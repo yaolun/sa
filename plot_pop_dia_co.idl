@@ -1,0 +1,10 @@
+data = read_ascii('~/co_TRANS_fit_combined.txt', data_start = 3)
+ref = read_ascii('~/data/co_tran_ref.txt', data_start = 1)
+help, data
+help, ref
+;print, ref.field1[1,*]
+;print, data.field1[0,*]
+ind = intarr(n_elements(data.field01[0,*]))
+for i = 0, n_elements(ind)-1 do ind[i] = where(ref.field1[1,*] eq data.field01[0,i])
+print, ind
+pop_dia_co, data.field01[1,*], data.field01[3,*], data.field01[4,*], ref.field1[3,ind], ref.field1[5,ind], data.field01[0,*]
