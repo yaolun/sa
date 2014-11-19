@@ -409,19 +409,21 @@ from read_fitting import read_fitting_co
 from leastsqfit import lin_leastsqfit
 home = os.path.expanduser('~')
 
-pacs = '/bhr71/fitting/1107/pacs/advanced_products/BHR71_centralSpaxel_PointSourceCorrected_CorrectedYES_trim_lines.txt'
+pacs = '/bhr71/fitting/unc_test/pacs/advanced_products/BHR71_centralSpaxel_PointSourceCorrected_CorrectedYES_trim_lines.txt'
 spire = '/bhr71/fitting/1107/spire/advanced_products/BHR71_spire_corrected_lines.txt'
 pop_dia_1d('BHR71','/bhr71/plots/',pacs=pacs,spire=spire)
-pacs_cube = '/bhr71/fitting/1107/pacs/advanced_products/cube/BHR71_pacs_pixel'
+pacs_cube = '/bhr71/fitting/unc_test/pacs/advanced_products/cube/BHR71_pacs_pixel'
 # pacs_cube = [pacs_cube+str(i)+'_os8_sf7_lines.txt' for i in range(1,26)]
-[pop_dia_1d('BHR71_pacs_pixel'+str(i),'/bhr71/plots/',pacs=pacs_cube+str(i)+'_os8_sf7_lines.txt') for i in range(1,26)]
+for i in range(1,26):
+    print i
+    pop_dia_1d('BHR71_pacs_pixel'+str(i),'/bhr71/plots/',pacs=pacs_cube+str(i)+'_os8_sf7_lines.txt')
 
 # pop_dia_h2o_1d('BHR71','/bhr71/plots/',pacs=pacs,spire=spire)
 # <codecell>
 
 
 
-pacs = '/bhr71/fitting/1107/pacs/advanced_products/BHR71_centralSpaxel_PointSourceCorrected_CorrectedYES_trim_lines.txt'
+pacs = '/bhr71/fitting/unc_test/pacs/advanced_products/BHR71_centralSpaxel_PointSourceCorrected_CorrectedYES_trim_lines.txt'
 [co_pacs,co_name_pacs] = read_fitting_co(pacs,3)
 spire = '/bhr71/fitting/1107/spire/advanced_products/BHR71_spire_corrected_lines.txt'
 [co_spire,co_name_spire] = read_fitting_co(spire,3)
