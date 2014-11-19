@@ -200,5 +200,5 @@ def fitting_check(indir,obj=None,outdir=False):
 
 
 
-indir = '/bhr71/fitting/'
-fitting_check(indir)
+# indir = '/bhr71/fitting/'
+# fitting_check(indir)
