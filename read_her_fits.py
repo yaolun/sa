@@ -127,8 +127,16 @@ def fitting_check(indir,obj=None,outdir=False):
 		num7 = len(data[data['Sig_str(W/cm2)'] == 0.0]) + num7
 		num8 = len(data[(data['Sig_str(W/cm2)'] == 0.0) & (data['SNR'] >= 3)]) + num8
 		num9 = len(data[(data['Sig_str(W/cm2)'] == 0.0) & (data['SNR'] >= 3) & (data['Blend'] == 'DoubleGaussian')]) + num9
-		num_line2 = len(data[(data['SNR'] >=3) & (data['Sig_Cen(um)'] != -999.0) & (data['Sig_FWHM(um)'] != -999.0) & \
-							 (data['Sig_str(W/cm2)'] != 0.0) & (data['Validity'] ==1)]) + num_line2
+		num_line2 = len(data[(data['SNR'] >=3) & (data['Sig_Cen(um)'] != -999.0) & (data['Sig_FWHM(um)'] != -999.0) & (data['Sig_str(W/cm2)'] != 0.0) & (data['Validity'] ==1)]) + num_line2
+		if len(data[(data['Sig_str(W/cm2)'] == 0.0) & (data['SNR'] >= 3)]) != 0:
+			print path
+			print data['Line'][(data['Sig_str(W/cm2)'] == 0.0) & (data['SNR'] >= 3)]
+			print data['ObsWL(um)'][(data['Sig_str(W/cm2)'] == 0.0) & (data['SNR'] >= 3)]
+			print data['Sig_Cen(um)'][(data['Sig_str(W/cm2)'] == 0.0) & (data['SNR'] >= 3)]
+			print data['Str(W/cm2)'][(data['Sig_str(W/cm2)'] == 0.0) & (data['SNR'] >= 3)]
+			print data['Sig_str(W/cm2)'][(data['Sig_str(W/cm2)'] == 0.0) & (data['SNR'] >= 3)]
+			print data['FWHM(um)'][(data['Sig_str(W/cm2)'] == 0.0) & (data['SNR'] >= 3)]
+			print data['Sig_FWHM(um)'][(data['Sig_str(W/cm2)'] == 0.0) & (data['SNR'] >= 3)]
 
 
 	# Print out the statistic of the pacs fitting results
@@ -188,15 +196,15 @@ def fitting_check(indir,obj=None,outdir=False):
 
 	# Print out the statistic of the pacs fitting results
 	print '<SPIRE>'
-	print '\t Number of object: %d ' % num_pacs
-	print '\t %d lines are fitted, %.2f lines are fitted in each object on average.' % (num_fit,num_fit/num_pacs)
-	print '\t %d lines are detected, %.2f lines are fitted in each objects on average.' % (num_line,num_line/num_pacs)
+	print '\t Number of object: %d ' % num_spire
+	print '\t %d lines are fitted, %.2f lines are fitted in each object on average.' % (num_fit,num_fit/num_spire)
+	print '\t %d lines are detected, %.2f lines are fitted in each objects on average.' % (num_line,num_line/num_spire)
 	print '\t <<Anomaly>>'
 	print '\t \t SNR anomalies due to the missing spectra: %d' % num1
 	print '\t \t Zeros in line centroid uncertainty: %d and %d with detection.' % (num2,num3)
 	print '\t \t Zeros in FWHM uncertainty: %d, %d with detection, and %d with detection and double Gaussian.' % (num4,num5,num6)
 	print '\t \t Zeros in line strength uncertainty: %d, %d with detection, and %d with detection and double Gaussian' % (num7,num8,num9)
-	print '\t %d lines are detected without anomalous, and %.2f lines on average.' % (num_line2,num_line2/num_pacs)
+	print '\t %d lines are detected without anomalous, and %.2f lines on average.' % (num_line2,num_line2/num_spire)
 
 
 
