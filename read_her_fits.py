@@ -129,12 +129,10 @@ def fitting_check(indir,obj=None,outdir=False):
 		num7 = len(data[data['Sig_str(W/cm2)'] == 0.0]) + num7
 		num8 = len(data[(data['Sig_str(W/cm2)'] == 0.0) & (data['SNR'] >= 3)]) + num8
 		num9 = len(data[(data['Sig_str(W/cm2)'] == 0.0) & (data['SNR'] >= 3) & (data['Blend'] == 'DoubleGaussian')]) + num9
-<<<<<<< HEAD
 		num_line2 = len(data[(data['SNR'] >=3) & (data['Sig_Cen(um)'] != -999.0) & (data['Sig_FWHM(um)'] != -999.0) & \
 							 (data['Sig_str(W/cm2)'] != 0.0) & (data['Validity'] ==1)]) + num_line2
 		num_dg = len(data[data['Blend'] == 'DoubleGaussian']) + num_dg
 		num_dg_line = len(data[(data['Blend'] == 'DoubleGaussian') & (data['SNR'] >= 3)]) + num_dg_line
-=======
 		num_line2 = len(data[(data['SNR'] >=3) & (data['Sig_Cen(um)'] != -999.0) & (data['Sig_FWHM(um)'] != -999.0) & (data['Sig_str(W/cm2)'] != 0.0) & (data['Validity'] ==1)]) + num_line2
 		if len(data[(data['Sig_str(W/cm2)'] == 0.0) & (data['SNR'] >= 3)]) != 0:
 			print path
@@ -145,7 +143,6 @@ def fitting_check(indir,obj=None,outdir=False):
 			print data['Sig_str(W/cm2)'][(data['Sig_str(W/cm2)'] == 0.0) & (data['SNR'] >= 3)]
 			print data['FWHM(um)'][(data['Sig_str(W/cm2)'] == 0.0) & (data['SNR'] >= 3)]
 			print data['Sig_FWHM(um)'][(data['Sig_str(W/cm2)'] == 0.0) & (data['SNR'] >= 3)]
->>>>>>> 4c4ad8ec4bf57b8428325839fd5030fd91387120
 
 
 	# Print out the statistic of the pacs fitting results
@@ -213,10 +210,7 @@ def fitting_check(indir,obj=None,outdir=False):
 	print '\t Number of object: %d ' % num_spire
 	print '\t %d lines are fitted, %.2f lines are fitted in each object on average.' % (num_fit,num_fit/num_spire)
 	print '\t %d lines are detected, %.2f lines are fitted in each objects on average.' % (num_line,num_line/num_spire)
-<<<<<<< HEAD
 	print '\t %d lines are fitted with double Gaussian, %d lines are detected among them.' % (num_dg,num_dg_line)
-=======
->>>>>>> 4c4ad8ec4bf57b8428325839fd5030fd91387120
 	print '\t <<Anomaly>>'
 	print '\t \t SNR anomalies due to the missing spectra: %d' % num1
 	print '\t \t Zeros in line centroid uncertainty: %d and %d with detection.' % (num2,num3)

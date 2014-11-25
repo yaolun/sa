@@ -10,7 +10,7 @@
 /*                                                                  */
 /*       to compile, use an ANSI C compiler and add the math library*/
 /*       for instance,                                              */
-/*       cc -o CO.program CO.c -lm                                 */
+/*       cc -o CO.program CO.c -lm                                  */
 
 
 
@@ -24,7 +24,7 @@ int main(void)
 {
 
 	int number;
-	double m_C, m_O, E;
+	double m_C, m_O, E, c, wl;
 	int v, J;
 	
 	printf("Program to calculate the line frequencies of\n");
@@ -32,6 +32,8 @@ int main(void)
 	printf("Enter the isotope of Carbon\n");
 	scanf("%d",&number);
 	
+	c = 2.99792458E+10;
+
 	if(number == 9) m_C = 9.031039;
 	else if(number == 10) m_C = 10.016856;
 	else if(number == 11) m_C = 11.011433;
@@ -75,9 +77,11 @@ int main(void)
 	
 	/* since constants in MHz, convert to Hz */
 	E = E * 1.0E6;
+	/* calculate the wavelength in um */
+	wl = c / E * 1E+4;
 	
 	printf("\nThe frequency is %.10E Hz\n", E);
-	
+	printf("\nThe wavelength is %.10E um\n", wl);
 
 	return 0;
 }
