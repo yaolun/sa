@@ -133,7 +133,8 @@ def fitting_check(indir,obj=None,outdir=False):
 							 (data['Sig_str(W/cm2)'] != 0.0) & (data['Validity'] ==1)]) + num_line2
 		num_dg = len(data[data['Blend'] == 'DoubleGaussian']) + num_dg
 		num_dg_line = len(data[(data['Blend'] == 'DoubleGaussian') & (data['SNR'] >= 3)]) + num_dg_line
-		num_line2 = len(data[(data['SNR'] >=3) & (data['Sig_Cen(um)'] != -999.0) & (data['Sig_FWHM(um)'] != -999.0) & (data['Sig_str(W/cm2)'] != 0.0) & (data['Validity'] ==1)]) + num_line2
+
+		# Print out the detail information of the line that has zero in line strength uncertainty.
 		if len(data[(data['Sig_str(W/cm2)'] == 0.0) & (data['SNR'] >= 3)]) != 0:
 			print path
 			print data['Line'][(data['Sig_str(W/cm2)'] == 0.0) & (data['SNR'] >= 3)]
@@ -148,15 +149,15 @@ def fitting_check(indir,obj=None,outdir=False):
 	# Print out the statistic of the pacs fitting results
 	print '<PACS>'
 	print '\t Number of object: %d ' % num_pacs
-	print '\t %d lines are fitted, %.2f lines are fitted in each object on average.' % (num_fit,num_fit/num_pacs)
-	print '\t %d lines are detected, %.2f lines are fitted in each objects on average.' % (num_line,num_line/num_pacs)
-	print '\t %d lines are fitted with double Gaussian, %d lines are detected among them.' % (num_dg,num_dg_line)
+	print '\t %d lines fitted, %.2f lines fitted per object' % (num_fit,num_fit/num_pacs)
+	print '\t %d detections, %.2f detections per object.' % (num_line,num_line/num_pacs)
+	print '\t %d lines fitted with blend Gaussian, %d lines detections among them.' % (num_dg,num_dg_line)
 	print '\t <<Anomaly>>'
 	print '\t \t SNR anomalies due to the missing spectra: %d' % num1
-	print '\t \t Zeros in line centroid uncertainty: %d and %d with detection.' % (num2,num3)
-	print '\t \t Zeros in FWHM uncertainty: %d, %d with detection, and %d with detection and double Gaussian.' % (num4,num5,num6)
-	print '\t \t Zeros in line strength uncertainty: %d, %d with detection, and %d with detection and double Gaussian' % (num7,num8,num9)
-	print '\t %d lines are detected without anomalous, and %.2f lines on average.' % (num_line2,num_line2/num_pacs)
+	print '\t \t Zeros in line centroid uncertainty: %d and %d with detections.' % (num2,num3)
+	print '\t \t Zeros in FWHM uncertainty: %d, %d with detections, and %d with detections and blend Gaussian.' % (num4,num5,num6)
+	print '\t \t Zeros in line strength uncertainty: %d, %d with detections, and %d with detections and blend Gaussian' % (num7,num8,num9)
+	print '\t %d detections without anomalous, and %.2f lines per object.' % (num_line2,num_line2/num_pacs)
 
 	# ============================================================================================================================
 	# ============================================================================================================================
@@ -201,23 +202,22 @@ def fitting_check(indir,obj=None,outdir=False):
 		num8 = len(data[(data['Sig_str(W/cm2)'] == 0.0) & (data['SNR'] >= 3)]) + num8
 		num9 = len(data[(data['Sig_str(W/cm2)'] == 0.0) & (data['SNR'] >= 3) & (data['Blend'] == 'DoubleGaussian')]) + num9
 		num_line2 = len(data[(data['SNR'] >=3) & (data['Sig_Cen(um)'] != -999.0) & (data['Sig_FWHM(um)'] != -999.0) & \
-							 (data['Sig_str(W/cm2)'] != 0.0) & (data['Validity'] ==1)]) + num_line2
+							 (data['Sig_str(W/cm2)'] != 0.0) & (data['Validity'] == 1)]) + num_line2
 		num_dg = len(data[data['Blend'] == 'DoubleGaussian']) + num_dg
 		num_dg_line = len(data[(data['Blend'] == 'DoubleGaussian') & (data['SNR'] >= 3)]) + num_dg_line
 
 	# Print out the statistic of the pacs fitting results
 	print '<SPIRE>'
 	print '\t Number of object: %d ' % num_spire
-	print '\t %d lines are fitted, %.2f lines are fitted in each object on average.' % (num_fit,num_fit/num_spire)
-	print '\t %d lines are detected, %.2f lines are fitted in each objects on average.' % (num_line,num_line/num_spire)
-	print '\t %d lines are fitted with double Gaussian, %d lines are detected among them.' % (num_dg,num_dg_line)
+	print '\t %d lines fitted, %.2f lines fitted per object' % (num_fit,num_fit/num_spire)
+	print '\t %d detections, %.2f detections per object.' % (num_line,num_line/num_spire)
+	print '\t %d lines fitted with blend Gaussian, %d lines detections among them.' % (num_dg,num_dg_line)
 	print '\t <<Anomaly>>'
 	print '\t \t SNR anomalies due to the missing spectra: %d' % num1
-	print '\t \t Zeros in line centroid uncertainty: %d and %d with detection.' % (num2,num3)
-	print '\t \t Zeros in FWHM uncertainty: %d, %d with detection, and %d with detection and double Gaussian.' % (num4,num5,num6)
-	print '\t \t Zeros in line strength uncertainty: %d, %d with detection, and %d with detection and double Gaussian' % (num7,num8,num9)
-	print '\t %d lines are detected without anomalous, and %.2f lines on average.' % (num_line2,num_line2/num_spire)
-
+	print '\t \t Zeros in line centroid uncertainty: %d and %d with detections.' % (num2,num3)
+	print '\t \t Zeros in FWHM uncertainty: %d, %d with detections, and %d with detections and blend Gaussian.' % (num4,num5,num6)
+	print '\t \t Zeros in line strength uncertainty: %d, %d with detections, and %d with detections and blend Gaussian' % (num7,num8,num9)
+	print '\t %d detections without anomalous, and %.2f lines per object.' % (num_line2,num_line2/num_spire)
 
 
 # indir = '/bhr71/fitting/'
