@@ -49,7 +49,7 @@ def unc_test(filepath,plotname,noise_test=False,oned=True):
 		ax.tick_params('both',labelsize=18,width=1.5,which='minor')
 		[ax.spines[axis].set_linewidth(1.5) for axis in ['top','bottom','left','right']]
 		ax.set_ylim([min(snr/snr_flux),max(snr/snr_flux)])
-		fig.savefig(home+'unc_comparison.pdf',format='pdf',dpi=300,bbox_inches='tight')
+		fig.savefig(home+'/unc_comparison.pdf',format='pdf',dpi=300,bbox_inches='tight')
 		fig.clf()
 
 
