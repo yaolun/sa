@@ -1,4 +1,4 @@
-def unc_test(filepath,plotname):
+def unc_test(filepath,plotname,noise_test=False,oned=True):
 	from astropy.io import ascii
 	import numpy as np
 	import matplotlib.pyplot as plt
@@ -7,18 +7,51 @@ def unc_test(filepath,plotname):
 
 	filepath = home + filepath
 	data = ascii.read(filepath)
-	# Header of the 1-D fitting results
-	# =========================================================================================
-	# Line,		LabWL(um),		ObsWL(um),		Sig_Cen(um),	Str(W/cm2),		Sig_str(W/cm2)
-	# FWHM(um), Sig_FWHM(um),   Base(W/cm2/um), SNR,		 	E_u(K),         A(s-1)        
-	# g,        RA(deg),        Dec(deg),       Blend,          Validity
-	# =========================================================================================
-	header = data.colnames
-	data = data[np.isnan(data['SNR'])!=True]        # Temperory procedure to exclude the missing segment in the spectrum resulting in the NaN in SNR
-	data = data[(data['Sig_Cen(um)']!=-999.0) & (data['Sig_FWHM(um)']!=-999.0)]
-	snr = abs(data['SNR'][np.argsort(data['ObsWL(um)'])])
-	snr_flux = (data['Str(W/cm2)']/data['Sig_str(W/cm2)'])[np.argsort(data['ObsWL(um)'])]
-	wl = data['ObsWL(um)'][np.argsort(data['ObsWL(um)'])]
+	if oned == True:
+		# Header of the 1-D fitting results
+		# =========================================================================================
+		# Line,		LabWL(um),		ObsWL(um),		Sig_Cen(um),	Str(W/cm2),		Sig_str(W/cm2)
+		# FWHM(um), Sig_FWHM(um),   Base(W/cm2/um), Noise(W/cm2/um),SNR,		 	E_u(K),         A(s-1)        
+		# g,        RA(deg),        Dec(deg),       Blend,          Validity
+		# =========================================================================================
+		header = data.colnames
+		data = data[np.isnan(data['SNR'])!=True]        # Temperory procedure to exclude the missing segment in the spectrum resulting in the NaN in SNR
+		data = data[(data['Sig_Cen(um)']!=-999.0) & (data['Sig_FWHM(um)']!=-999.0)]
+		snr = abs(data['SNR'][np.argsort(data['ObsWL(um)'])])
+		snr_flux = (data['Str(W/cm2)']/data['Sig_str(W/cm2)'])[np.argsort(data['ObsWL(um)'])]
+		wl = data['ObsWL(um)'][np.argsort(data['ObsWL(um)'])]
+	else:
+		# Header of the all 1-D fitting results
+		# ====================================================================================================
+		# Object,   Line,			LabWL(um),		ObsWL(um),		Sig_Cen(um),	Str(W/cm2),		Sig_str(W/cm2)
+		# FWHM(um), Sig_FWHM(um),   Base(W/cm2/um), Noise(W/cm2/um),SNR,		 	E_u(K),         A(s-1)        
+		# g,        RA(deg),        Dec(deg),       Blend,          Validity
+		# ====================================================================================================
+		header = data.colnames
+		data = data[np.isnan(data['SNR'])!=True]        # Temperory procedure to exclude the missing segment in the spectrum resulting in the NaN in SNR
+		data = data[(data['Sig_Cen(um)']!=-999.0) & (data['Sig_FWHM(um)']!=-999.0)]
+		snr = abs(data['SNR'][np.argsort(data['ObsWL(um)'])])
+		snr_flux = (data['Str(W/cm2)']/data['Sig_str(W/cm2)'])[np.argsort(data['ObsWL(um)'])]
+		wl = data['ObsWL(um)'][np.argsort(data['ObsWL(um)'])]
+
+	if noise_test == True:
+		# Plot Sig_str verses noise * FWHM
+		fig = plt.figure(figsize=(12,9))
+		ax = fig.add_subplot(111)
+		sig_str = data['Sig_str(W/cm2)'][np.argsort(data['ObsWL(um)'])]
+		noise = data['Noise(W/cm2/um)'][np.argsort(data['ObsWL(um)'])]
+		fwhm = data['FWHM(um)'][np.argsort(data['ObsWL(um)'])]
+		NOISE, = ax.plot(sig_str[snr >= 3.0], noise[snr >= 3.0]*fwhm[snr >= 3.0], 'go')
+		ax.plot(sig_str[snr < 3.0], noise[snr < 3.0]*fwhm[snr < 3.0], 'go', alpha = 0.5)
+		ax.set_xlabel(r'$\mathrm{\sigma_{fit}}$', fontsize=20)
+		ax.set_ylabel(r'$\mathrm{Noise \times FWHM}$', fontsize=20)
+		ax.tick_params('both',labelsize=18,width=1.5,which='major')
+		ax.tick_params('both',labelsize=18,width=1.5,which='minor')
+		[ax.spines[axis].set_linewidth(1.5) for axis in ['top','bottom','left','right']]
+		ax.set_ylim([min(snr/snr_flux),max(snr/snr_flux)])
+		fig.savefig(home+'unc_comparison.pdf',format='pdf',dpi=300,bbox_inches='tight')
+		fig.clf()
+
 
 	fig = plt.figure(figsize=(12,9))
 	ax = fig.add_subplot(111)

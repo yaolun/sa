@@ -4,7 +4,7 @@
 
 /*       CO vibrational and rotational transition frequency program */
 /*       initial writing:  1994 by James M Anderson                 */
-/*       uses data from Autihier et al., 1993, J Mol. Spec.         */
+/*       uses data from Authier et al., 1993, J Mol. Spec.         */
 /*       at present, each run of the program results in one         */
 /*       frequency output                                           */
 /*                                                                  */
