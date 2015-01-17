@@ -1,4 +1,4 @@
-def unc_test(filepath,plotname,noise_test=False,oned=True):
+def unc_test(filepath,plotdir,noise_test=False,oned=True,zoom=False,spire=False,scatter_hist=False,png=False):
 	from astropy.io import ascii
 	import numpy as np
 	import matplotlib.pyplot as plt
@@ -21,7 +21,7 @@ def unc_test(filepath,plotname,noise_test=False,oned=True):
 		snr_flux = (data['Str(W/cm2)']/data['Sig_str(W/cm2)'])[np.argsort(data['ObsWL(um)'])]
 		wl = data['ObsWL(um)'][np.argsort(data['ObsWL(um)'])]
 	else:
-		# Header of the all 1-D fitting results
+		# Header of the all cube fitting results
 		# ====================================================================================================
 		# Object,   Line,			LabWL(um),		ObsWL(um),		Sig_Cen(um),	Str(W/cm2),		Sig_str(W/cm2)
 		# FWHM(um), Sig_FWHM(um),   Base(W/cm2/um), Noise(W/cm2/um),SNR,		 	E_u(K),         A(s-1)        
@@ -35,41 +35,171 @@ def unc_test(filepath,plotname,noise_test=False,oned=True):
 		wl = data['ObsWL(um)'][np.argsort(data['ObsWL(um)'])]
 
 	if noise_test == True:
-		# Plot Sig_str verses noise * FWHM
+		# Plot noise * FWHM verses Sig_str
 		fig = plt.figure(figsize=(12,9))
 		ax = fig.add_subplot(111)
 		sig_str = data['Sig_str(W/cm2)'][np.argsort(data['ObsWL(um)'])]
 		noise = data['Noise(W/cm2/um)'][np.argsort(data['ObsWL(um)'])]
 		fwhm = data['FWHM(um)'][np.argsort(data['ObsWL(um)'])]
-		NOISE, = ax.plot(sig_str[snr >= 3.0], noise[snr >= 3.0]*fwhm[snr >= 3.0], 'go')
-		ax.plot(sig_str[snr < 3.0], noise[snr < 3.0]*fwhm[snr < 3.0], 'go', alpha = 0.5)
-		ax.set_xlabel(r'$\mathrm{\sigma_{fit}}$', fontsize=20)
-		ax.set_ylabel(r'$\mathrm{Noise \times FWHM}$', fontsize=20)
+		if spire != True:
+			low, = ax.plot(np.log10( noise[(snr >= 3.0) & (snr < 10.0)] * fwhm[(snr >= 3.0) & (snr < 10.0)] ), np.log10( sig_str[(snr >= 3.0) & (snr < 10.0)] ), 'go')
+			high, = ax.plot(np.log10(noise[(snr >= 10.0)]*fwhm[(snr >= 10.0)]), np.log10(sig_str[(snr >= 10.0)]), 'ro')
+		else:
+			ssw, = ax.plot(np.log10( noise[(snr >= 3.0) & (data['ObsWL(um)'] <= 304)] * fwhm[(snr >= 3.0) & (data['ObsWL(um)'] <= 304)] ), np.log10( sig_str[(snr >= 3.0) & (data['ObsWL(um)'] <= 304)] ), 'go')
+			slw, = ax.plot(np.log10( noise[(snr >= 3.0) & (data['ObsWL(um)'] > 304)] * fwhm[(snr >= 3.0) & (data['ObsWL(um)'] > 304)] ), np.log10( sig_str[(snr >= 3.0) & (data['ObsWL(um)'] > 304)] ), 'ro')
+			# high, = ax.plot(np.log10(noise[(snr >= 10.0)]*fwhm[(snr >= 10.0)]), np.log10(sig_str[(snr >= 10.0)]), 'ro')
+		# ax.plot(np.log10(sig_str[snr < 3.0]), np.log10(noise[snr < 3.0]*fwhm[snr < 3.0]), 'go', alpha = 0.5)
+		# overplot the slope = 1 line
+		slope, = ax.plot(np.hstack((np.log10(sig_str[snr >= 3.0]), np.log10(noise[snr >= 3.0]*fwhm[snr >= 3.0]))),np.hstack((np.log10(sig_str[snr >= 3.0]), np.log10(noise[snr >= 3.0]*fwhm[snr >= 3.0]))),'b-',linewidth=1.5)
+		if spire != True:
+			lg = plt.legend([low, high, slope],[r'$\mathrm{3<SNR<10}$',r'$\mathrm{10<SNR}$',r'$\mathrm{Equality}$'], loc='best', numpoints=1, fontsize=20)
+		else:
+			lg = plt.legend([ssw,slw,slope],[r'$\mathrm{SSW}$',r'$\mathrm{SLW}$',r'$\mathrm{Equality}$'], loc='best', numpoints=1, fontsize=20)
+		ax.set_ylabel(r'$\mathrm{log(\sigma_{fit})}$', fontsize=22)
+		ax.set_xlabel(r'$\mathrm{log(Noise \times FWHM)}$', fontsize=22)
 		ax.tick_params('both',labelsize=18,width=1.5,which='major')
 		ax.tick_params('both',labelsize=18,width=1.5,which='minor')
+		# ax.set_ylim([-1e-19,5e-19])
+		# ax.set_xlim([-1e-19,5e-19])
+		addname = ''
+		if zoom == True:
+			ax.set_xlim([-25,-15])
+			ax.set_ylim([-25,-15])
+			addname = '_zoomin'
 		[ax.spines[axis].set_linewidth(1.5) for axis in ['top','bottom','left','right']]
-		ax.set_ylim([min(snr/snr_flux),max(snr/snr_flux)])
-		fig.savefig(home+'/unc_comparison.pdf',format='pdf',dpi=300,bbox_inches='tight')
+		if png == False:
+			fig.savefig(home+plotdir+'unc_comparison'+addname+'.pdf',format='pdf',dpi=300,bbox_inches='tight')
+		else:
+			fig.savefig(home+plotdir+'unc_comparison'+addname+'.png',format='png',dpi=300,bbox_inches='tight')
 		fig.clf()
 
+		if scatter_hist == True:
+			print 'Plotting scatter/histogram...'
+			from matplotlib.ticker import NullFormatter
 
-	fig = plt.figure(figsize=(12,9))
-	ax = fig.add_subplot(111)
+			nullfmt   = NullFormatter()         # no labels
 
-	SNR, = ax.plot(wl[snr >= 3.0], snr[snr >= 3.0]/snr_flux[snr >= 3.0], 'go', linewidth=1.5)
-	ax.plot(wl[snr < 3.0], snr[snr < 3.0]/snr_flux[snr < 3.0], 'go', alpha = 0.5, linewidth=1.5)
-	# SNR_flux, = ax.plot(wl[snr_flux >= 3.0], snr_flux[snr_flux >= 3.0], 'go', linewidth=1.5)
-	# ax.plot(wl[snr_flux < 3.0], snr_flux[snr_flux < 3.0], 'go', alpha = 0.5, linewidth=1.5)
-	ax.set_xlabel(r'$\mathrm{Wavelength~(\mu m)}$', fontsize=20)
-	ax.set_ylabel(r'$\mathrm{SNR}$', fontsize=20)
-	# lg = ax.legend([SNR, SNR_flux], [r'$\mathrm{SNR}$',r'$\mathrm{F_{line}/\sigma_{line}}$'], fontsize=18)
-	lg = ax.legend([SNR], [r'$\mathrm{\frac{SNR}{F_{line}/\sigma_{line}}}$'], numpoints=1, fontsize=18)
-	ax.tick_params('both',labelsize=18,width=1.5,which='major')
-	ax.tick_params('both',labelsize=18,width=1.5,which='minor')
-	[ax.spines[axis].set_linewidth(1.5) for axis in ['top','bottom','left','right']]
-	ax.set_ylim([min(snr/snr_flux),max(snr/snr_flux)])
-	fig.savefig(home+plotname+'.pdf',format='pdf',dpi=300,bbox_inches='tight')
-	fig.clf()
+			# data
+			x = np.log10( noise[(snr >= 3.0) & (snr < 10.0)] * fwhm[(snr >= 3.0) & (snr < 10.0)] )
+			y = np.log10( sig_str[(snr >= 3.0) & (snr < 10.0)] )
+
+			xx = np.log10( noise[(snr >= 10.0)] * fwhm[(snr >= 10.0)] )
+			yy = np.log10( sig_str[(snr >= 10.0)] )
+
+			line = np.hstack((np.log10(sig_str[snr >= 3.0]), np.log10(noise[snr >= 3.0]*fwhm[snr >= 3.0])))
+
+			# definitions for the axes
+			left, width = 0.1, 0.65
+			bottom, height = 0.1, 0.65
+			bottom_h = left_h = left+width+0.02
+
+			rect_scatter = [left, bottom, width, height]
+			rect_histx = [left, bottom_h, width, 0.2]
+			rect_histy = [left_h, bottom, 0.2, height]
+
+			# start with a rectangular Figure
+			fig = plt.figure(1,figsize=(12,12))
+
+			axScatter = fig.add_axes(rect_scatter)
+			axHistx = fig.add_axes(rect_histx)
+			axHisty = fig.add_axes(rect_histy)
+
+			# set labels for scatter plot
+			axScatter.set_xlabel(r'$\mathrm{log(Noise\times FWHM)~(W~cm^{-2})}$', fontsize=22)
+			axScatter.set_ylabel(r'$\mathrm{log(\sigma_{fit})~(W~cm^{-2})}$', fontsize=22)
+
+			# no labels
+			axHistx.xaxis.set_major_formatter(nullfmt)
+			axHisty.yaxis.set_major_formatter(nullfmt)
+
+			# no tick labels
+			axHistx.yaxis.set_ticks([])
+			axHisty.xaxis.set_ticks([])
+
+			# the scatter plot:
+			low = axScatter.scatter(x, y, c='g', s=27, lw=0.5)
+			high = axScatter.scatter(xx, yy, c='r', s=27, lw=0.5)
+			slope, = axScatter.plot(line, line, 'b-', linewidth=1.5)
+			lg = plt.legend([low, high, slope],[r'$\mathrm{3<SNR<10}$',r'$\mathrm{10<SNR}$',r'$\mathrm{Equality}$'],\
+							loc='best', bbox_to_anchor=[0.35,1],bbox_transform=axScatter.transAxes, numpoints=1, scatterpoints=1, fontsize=18)
+			
+			# now determine nice limits by hand:
+			binwidth = 0.05
+			xymax = np.max( [np.max(x), np.max(y)] )
+			xymin = np.min( [np.min(x), np.min(y)] )
+			ulim = ( int(xymax/binwidth) + 1) * binwidth + 0.5
+			llim = ( int(xymin/binwidth) + 1) * binwidth - 0.5
+
+			axScatter.set_xlim( (llim, ulim) )
+			axScatter.set_ylim( (llim, ulim) )
+
+			bins = np.arange(llim, ulim + binwidth , binwidth)
+			axHistx.hist(x, bins=bins, histtype='step', edgecolor='Green',hatch='////')
+			axHisty.hist(y, bins=bins, histtype='step', edgecolor='Green',hatch='////', orientation='horizontal')
+
+			axHistx.hist(xx, bins=bins, histtype='step', edgecolor='Red', hatch='\\\\\\\\',)
+			axHisty.hist(yy, bins=bins, histtype='step', edgecolor='Red', hatch='\\\\\\\\', orientation='horizontal')
+
+			axHistx.set_xlim( axScatter.get_xlim() )
+			axHisty.set_ylim( axScatter.get_ylim() )
+
+			# Tweak the axes thickness
+			axes = [axHistx,axHisty]
+			for ax in axes:
+				ax.tick_params('both',labelsize=14,width=1.5,which='major')
+				ax.tick_params('both',labelsize=14,width=1.5,which='minor')
+				[ax.spines[axis].set_linewidth(1.5) for axis in ['top','bottom','left','right']]
+			ax = axScatter
+			ax.tick_params('both',labelsize=14,width=1.5,which='major')
+			ax.tick_params('both',labelsize=14,width=1.5,which='minor')
+			[ax.spines[axis].set_linewidth(1.5) for axis in ['top','bottom','left','right']]
+
+			if png == False:
+				plt.savefig(home+plotdir+'scatter_hist.pdf',format='pdf',dpi=300,bbox_inches='tight')
+			else:
+				plt.savefig(home+plotdir+'scatter_hist.png',format='png',dpi=300,bbox_inches='tight')
+			plt.cla()
+			plt.clf()
+
+
+	# fig = plt.figure(figsize=(12,9))
+	# ax = fig.add_subplot(111)
+
+	# SNR, = ax.plot(wl[snr >= 3.0], snr[snr >= 3.0]/snr_flux[snr >= 3.0], 'go', linewidth=1.5)
+	# ax.plot(wl[snr < 3.0], snr[snr < 3.0]/snr_flux[snr < 3.0], 'go', alpha = 0.5, linewidth=1.5)
+	# # SNR_flux, = ax.plot(wl[snr_flux >= 3.0], snr_flux[snr_flux >= 3.0], 'go', linewidth=1.5)
+	# # ax.plot(wl[snr_flux < 3.0], snr_flux[snr_flux < 3.0], 'go', alpha = 0.5, linewidth=1.5)
+	# ax.set_xlabel(r'$\mathrm{Wavelength~(\mu m)}$', fontsize=20)
+	# ax.set_ylabel(r'$\mathrm{SNR}$', fontsize=20)
+	# # lg = ax.legend([SNR, SNR_flux], [r'$\mathrm{SNR}$',r'$\mathrm{F_{line}/\sigma_{line}}$'], fontsize=18)
+	# lg = ax.legend([SNR], [r'$\mathrm{\frac{SNR}{F_{line}/\sigma_{line}}}$'], numpoints=1, fontsize=18)
+	# ax.tick_params('both',labelsize=18,width=1.5,which='major')
+	# ax.tick_params('both',labelsize=18,width=1.5,which='minor')
+	# [ax.spines[axis].set_linewidth(1.5) for axis in ['top','bottom','left','right']]
+	# ax.set_ylim([min(snr/snr_flux),max(snr/snr_flux)])
+	# fig.savefig(home+plotdir+'snr_comparison.pdf',format='pdf',dpi=300,bbox_inches='tight')
+	# fig.clf()
+zoom = False
+scatter_hist = True
+png = True
+# filepath = '/FWD_archive_pacs_1d_lines.txt'
+# plotdir = '/pacs_1d_'
+# unc_test(filepath,plotdir,noise_test=True,zoom=zoom)
+# filepath = '/FWD_archive_spire_1d_lines.txt'
+# plotdir = '/spire_1d_'
+# unc_test(filepath,plotdir,noise_test=True)
+filepath = '/FWD_archive_pacs_cube_lines.txt'
+plotdir = '/pacs_cube_'
+unc_test(filepath,plotdir,noise_test=True,zoom=zoom,scatter_hist=scatter_hist, png=png)
+filepath = '/FWD_archive_spire_cube_lines.txt'
+plotdir = '/spire_cube_'
+unc_test(filepath,plotdir,noise_test=True,zoom=zoom,scatter_hist=scatter_hist, png=png)
+# filepath = '/test/fitting_test/WL12_centralSpaxel_PointSourceCorrected_CorrectedYES_trim_lines.txt'
+# plotdir = '/WL12_pacs_'
+# unc_test(filepath,plotdir,noise_test=True)
+# filepath = '/test/fitting_test/BHR71_spire_corrected_lines.txt'
+# plotdir = '/BHR71_spire_'
+# unc_test(filepath,plotdir,noise_test=True)
 
 # # Using the uncertainty from the fits file
 # filepath = '/bhr71/fitting/unc_test/pacs/advanced_products/BHR71_centralSpaxel_PointSourceCorrected_CorrectedYES_trim_lines.txt'
