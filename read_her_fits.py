@@ -268,6 +268,8 @@ def fitting_check(indir,obj=None,outdir=False):
 	num_dg = 0.0
 	num_dg_line = 0.0
 
+	num_test = 0.0
+
 	# PACS statistic
 	for path in pacspath:
 		data = ascii.read(path)
@@ -297,6 +299,8 @@ def fitting_check(indir,obj=None,outdir=False):
 		num_dg = len(data[data['Blend'] == 'DoubleGaussian']) + num_dg
 		num_dg_line = len(data[(data['Blend'] == 'DoubleGaussian') & (data['SNR'] >= 3)]) + num_dg_line
 
+		num_test = len(data[data['Sig_FWHM(um)'] == 0.0]) + num_test
+
 		# Print out the detail information of the line that has zero in line strength uncertainty.
 		if len(data[(data['Sig_str(W/cm2)'] == 0.0) & (data['SNR'] >= 3)]) != 0:
 			print path
@@ -322,6 +326,8 @@ def fitting_check(indir,obj=None,outdir=False):
 	print '\t \t Zeros in line strength uncertainty: %d, %d with detections, and %d with detections and blend Gaussian' % (num7,num8,num9)
 	print '\t %d detections without anomalous, and %.2f lines per object.' % (num_line2,num_line2/num_pacs)
 
+	print num_test
+
 	# ============================================================================================================================
 	# ============================================================================================================================
 	print '=============================================================================================================='
@@ -339,6 +345,8 @@ def fitting_check(indir,obj=None,outdir=False):
 	num_line2 = 0.0
 	num_dg = 0.0
 	num_dg_line = 0.0
+
+	num_test = 0.0
 
 	# SPIRE statistic
 	for path in spirepath:
@@ -369,6 +377,9 @@ def fitting_check(indir,obj=None,outdir=False):
 		num_dg = len(data[data['Blend'] == 'DoubleGaussian']) + num_dg
 		num_dg_line = len(data[(data['Blend'] == 'DoubleGaussian') & (data['SNR'] >= 3)]) + num_dg_line
 
+		num_test = len(data[data['Sig_FWHM(um)'] == 0.0]) + num_test
+
+
 	# Print out the statistic of the pacs fitting results
 	print '<SPIRE>'
 	print '\t Number of object: %d ' % num_spire
@@ -382,6 +393,7 @@ def fitting_check(indir,obj=None,outdir=False):
 	print '\t \t Zeros in line strength uncertainty: %d, %d with detections, and %d with detections and blend Gaussian' % (num7,num8,num9)
 	print '\t %d detections without anomalous, and %.2f lines per object.' % (num_line2,num_line2/num_spire)
 
+	print num_test
 
 # indir = '/bhr71/fitting/'
 # fitting_check(indir)
