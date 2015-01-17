@@ -179,21 +179,21 @@ def unc_test(filepath,plotdir,noise_test=False,oned=True,zoom=False,spire=False,
 	# ax.set_ylim([min(snr/snr_flux),max(snr/snr_flux)])
 	# fig.savefig(home+plotdir+'snr_comparison.pdf',format='pdf',dpi=300,bbox_inches='tight')
 	# fig.clf()
-zoom = False
-scatter_hist = True
-png = True
-# filepath = '/FWD_archive_pacs_1d_lines.txt'
-# plotdir = '/pacs_1d_'
-# unc_test(filepath,plotdir,noise_test=True,zoom=zoom)
-# filepath = '/FWD_archive_spire_1d_lines.txt'
-# plotdir = '/spire_1d_'
-# unc_test(filepath,plotdir,noise_test=True)
-filepath = '/FWD_archive_pacs_cube_lines.txt'
-plotdir = '/pacs_cube_'
-unc_test(filepath,plotdir,noise_test=True,zoom=zoom,scatter_hist=scatter_hist, png=png)
-filepath = '/FWD_archive_spire_cube_lines.txt'
-plotdir = '/spire_cube_'
-unc_test(filepath,plotdir,noise_test=True,zoom=zoom,scatter_hist=scatter_hist, png=png)
+# zoom = False
+# scatter_hist = True
+# png = True
+# # filepath = '/FWD_archive_pacs_1d_lines.txt'
+# # plotdir = '/pacs_1d_'
+# # unc_test(filepath,plotdir,noise_test=True,zoom=zoom)
+# # filepath = '/FWD_archive_spire_1d_lines.txt'
+# # plotdir = '/spire_1d_'
+# # unc_test(filepath,plotdir,noise_test=True)
+# filepath = '/FWD_archive_pacs_cube_lines.txt'
+# plotdir = '/pacs_cube_'
+# unc_test(filepath,plotdir,noise_test=True,zoom=zoom,scatter_hist=scatter_hist, png=png)
+# filepath = '/FWD_archive_spire_cube_lines.txt'
+# plotdir = '/spire_cube_'
+# unc_test(filepath,plotdir,noise_test=True,zoom=zoom,scatter_hist=scatter_hist, png=png)
 # filepath = '/test/fitting_test/WL12_centralSpaxel_PointSourceCorrected_CorrectedYES_trim_lines.txt'
 # plotdir = '/WL12_pacs_'
 # unc_test(filepath,plotdir,noise_test=True)
