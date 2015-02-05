@@ -452,29 +452,23 @@ def fitting_check(indir,outdir):
 
 	# Search for the fitting results tables under the primary directory
 	# If the object name is specified, then only search in the the object directory
-	if obj == None:
-		# objdir = [x[0] for x in os.walk(home+indir)][1:]
-		objdir = os.walk(home+indir).next()[1]
-		pacspath = []
-		spirepath = []
-		num_pacs = 0.0
-		num_spire = 0.0
-		for o in objdir:
-			# PACS search
-			path_dum = find('*_lines.txt', home+indir+'/'+o+'/pacs/')
-			if len(path_dum) > 0:
-				pacspath.extend(path_dum)
-				num_pacs  += 1
-			# SPIRE search
-			path_dum = find('*_lines.txt', home+indir+'/'+o+'/spire/')
-			if len(path_dum) > 0:
-				spirepath.extend(path_dum)
-				num_spire += 1
-	else:
-		num_pacs = 1.0
-		num_spire = 1.0
-		pacspath = find('*_lines.txt', home+indir+'/'+obj+'/pacs/')
-		spirepath = find('*_lines.txt', home+indir+'/'+obj+'/spire/')
+	# objdir = [x[0] for x in os.walk(home+indir)][1:]
+	objdir = os.walk(home+indir).next()[1]
+	pacspath = []
+	spirepath = []
+	num_pacs = 0.0
+	num_spire = 0.0
+	for o in objdir:
+		# PACS search
+		path_dum = find('*_lines.txt', home+indir+'/'+o+'/pacs/')
+		if len(path_dum) > 0:
+			pacspath.extend(path_dum)
+			num_pacs  += 1
+		# SPIRE search
+		path_dum = find('*_lines.txt', home+indir+'/'+o+'/spire/')
+		if len(path_dum) > 0:
+			spirepath.extend(path_dum)
+			num_spire += 1
 
 	num_fit = 0.0
 	num_line = 0.0
