@@ -580,6 +580,8 @@ def fitting_check(indir,outdir):
 
 	print num_test
 
+	print 'Finished the statistic of the fitting results, go check them at %s !' % home+outdir+'stat.txt'
+
 def cdf_test(indir,outdir):
 	"""
 	The main test script for checking the performance of the archive and fitting results.
