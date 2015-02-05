@@ -500,6 +500,7 @@ def fitting_check(indir,outdir):
 
 	# PACS statistic
 	for path in pacspath:
+		print path
 		data = ascii.read(path)
 		# Header of the 1-D fitting results
 		# =========================================================================================
@@ -575,6 +576,7 @@ def fitting_check(indir,outdir):
 
 	# SPIRE statistic
 	for path in spirepath:
+		print path
 		data = ascii.read(path)
 		# Header of the 1-D fitting results
 		# =========================================================================================
@@ -621,6 +623,8 @@ def fitting_check(indir,outdir):
 	foo.close()
 
 	print num_test
+
+	print 'Finished the statistic of the fitting results, go check them at %s !' % home+outdir+'stat.txt'
 
 def cdf_test(indir,outdir):
 	"""
