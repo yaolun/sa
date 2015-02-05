@@ -419,7 +419,7 @@ def unc_test(filepath,plotdir,png=True):
 	print 'Finished the uncertainty plots, check them!'
 
 
-def fitting_check(indir,obj=None,outdir):
+def fitting_check(indir,outdir):
 	"""
 	Print the statistic of the fitting results separated by PACS and SPIRE.
 	Usage:
