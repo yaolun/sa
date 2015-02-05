@@ -188,12 +188,12 @@ def fits_com(indir):
 					err += 1
 		if obsid[i][3] != '0':
 			# check FITS files for SPIRE 1d and cube
-			if (os.path.exists(home+indir+'/'+obsid[i][0]+'/spire/data/fits/OBSID_'+obsid[i][j]+'_spire_corrected.fits') or \
-				os.path.exists(home+indir+'/'+obsid[i][0]+'/spire/data/fits/OBSID_'+obsid[i][j].lower()+'_spire_corrected.fits')) == False:
-				print '%s missing OBSID_%s_spire_corrected.fits' % (obsid[i][0], obsid[i][j])
+			if (os.path.exists(home+indir+'/'+obsid[i][0]+'/spire/data/fits/'+obsid[i][0]+'_spire_corrected.fits') or \
+				os.path.exists(home+indir+'/'+obsid[i][0]+'/spire/data/fits/'+obsid[i][0].lower()+'_spire_corrected.fits')) == False:
+				print '%s missing %s_spire_corrected.fits' % (obsid[i][0], obsid[i][0].lower())
 				err += 1
-			if os.path.exists(home+indir+'/'+obsid[i][0]+'/spire/data/fits/'+obsid[i][j]+'_spectrum_extended_HR_aNB_15.fits') == False:
-				print '%s missing %s_spectrum_extended_HR_aNB_15.fits' % (obsid[i][0], obsid[i][j])
+			if os.path.exists(home+indir+'/'+obsid[i][0]+'/spire/data/fits/'+obsid[i][3]+'_spectrum_extended_HR_aNB_15.fits') == False:
+				print '%s missing %s_spectrum_extended_HR_aNB_15.fits' % (obsid[i][0], obsid[i][3])
 				err += 1
 	if err == 0:
 		print 'passed the FITS test!'
