@@ -500,7 +500,6 @@ def fitting_check(indir,outdir):
 
 	# PACS statistic
 	for path in pacspath:
-		print path
 		data = ascii.read(path)
 		# Header of the 1-D fitting results
 		# =========================================================================================
@@ -576,7 +575,6 @@ def fitting_check(indir,outdir):
 
 	# SPIRE statistic
 	for path in spirepath:
-		print path
 		data = ascii.read(path)
 		# Header of the 1-D fitting results
 		# =========================================================================================
