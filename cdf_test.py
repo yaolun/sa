@@ -1,4 +1,9 @@
 def obj_com(indir):
+	"""
+	Test the completeness of the objects directories and the fitting results of both 1d and cube
+	Usage:
+		obj_com('/data/FWD_bettyjo/FWD_archive_slim/')
+	"""
 	import os
 	home = os.path.expanduser('~')
 
@@ -52,9 +57,13 @@ def obj_com(indir):
 	if err == 0:
 		print 'Passed the object test!'
 
-# obj_com('/data/FWD_bettyjo/FWD_archive_slim/')
-
 def fits_com(indir):
+	"""
+	Check the completeness of the FITS files that should be included in the release
+
+	Usage:
+		fits_com('/data/FWD_bettyjo/FWD_archive_slim/')
+	"""
 	import os
 	import glob
 	home = os.path.expanduser('~')
@@ -247,11 +256,53 @@ def fits_com(indir):
 	if err == 0:
 		print 'passed the FITS test!'
 
-# fits_com('/data/FWD_bettyjo/FWD_archive_slim/')
+def strong_line(indir):
+	"""
+	Return the number of strong lines (SNR >= 10) for A given source. (Return the total number of strong lines found
+	in 1d and all spaxels)
+	Usage:
+		strong_line('/FWD_archive/CDF_archive/BHR71/')
+	"""
+	from astropy.io import ascii
+	import numpy as np
+	import os
+	home = os.path.expanduser('~')
 
-# def strong_line(indir,obj=None):
+	# Child function to find the files that match the given pattern
+	def find(pattern, path):
+		import os, fnmatch
+		result = []
+		for root, dirs, files in os.walk(path):
+			for name in files:
+				if fnmatch.fnmatch(name, pattern):
+					result.append(os.path.join(root, name))
+		return result
 
-def unc_test(filepath,plotdir,pacs=False,spire=False,png=True):
+	# Search for the fitting results tables under the primary directory
+	# only search in the the object directory
+	path2fit = find('*_lines.txt', home+indir)
+	# Header of the all cube fitting results
+	# ====================================================================================================
+	# Object,   Line,			LabWL(um),		ObsWL(um),		Sig_Cen(um),	Str(W/cm2),		Sig_str(W/cm2)
+	# FWHM(um), Sig_FWHM(um),   Base(W/cm2/um), Noise(W/cm2/um),SNR,		 	E_u(K),         A(s-1)        
+	# g,        RA(deg),        Dec(deg),       Blend,          Validity
+	# ====================================================================================================
+	num_strong = 0
+	# Read the data
+	for path in path2fit:
+		data = ascii.read(path)
+		header = data.colnames
+		data = data[(np.isnan(data['SNR'])!=True) & (data['Validity']==1)]  # Temperory procedure to exclude the missing segment in the spectrum resulting in the NaN in SNR
+		num_strong = num_strong + len(data[data['SNR'] >= 10.0])
+
+	return num_strong
+
+def unc_test(filepath,plotdir,png=True):
+	"""
+	Show the uncertainty relation of the measurement from baseline flucuation and the measurement from the fitting routine.
+	Usage:
+		unc_test('/FWD_archive/CDF_archive/CDF_archive_pacs_1d_lines.txt', '/analysis/')
+	"""
 	from astropy.io import ascii
 	import numpy as np
 	import matplotlib.pyplot as plt
@@ -269,8 +320,7 @@ def unc_test(filepath,plotdir,pacs=False,spire=False,png=True):
 	# g,        RA(deg),        Dec(deg),       Blend,          Validity
 	# ====================================================================================================
 	header = data.colnames
-	data = data[np.isnan(data['SNR'])!=True]        # Temperory procedure to exclude the missing segment in the spectrum resulting in the NaN in SNR
-	data = data[(data['Sig_Cen(um)']!=-999.0) & (data['Sig_FWHM(um)']!=-999.0) & (data['Validity']==1)]
+	data = data[(np.isnan(data['SNR'])!=True) & (data['Validity']==1)]  # Temperory procedure to exclude the missing segment in the spectrum resulting in the NaN in SNR
 	snr = abs(data['SNR'][np.argsort(data['ObsWL(um)'])])
 	snr_flux = (data['Str(W/cm2)']/data['Sig_str(W/cm2)'])[np.argsort(data['ObsWL(um)'])]
 	wl = data['ObsWL(um)'][np.argsort(data['ObsWL(um)'])]
@@ -366,13 +416,22 @@ def unc_test(filepath,plotdir,pacs=False,spire=False,png=True):
 	plt.cla()
 	plt.clf()
 
+	print 'Finished the uncertainty plots, check them!'
 
-def fitting_check(indir,obj=None,outdir=False):
+
+def fitting_check(indir,obj=None,outdir):
+	"""
+	Print the statistic of the fitting results separated by PACS and SPIRE.
+	Usage:
+		fitting_check('/FWD_archive/CDF_archive/', '/analysis/')
+	"""
 	from astropy.io import ascii
 	import numpy as np
 	import matplotlib.pyplot as plt
 	import os
 	home = os.path.expanduser('~')
+
+	foo = open(home+outdir+'stat.txt','w')
 
 	# Child function to find the files that match the given pattern
 	def find(pattern, path):
@@ -469,25 +528,22 @@ def fitting_check(indir,obj=None,outdir=False):
 			print data['FWHM(um)'][(data['Sig_str(W/cm2)'] == 0.0) & (data['SNR'] >= 3)]
 			print data['Sig_FWHM(um)'][(data['Sig_str(W/cm2)'] == 0.0) & (data['SNR'] >= 3)]
 
-
 	# Print out the statistic of the pacs fitting results
-	print '<PACS>'
-	print '\t Number of object: %d ' % num_pacs
-	print '\t %d lines fitted, %.2f lines fitted per object' % (num_fit,num_fit/num_pacs)
-	print '\t %d detections, %.2f detections per object.' % (num_line,num_line/num_pacs)
-	print '\t %d lines fitted with blend Gaussian, %d lines detections among them.' % (num_dg,num_dg_line)
-	print '\t <<Anomaly>>'
-	print '\t \t SNR anomalies due to the missing spectra: %d' % num1
-	print '\t \t Zeros in line centroid uncertainty: %d and %d with detections.' % (num2,num3)
-	print '\t \t Zeros in FWHM uncertainty: %d, %d with detections, and %d with detections and blend Gaussian.' % (num4,num5,num6)
-	print '\t \t Zeros in line strength uncertainty: %d, %d with detections, and %d with detections and blend Gaussian' % (num7,num8,num9)
-	print '\t %d detections without anomalous, and %.2f lines per object.' % (num_line2,num_line2/num_pacs)
+	foo.write('<PACS>\n')
+	foo.write('\t Number of object: %d \n' % num_pacs)
+	foo.write('\t %d lines fitted, %.2f lines fitted per object\n' % (num_fit,num_fit/num_pacs))
+	foo.write('\t %d detections, %.2f detections per object.\n' % (num_line,num_line/num_pacs))
+	foo.write('\t %d lines fitted with blend Gaussian, %d lines detections among them.\n' % (num_dg,num_dg_line))
+	foo.write('\t <<Anomaly>>\n')
+	foo.write('\t \t SNR anomalies due to the missing spectra: %d \n' % num1)
+	foo.write('\t \t Zeros in line centroid uncertainty: %d and %d with detections.\n' % (num2,num3))
+	foo.write('\t \t Zeros in FWHM uncertainty: %d, %d with detections, and %d with detections and blend Gaussian.\n' % (num4,num5,num6))
+	foo.write('\t \t Zeros in line strength uncertainty: %d, %d with detections, and %d with detections and blend Gaussian.\n' % (num7,num8,num9))
+	foo.write('\t %d detections without anomalous, and %.2f lines per object.\n' % (num_line2,num_line2/num_pacs))
 
 	print num_test
 
-	# ============================================================================================================================
-	# ============================================================================================================================
-	print '=============================================================================================================='
+	foo.write('====================================================================================================================\n')
 	num_fit = 0.0
 	num_line = 0.0
 	num1 = 0.0
@@ -538,18 +594,56 @@ def fitting_check(indir,obj=None,outdir=False):
 
 
 	# Print out the statistic of the pacs fitting results
-	print '<SPIRE>'
-	print '\t Number of object: %d ' % num_spire
-	print '\t %d lines fitted, %.2f lines fitted per object' % (num_fit,num_fit/num_spire)
-	print '\t %d detections, %.2f detections per object.' % (num_line,num_line/num_spire)
-	print '\t %d lines fitted with blend Gaussian, %d lines detections among them.' % (num_dg,num_dg_line)
-	print '\t <<Anomaly>>'
-	print '\t \t SNR anomalies due to the missing spectra: %d' % num1
-	print '\t \t Zeros in line centroid uncertainty: %d and %d with detections.' % (num2,num3)
-	print '\t \t Zeros in FWHM uncertainty: %d, %d with detections, and %d with detections and blend Gaussian.' % (num4,num5,num6)
-	print '\t \t Zeros in line strength uncertainty: %d, %d with detections, and %d with detections and blend Gaussian' % (num7,num8,num9)
-	print '\t %d detections without anomalous, and %.2f lines per object.' % (num_line2,num_line2/num_spire)
+	foo.write('<SPIRE>\n')
+	foo.write('\t Number of object: %d \n' % num_spire)
+	foo.write('\t %d lines fitted, %.2f lines fitted per object.\n' % (num_fit,num_fit/num_spire))
+	foo.write('\t %d detections, %.2f detections per object.\n' % (num_line,num_line/num_spire))
+	foo.write('\t %d lines fitted with blend Gaussian, %d lines detections among them.\n' % (num_dg,num_dg_line))
+	foo.write('\t <<Anomaly>>\n')
+	foo.write('\t \t SNR anomalies due to the missing spectra: %d \n' % num1)
+	foo.write('\t \t Zeros in line centroid uncertainty: %d and %d with detections.\n' % (num2,num3))
+	foo.write('\t \t Zeros in FWHM uncertainty: %d, %d with detections, and %d with detections and blend Gaussian.\n' % (num4,num5,num6))
+	foo.write('\t \t Zeros in line strength uncertainty: %d, %d with detections, and %d with detections and blend Gaussian.\n' % (num7,num8,num9))
+	foo.write('\t %d detections without anomalous, and %.2f lines per object.\n' % (num_line2,num_line2/num_spire))
+
+	foo.close()
 
 	print num_test
 
-# def cdf_test(indir,outdir):
+def cdf_test(indir,outdir):
+	"""
+	The main test script for checking the performance of the archive and fitting results.
+	Usage:
+		cdf_test('/FWD_archive/CDF_archive', '/FWD_archive/')
+	"""
+	import numpy as np
+	import os
+
+	# Check the existence of the outdir
+	if os.path.exists(home+outdir) == False:
+		os.makedirs(home+outdir)
+
+	# Object completeness test
+	obj_com(indir)
+
+	# FITS files completeness test
+	fits_com(indir)
+
+	# Strong lines test
+	objdir = os.walk(home+indir).next()[1]
+	objdir = objdir[objdir != 'contour']
+	# test pacs fitting
+	if os.path.exists(home+indir+'/'+objdir+'/pacs/advanced_products') == True:
+		print objdir, 'PACS:  ', strong_line(home+indir+'/'+objdir+'/pacs/advanced_products/')
+	# test spire fitting
+	if os.path.exists(home+indir+'/'+objdir+'/spire/advanced_products') == True:
+		print objdir, 'SPIRE: ', strong_line(home+indir+'/'+objdir+'/spire/advanced_products/')
+
+	# Uncertainty relation plots
+	unc_test(indir, outdir)
+
+	# Stats of the fitting results
+	fitting_check(indir, outdir)
+
+
+
