@@ -648,7 +648,7 @@ def cdf_test(indir,outdir):
 
 	# Strong lines test
 	objdir = np.array(os.walk(home+indir).next()[1])
-	objdir = objdir[objdir != 'contour']
+	objdir = np.sort(objdir[objdir != 'contour'])
 	for o in objdir:
 		# test pacs fitting
 		if os.path.exists(home+indir+'/'+o+'/pacs/advanced_products') == True:
