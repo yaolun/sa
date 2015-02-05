@@ -1,8 +1,10 @@
-def unc_test(filepath,plotdir,noise_test=False,oned=True,zoom=False,spire=False,scatter_hist=False,png=False):
+def unc_test(filepath,plotdir,noise_test=False,width_test=False,oned=True,zoom=False,pacs=False,spire=False,scatter_hist=False,png=False):
 	from astropy.io import ascii
 	import numpy as np
 	import matplotlib.pyplot as plt
 	import os
+	import astropy.constants as const
+	from scipy.interpolate import interp1d
 	home = os.path.expanduser('~')
 
 	filepath = home + filepath
@@ -16,7 +18,7 @@ def unc_test(filepath,plotdir,noise_test=False,oned=True,zoom=False,spire=False,
 		# =========================================================================================
 		header = data.colnames
 		data = data[np.isnan(data['SNR'])!=True]        # Temperory procedure to exclude the missing segment in the spectrum resulting in the NaN in SNR
-		data = data[(data['Sig_Cen(um)']!=-999.0) & (data['Sig_FWHM(um)']!=-999.0)]
+		data = data[(data['Sig_Cen(um)']!=-999.0) & (data['Sig_FWHM(um)']!=-999.0) & (data['Validity']==1)]
 		snr = abs(data['SNR'][np.argsort(data['ObsWL(um)'])])
 		snr_flux = (data['Str(W/cm2)']/data['Sig_str(W/cm2)'])[np.argsort(data['ObsWL(um)'])]
 		wl = data['ObsWL(um)'][np.argsort(data['ObsWL(um)'])]
@@ -29,7 +31,7 @@ def unc_test(filepath,plotdir,noise_test=False,oned=True,zoom=False,spire=False,
 		# ====================================================================================================
 		header = data.colnames
 		data = data[np.isnan(data['SNR'])!=True]        # Temperory procedure to exclude the missing segment in the spectrum resulting in the NaN in SNR
-		data = data[(data['Sig_Cen(um)']!=-999.0) & (data['Sig_FWHM(um)']!=-999.0)]
+		data = data[(data['Sig_Cen(um)']!=-999.0) & (data['Sig_FWHM(um)']!=-999.0) & (data['Validity']==1)]
 		snr = abs(data['SNR'][np.argsort(data['ObsWL(um)'])])
 		snr_flux = (data['Str(W/cm2)']/data['Sig_str(W/cm2)'])[np.argsort(data['ObsWL(um)'])]
 		wl = data['ObsWL(um)'][np.argsort(data['ObsWL(um)'])]
@@ -161,6 +163,52 @@ def unc_test(filepath,plotdir,noise_test=False,oned=True,zoom=False,spire=False,
 			plt.cla()
 			plt.clf()
 
+	if width_test == True:
+		data = data[data['Str(W/cm2)'] > 0]
+		fwhm = data['FWHM(um)']
+		c = const.c.cgs.value
+		if spire == True:
+			fwhm_ins = 1.5*1.207*(1.2*1e9*(data['ObsWL(um)']*1e-4)**2/c) * 1e4
+		if pacs == True:
+			[wl1, res1] = np.genfromtxt(home+'/programs/misc/spectralresolution_order1.txt').T
+			[wl2, res2] = np.genfromtxt(home+'/programs/misc/spectralresolution_order2.txt').T
+			[wl3, res3] = np.genfromtxt(home+'/programs/misc/spectralresolution_order3.txt').T
+			fwhm1 = wl1/res1
+			fwhm2 = wl2/res2
+			fwhm3 = wl3/res3
+			wl_ins = np.hstack((wl2[wl2 < min(wl1)],wl1))
+	        fwhm_ins = np.hstack((fwhm2[wl2 < min(wl1)],fwhm1))
+	        f = interp1d(wl_ins, fwhm_ins, kind='linear')
+    		fwhm_ins = f(data['ObsWL(um)'])
+			
+		print 'Found %d lines' % len(data[(data['SNR'] >= 3.0)])
+		# print 'Found %d lines' % len(fwhm[(data['SNR'] > 10) & (data['Line'] == 'OI3P1-3P2')])
+		data_strong = data[data['SNR'] > 10]
+		fwhm_strong = fwhm[data['SNR'] > 10]
+		fwhm_ins_strong = fwhm_ins[data['SNR'] > 10]
+		# data_strong = data[(data['SNR'] > 10) & (data['Line'] == 'OI3P1-3P2')]
+		# fwhm_strong = fwhm[(data['SNR'] > 10) & (data['Line'] == 'OI3P1-3P2')]
+		# fwhm_ins_strong = fwhm_ins[(data['SNR'] > 10) & (data['Line'] == 'OI3P1-3P2')]
+		# ascii.write(data_strong[(abs(fwhm_strong/fwhm_ins_strong - 1) > 0.01) & (data_strong['Str(W/cm2)'] > 0)], home+plotdir+'wider_weirdo.txt', delimiter='\t')
+
+		fig = plt.figure(figsize=(12,9))
+		ax = fig.add_subplot(111)
+		# the histogram of the data with histtype='step'
+		n, bins, patches = ax.hist(fwhm[(data['SNR'] > 10) & (data['Str(W/cm2)'] > 0)]/fwhm_ins[(data['SNR'] > 10) & (data['Str(W/cm2)'] > 0)], 25, histtype='stepfilled') # normed=1,
+		plt.setp(patches, 'facecolor', 'g', 'alpha', 0.75)
+
+		ax.set_xlabel(r'$\mathrm{\frac{FWHM}{resolution}}$', fontsize=20)
+		ax.set_ylabel(r'$\mathrm{Counts}$', fontsize=20)
+		ax.set_xlim([0.6,1.4])
+
+		ax.tick_params('both',labelsize=18,width=1.5,which='major')
+		ax.tick_params('both',labelsize=18,width=1.5,which='minor')
+		[ax.spines[axis].set_linewidth(1.5) for axis in ['top','bottom','left','right']]
+		plt.savefig(home+plotdir+'fwhm_hist.pdf', format='pdf', dpi=300, bbox_inches='tight')
+		plt.cla()
+		plt.clf()
+
+
 
 	# fig = plt.figure(figsize=(12,9))
 	# ax = fig.add_subplot(111)
@@ -179,6 +227,29 @@ def unc_test(filepath,plotdir,noise_test=False,oned=True,zoom=False,spire=False,
 	# ax.set_ylim([min(snr/snr_flux),max(snr/snr_flux)])
 	# fig.savefig(home+plotdir+'snr_comparison.pdf',format='pdf',dpi=300,bbox_inches='tight')
 	# fig.clf()
+# plotdir = '/spire_cube_'
+# filepath = '/CDF_archive_spire_cube_lines.txt'
+# unc_test(filepath,plotdir,width_test=True)
+# plotdir = '/spire_1d_'
+# filepath = '/CDF_archive_spire_1d_lines.txt'
+# unc_test(filepath,plotdir,width_test=True)
+# plotdir = '/pacs_1d_fixed_'
+# filepath = '/FWD_archive_pacs_1d_lines.txt'
+# unc_test(filepath,plotdir,width_test=True,pacs=True)
+# plotdir = '/pacs_1d_'
+# filepath = '/test/CDF_archive_pacs_1d_lines.txt'
+# unc_test(filepath,plotdir,width_test=True,pacs=True)
+# plotdir = '/test/pacs_1d_fixed_'
+# filepath = '/test/dgtest/fixedwidth/CDF_archive_pacs_1d_lines.txt'
+# unc_test(filepath,plotdir,width_test=True,pacs=True)
+# plotdir = '/test/pacs_1d_flex1.3'
+# filepath = '/test/dgtest/flexwidth/CDF_archive_pacs_1d_lines.txt'
+# unc_test(filepath,plotdir,width_test=True,pacs=True)
+# plotdir = '/test/pacs_1d_flex1.2'
+# filepath = '/test/flexwidth1.2/CDF_archive_pacs_1d_lines.txt'
+# unc_test(filepath,plotdir,width_test=True,pacs=True)
+
+
 # zoom = False
 # scatter_hist = True
 # png = True
@@ -193,7 +264,7 @@ def unc_test(filepath,plotdir,noise_test=False,oned=True,zoom=False,spire=False,
 # unc_test(filepath,plotdir,noise_test=True,zoom=zoom,scatter_hist=scatter_hist, png=png)
 # filepath = '/FWD_archive_spire_cube_lines.txt'
 # plotdir = '/spire_cube_'
-# unc_test(filepath,plotdir,noise_test=True,zoom=zoom,scatter_hist=scatter_hist, png=png)
+# unc_test(filepath,plotdir,noise_test=True,zoom=zoom,scatter_hist=scatter_hist, png=png, width_test=True)
 # filepath = '/test/fitting_test/WL12_centralSpaxel_PointSourceCorrected_CorrectedYES_trim_lines.txt'
 # plotdir = '/WL12_pacs_'
 # unc_test(filepath,plotdir,noise_test=True)
@@ -396,4 +467,160 @@ def fitting_check(indir,obj=None,outdir=False):
 	print num_test
 
 # indir = '/bhr71/fitting/'
-# fitting_check(indir)
+# fitting_check(indir,obj='0117')
+
+def reduction_comparison(file1, file2, outdir, obj=None, cube=False, pacs=False, spire=False, snrplot=False, fitting_copy=False):
+	# file1 should at least include all of the elements in file2.
+	from astropy.io import ascii
+	import numpy as np
+	import matplotlib.pyplot as plt
+	import os
+	import astropy.constants as const
+	import subprocess as subp
+
+	home = os.path.expanduser('~')
+	
+	if not os.path.exists(home+outdir):
+		os.makedirs(home+outdir)
+	if snrplot == True:
+		if not os.path.exists(home+outdir+'/snr_missing/flex_width/'):
+			os.makedirs(home+outdir+'/snr_missing/flex_width')
+		if not os.path.exists(home+outdir+'/snr_missing/fixed_width/'):
+			os.makedirs(home+outdir+'/snr_missing/fixed_width')
+
+
+
+	if pacs == True:
+		band = 'pacs'
+	if spire == True:
+		band = 'spire'
+
+	# Header of the all cube fitting results
+	# ====================================================================================================
+	# Object,   Line,			LabWL(um),		ObsWL(um),		Sig_Cen(um),	Str(W/cm2),		Sig_str(W/cm2)
+	# FWHM(um), Sig_FWHM(um),   Base(W/cm2/um), Noise(W/cm2/um),SNR,		 	E_u(K),         A(s-1)        
+	# g,        RA(deg),        Dec(deg),       Pixel_No.,		Blend,          Validity
+	# ====================================================================================================
+
+	data1 = ascii.read(home+file1)
+	header1 = data1.colnames
+	data1 = data1[(data1['Sig_Cen(um)']!=-999.0) & (data1['Sig_FWHM(um)']!=-999.0) & (data1['Validity']==1) & (data1['Str(W/cm2)'] > 0)]
+
+	data2 = ascii.read(home+file2)
+	header2 = data2.colnames
+	data2 = data2[(data2['Sig_Cen(um)']!=-999.0) & (data2['Sig_FWHM(um)']!=-999.0) & (data2['Validity']==1) & (data2['Str(W/cm2)'] > 0)]
+
+	# limited sample
+	data1_subset = data1[(data1['SNR'] >= 3)]
+	data2_subset = data2[(data2['SNR'] >= 3)]
+	print len(data1_subset)
+	print len(data2_subset)
+	# pick out the difference
+	if fitting_copy == True:
+		print 'compare data1 against data2'
+		for i  in range(0, len(data1_subset['Object'])):
+			ind = np.where((data1_subset['Object'] == data1_subset['Object'][i]) & (data1_subset['Line'] == data1_subset['Line'][i]))
+			if len(data1_subset[ind]) == 2:
+				print data1_subset[ind]
+			if cube == False:
+				ind = np.where((data2_subset['Object'] == data1_subset['Object'][i]) & (data2_subset['Line'] == data1_subset['Line'][i]))
+			else:
+				ind = np.where((data2_subset['Object'] == data1_subset['Object'][i]) & (data2_subset['Line'] == data1_subset['Line'][i]) & (data2_subset['Pixel_No'] == data1_subset['Pixel_No'][i]))
+			if len(data2_subset[ind]) == 0:
+				print 'extra line found: ', data1_subset['Object'][i], data1_subset['Line'][i]
+				# if str(data1_subset['Line'][i].data) == 'OI3P1-3P2':
+				# 	break
+				foo = open(home+outdir+'extra_line_data1-data2.txt','a')
+				ascii.write(data1_subset[i], foo, delimiter='\t')
+				if not os.path.exists(home+outdir+'data1-data2/ref/'):
+					os.makedirs(home+outdir+'data1-data2/ref/')
+				if str(data1_subset['Blend'][i].data) != 'DoubleGaussian':
+					subp.Popen(['scp','yaolun@bettyjo.as.utexas.edu:~/FWD_archive/FWD_archive/flexwidth1.3_dgtest/'+str(data1_subset['Object'][i].data)+'/'+band+'/advanced_products/plots/'+str(data1_subset['Object'][i].data)+'_centralSpaxel_PointSourceCorrected_CorrectedYES_trim_'+str(data1_subset['Line'][i].data)+'.eps', home+outdir+'data1-data2/']).wait()
+					subp.Popen(['scp','yaolun@bettyjo.as.utexas.edu:~/FWD_archive/FWD_archive/fixedwidth_dgtest/'+str(data1_subset['Object'][i].data)+'/'+band+'/advanced_products/plots/'+str(data1_subset['Object'][i].data)+'_centralSpaxel_PointSourceCorrected_CorrectedYES_trim_'+str(data1_subset['Line'][i].data)+'.eps', home+outdir+'data1-data2/ref/']).wait()
+
+		print 'compare data2 against data1'
+		for i  in range(0, len(data2_subset['Object'])):
+			ind = np.where((data2_subset['Object'] == data2_subset['Object'][i]) & (data2_subset['Line'] == data2_subset['Line'][i]))
+			if len(data2_subset[ind]) == 2:
+				print data2_subset[ind]
+			if cube == False:
+				ind = np.where((data1_subset['Object'] == data2_subset['Object'][i]) & (data1_subset['Line'] == data2_subset['Line'][i]))
+			else:
+				ind = np.where((data1_subset['Object'] == data2_subset['Object'][i]) & (data1_subset['Line'] == data2_subset['Line'][i]) & (data1_subset['Pixel_No'] == data2_subset['Pixel_No'][i]))
+			if len(data1_subset[ind]) == 0:
+				print 'extra line found: ', data2_subset['Object'][i], data2_subset['Line'][i]
+				# if str(data2_subset['Line'][i].data) == 'OI3P1-3P2':
+				# 	break
+				foo = open(home+outdir+'extra_line_data2-data1.txt','a')
+				ascii.write(data2_subset[i], foo, delimiter='\t')
+				if not os.path.exists(home+outdir+'data2-data1/ref/'):
+					os.makedirs(home+outdir+'data2-data1/ref/')
+				if str(data2_subset['Blend'][i].data) != 'DoubleGaussian':
+					subp.Popen(['scp','yaolun@bettyjo.as.utexas.edu:~/FWD_archive/FWD_archive/fixedwidth_dgtest/'+str(data2_subset['Object'][i].data)+'/'+band+'/advanced_products/plots/'+str(data2_subset['Object'][i].data)+'_centralSpaxel_PointSourceCorrected_CorrectedYES_trim_'+str(data2_subset['Line'][i].data)+'.eps', home+outdir+'data2-data1/']).wait()
+					subp.Popen(['scp','yaolun@bettyjo.as.utexas.edu:~/FWD_archive/FWD_archive/flexwidth1.3_dgtest/'+str(data2_subset['Object'][i].data)+'/'+band+'/advanced_products/plots/'+str(data2_subset['Object'][i].data)+'_centralSpaxel_PointSourceCorrected_CorrectedYES_trim_'+str(data2_subset['Line'][i].data)+'.eps', home+outdir+'data2-data1/ref/']).wait()
+				if str(data2_subset['Blend'][i].data) == 'DoubleGaussian':
+					subp.Popen(['scp','yaolun@bettyjo.as.utexas.edu:~/FWD_archive/FWD_archive/fixedwidth_dgtest/'+str(data2_subset['Object'][i].data)+'/'+band+'/advanced_products/plots/double_gauss/'+str(data2_subset['Object'][i].data)+'*'+str(data2_subset['Line'][i].data)+'*', home+outdir+'data2-data1/']).wait()
+					subp.Popen(['scp','yaolun@bettyjo.as.utexas.edu:~/FWD_archive/FWD_archive/flexwidth1.3_dgtest/'+str(data2_subset['Object'][i].data)+'/'+band+'/advanced_products/plots/double_gauss/'+str(data2_subset['Object'][i].data)+'*'+str(data2_subset['Line'][i].data)+'*', home+outdir+'data2-data1/ref/']).wait()
+	if snrplot == True:
+		# limited sample
+		data1_subset = data1[(data1['SNR'] >= 3) & (data1['Str(W/cm2)'] > 0)]
+		data2_subset = data2[(data2['SNR'] >= 3) & (data2['Str(W/cm2)'] > 0)]
+
+		snrxy = np.empty((len(data1_subset['SNR']),2))
+		str_change = np.full(len(data1_subset['SNR']), False, dtype=bool)
+		j = 0
+		for i in range(0, len(data1_subset['SNR'])):
+			if cube == False:
+				ind = np.where((data2['Object'] == data1_subset['Object'][i]) & (data2['Line'] == data1_subset['Line'][i]))
+			else:
+				ind = np.where((data2['Object'] == data1_subset['Object'][i]) & (data2['Line'] == data1_subset['Line'][i]) & (data2['Pixel_No'] == data1_subset['Pixel_No'][i]))
+			if len(data2[ind]) != 0:
+				snrxy[i,0] = data1_subset['SNR'][i]
+				snrxy[i,1] = data2['SNR'][ind]
+				if data1_subset['Str(W/cm2)'][i] > data2['Str(W/cm2)'][ind]:
+					str_change[i] = True
+				if ((data2['SNR'][ind]-data1_subset['SNR'][i]) > 0.1*data1_subset['SNR'][i]) & (data1_subset['SNR'][i] > 10):
+					# # copy from data1
+					# foo = open(home+outdir+'snr_missing/flex_line.txt','a')
+					# ascii.write(data1_subset[i], foo, delimiter='\t')
+					# if str(data1_subset['Blend'][i].data) != 'DoubleGaussian':
+					# 	subp.Popen(['scp','yaolun@bettyjo.as.utexas.edu:~/FWD_archive/FWD_archive/flexwidth/_flexwidth'+str(data1_subset['Object'][i].data)+'/'+band+'/advanced_products/plots/'+str(data1_subset['Object'][i].data)+'_centralSpaxel_PointSourceCorrected_CorrectedYES_trim_'+str(data1_subset['Line'][i].data)+'.eps', home+outdir+'/snr_missing/flex_width/']).wait()
+					# foo.close()
+					# # cpoy from data2
+					# foo = open(home+outdir+'snr_missing/fixed_line.txt','a')
+					# ascii.write(data2[ind], foo, delimiter='\t')
+					# if str(data2['Blend'][ind].data[0]) != 'DoubleGaussian':
+					# 	subp.Popen(['scp','yaolun@bettyjo.as.utexas.edu:~/FWD_archive/FWD_archive/fixedwidth/_fixedwidth'+str(data2['Object'][ind].data[0])+'/'+band+'/advanced_products/plots/'+str(data2['Object'][ind].data[0])+'_centralSpaxel_PointSourceCorrected_CorrectedYES_trim_'+str(data2['Line'][ind].data[0])+'.eps', home+outdir+'/snr_missing/fixed_width/']).wait()
+					# foo.close()
+
+					j += 1
+		# print j
+		# x is data1, y is data2
+
+		# plot snr relation
+		fig = plt.figure(figsize=(12,9))
+		ax = fig.add_subplot(111)
+
+		green, = ax.plot(snrxy[(str_change == True),1], snrxy[(str_change == True),0], 'go', alpha=0.5)
+		red, = ax.plot(snrxy[(str_change == False),1], snrxy[(str_change == False),0], 'ro', alpha=0.5)
+		equal, = ax.plot(np.hstack((snrxy[:,1], snrxy[:,0])), np.hstack((snrxy[:,1], snrxy[:,0])), 'b-', linewidth=1.5)
+		ax.fill_between(np.sort(np.hstack((snrxy[:,1], snrxy[:,0]))), 0.7*np.sort(np.hstack((snrxy[:,1], snrxy[:,0]))), 1.3*np.sort(np.hstack((snrxy[:,1], snrxy[:,0]))), facecolor='Blue', alpha=0.4, interpolate=True)
+		lg = plt.legend([green, red, equal],[r'$\mathrm{F_{flex}>F_{fixed}}$',r'$\mathrm{F_{flex}\leq F_{fixed}}$',r'$\mathrm{Equality}$'], fontsize=18, loc='upper left', numpoints=1)
+		ax.set_ylabel(r'$\mathrm{SNR_{flex-width}}$', fontsize=20)
+		ax.set_xlabel(r'$\mathrm{SNR_{fixed-width}}$', fontsize=20)
+		ax.tick_params('both',labelsize=18,width=1.5,which='major')
+		ax.tick_params('both',labelsize=18,width=1.5,which='minor')
+		[ax.spines[axis].set_linewidth(1.5) for axis in ['top','bottom','left','right']]
+
+		fig.savefig(home+outdir+'snr_comparison.png', format='png', dpi=300, bbox_inches='tight')
+		plt.clf()
+
+		
+
+file1 = '/test/dgtest/flexwidth/CDF_archive_pacs_1d_lines.txt'
+file2 = '/test/dgtest/fixedwidth/CDF_archive_pacs_1d_lines.txt'
+
+# file1 = '/test/CDF_archive_pacs_cube_lines.txt'
+# file2 = '/FWD_archive_pacs_cube_lines.txt'
+
+reduction_comparison(file1, file2, '/test/', pacs=True, snrplot=True, fitting_copy=False)
