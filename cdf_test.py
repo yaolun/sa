@@ -69,22 +69,22 @@ def fits_com(indir):
 
 	jitter_exclude = ['IRAM04191','IRS46','L1014','L1455-IRS3','RCrA-IRS5A','RCrA-IRS7C','Serpens-SMM4','EC82','HD98922','HD245906','HD203024','HTLup','HD142666']
 
-	obsid = [['ABAur','1342217842','1342217843','0'],\
+	obsid = [['AB_Aur','1342217842','1342217843','0'],\
 			 ['AS205','1342215737','1342215738','0'],\
 			 ['B1-a','1342216182','1342216183','1342249475'],\
 			 ['B1-c','1342216213','1342216214','1342249476'],\
 			 ['B335','1342208889','1342208888','1342253652'],\
 			 ['BHR71','1342212230','1342212231','1342248249'],\
 			 ['Ced110-IRS4','0','0','1342248246'],\
-			 ['DGTau','1342225730','1342225731','0'],\
+			 ['DG_Tau','1342225730','1342225731','0'],\
 			 ['EC82','1342192975','1342219435','0'],\
 			 ['Elias29','1342228519','1342228520','0'],\
-			 ['FUOri','1342250907','1342250908','1342230412'],\
+			 ['FU_Orionis','1342250907','1342250908','1342230412'],\
 			 ['GSS30-IRS1','1342215678','1342215679','1342251286'],\
 			 ['HD100453','1342211695','1342211696','0'],\
 			 ['HD100546','1342188037','1342188038','0'],\
 			 ['HD104237','1342207819','1342207820','0'],\
-			 ['HD135344B','1342213921','1342213922','0'],\
+			 ['HD135344B-1','1342213921','1342213922','0'],\
 			 ['HD139614','1342215683','1342215684','0'],\
 			 ['HD141569','1342213913','0','0'],\
 			 ['HD142527','1342216174','1342216175','0'],\
@@ -105,14 +105,15 @@ def fits_com(indir):
 			 ['HD98922','1342210385','0','0'],\
 			 ['HH46','0','0','1342245084'],\
 			 ['HH100','0','0','1342252897'],\
-			 ['HTLup','1342213920','0','0'],\
+			 ['HT_Lup','1342213920','0','0'],\
 			 ['IRAM04191','1342216654','1342216655','0'],\
-			 ['IRAS03245','1342214677','1342214676','1342249053'],\
-			 ['IRAS03301','1342215668','1342216181','1342249477'],\
+			 ['IRAS03245+3002','1342214677','1342214676','1342249053'],\
+			 ['IRAS03301+3111','1342215668','1342216181','1342249477'],\
 			 ['IRAS12496','1342188039','1342188040','1342254037'],\
 			 ['IRAS15398','0','0','1342250515'],\
 			 ['IRS46','1342228474','1342228475','1342251289'],\
 			 ['IRS48','1342227069','1342227070','0'],\
+			 ['IRS63','1342228473','1342228472','0'],\
 			 ['L1014','1342208911','1342208912','1342245857'],\
 			 ['L1157','1342208909','1342208908','1342247625'],\
 			 ['L1448-MM','1342213683','1342214675','0'],\
@@ -127,8 +128,8 @@ def fits_com(indir):
 			 ['RCrA-IRS7C','1342206990','1342206989','1342242621'],\
 			 ['RNO90','1342228206','0','0'],\
 			 ['RNO91','0','0','1342251285'],\
-			 ['RULup','1342215682','0','0'],\
-			 ['RYLup','1342216171','0','0'],\
+			 ['RU_Lup','1342215682','0','0'],\
+			 ['RY_Lup','1342216171','0','0'],\
 			 ['SCra','1342207809','1342207810','0'],\
 			 ['SR21','1342227209','1342227210','0'],\
 			 ['Serpens-SMM3','1342193216','1342193214','0'],\
@@ -146,49 +147,6 @@ def fits_com(indir):
 	for i in range(0, len(obsid)):
 		for j in range(1,3):
 			if obsid[i][j] != '0':
-				# 1d - 9Spx
-				# if os.path.exists(home+indir+'/'+obsid[i][0]+'/pacs/data/fits/OBSID_'+obsid[i][j]+'_'+obsid[i][0]+'_blue_central9Spaxels_PointSourceCorrected_slice_00_os8sf7.fits') == False:
-				# 	print '%s missing OBSID_%s_%s_blue_central9Spaxels_PointSourceCorrected_slice_00_os8sf7.fits' % (obsid[i][0], obsid[i][j], obsid[i][0])
-				# 	err += 1
-				# if os.path.exists(home+indir+'/'+obsid[i][0]+'/pacs/data/fits/OBSID_'+obsid[i][j]+'_'+obsid[i][0]+'_red_central9Spaxels_PointSourceCorrected_slice_00_os8sf7.fits') == False:
-				# 	print '%s missing OBSID_%s_%s_red_central9Spaxels_PointSourceCorrected_slice_00_os8sf7.fits' % (obsid[i][0], obsid[i][j], obsid[i][0])
-				# 	err += 1
-				# # 1d - 3x3NO
-				# if os.path.exists(home+indir+'/'+obsid[i][0]+'/pacs/data/fits/OBSID_'+obsid[i][j]+'_'+obsid[i][0]+'_blue_centralSpaxel_PointSourceCorrected_Corrected3x3NO_slice_00_os8sf7.fits') == False:
-				# 	print '%s missing OBSID_%s_%s_blue_centralSpaxel_PointSourceCorrected_Corrected3x3NO_slice_00_os8sf7.fits' % (obsid[i][0], obsid[i][j], obsid[i][0])
-				# 	err += 1
-				# if os.path.exists(home+indir+'/'+obsid[i][0]+'/pacs/data/fits/OBSID_'+obsid[i][j]+'_'+obsid[i][0]+'_red_centralSpaxel_PointSourceCorrected_Corrected3x3NO_slice_00_os8sf7.fits') == False:
-				# 	print '%s missing OBSID_%s_%s_red_centralSpaxel_PointSourceCorrected_Corrected3x3NO_slice_00_os8sf7.fits' % (obsid[i][0], obsid[i][j], obsid[i][0])
-				# 	err += 1
-				# # 1d - 3x3YES
-				# if os.path.exists(home+indir+'/'+obsid[i][0]+'/pacs/data/fits/OBSID_'+obsid[i][j]+'_'+obsid[i][0]+'_blue_centralSpaxel_PointSourceCorrected_Corrected3x3YES_slice_00_os8sf7.fits') == False:
-				# 	print '%s missing OBSID_%s_%s_blue_centralSpaxel_PointSourceCorrected_Corrected3x3YES_slice_00_os8sf7.fits' % (obsid[i][0], obsid[i][j], obsid[i][0])
-				# 	err += 1
-				# if os.path.exists(home+indir+'/'+obsid[i][0]+'/pacs/data/fits/OBSID_'+obsid[i][j]+'_'+obsid[i][0]+'_red_centralSpaxel_PointSourceCorrected_Corrected3x3YES_slice_00_os8sf7.fits') == False:
-				# 	print '%s missing OBSID_%s_%s_red_centralSpaxel_PointSourceCorrected_Corrected3x3YES_slice_00_os8sf7.fits' % (obsid[i][0], obsid[i][j], obsid[i][0])
-				# 	err += 1
-				# # cube - finalcube
-				# if os.path.exists(home+indir+'/'+obsid[i][0]+'/pacs/data/fits/OBSID_'+obsid[i][j]+'_blue_finalcubes_os8_sf7.fits') == False:
-				# 	print '%s missing OBSID_%s_blue_finalcubes_os8_sf7.fits' % (obsid[i][0], obsid[i][j])
-				# 	err += 1
-				# if os.path.exists(home+indir+'/'+obsid[i][0]+'/pacs/data/fits/OBSID_'+obsid[i][j]+'_red_finalcubes_os8_sf7.fits') == False:
-				# 	print '%s missing OBSID_%s_red_finalcubes_os8_sf7.fits' % (obsid[i][0], obsid[i][j])
-				# 	err += 1
-				# # cube - noda
-				# if os.path.exists(home+indir+'/'+obsid[i][0]+'/pacs/data/fits/OBSID_'+obsid[i][j]+'_blue_rebinnedcubesnoda_os8_sf7.fits') == False:
-				# 	print '%s missing OBSID_%s_blue_rebinnedcubesnoda_os8_sf7.fits' % (obsid[i][0], obsid[i][j])
-				# 	err += 1
-				# if os.path.exists(home+indir+'/'+obsid[i][0]+'/pacs/data/fits/OBSID_'+obsid[i][j]+'_red_rebinnedcubesnoda_os8_sf7.fits') == False:
-				# 	print '%s missing OBSID_%s_red_rebinnedcubesnoda_os8_sf7.fits' % (obsid[i][0], obsid[i][j])
-				# 	err += 1
-				# # cube - nodb
-				# if os.path.exists(home+indir+'/'+obsid[i][0]+'/pacs/data/fits/OBSID_'+obsid[i][j]+'_blue_rebinnedcubesnodb_os8_sf7.fits') == False:
-				# 	print '%s missing OBSID_%s_blue_rebinnedcubesnodb_os8_sf7.fits' % (obsid[i][0], obsid[i][j])
-				# 	err += 1
-				# if os.path.exists(home+indir+'/'+obsid[i][0]+'/pacs/data/fits/OBSID_'+obsid[i][j]+'_red_rebinnedcubesnodb_os8_sf7.fits') == False:
-				# 	print '%s missing OBSID_%s_red_rebinnedcubesnodb_os8_sf7.fits' % (obsid[i][0], obsid[i][j])
-				# 	err += 1
-
 				# check FITS files for PACS 1d and cube
 				# nojitter first
 				# 1d - 9Spx
