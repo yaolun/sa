@@ -647,13 +647,13 @@ def cdf_test(indir,outdir):
 	# Strong lines test
 	objdir = os.walk(home+indir).next()[1]
 	objdir = objdir[objdir != 'contour']
-	for obj in objdir:
+	for o in objdir:
 		# test pacs fitting
-		if os.path.exists(home+indir+'/'+obj+'/pacs/advanced_products') == True:
-			print obj, 'PACS:  ', strong_line(home+indir+'/'+obj+'/pacs/advanced_products/')
+		if os.path.exists(home+indir+'/'+o+'/pacs/advanced_products') == True:
+			print o, 'PACS:  ', strong_line(home+indir+'/'+o+'/pacs/advanced_products/')
 		# test spire fitting
-		if os.path.exists(home+indir+'/'+obj+'/spire/advanced_products') == True:
-			print obj, 'SPIRE: ', strong_line(home+indir+'/'+obj+'/spire/advanced_products/')
+		if os.path.exists(home+indir+'/'+o+'/spire/advanced_products') == True:
+			print o, 'SPIRE: ', strong_line(home+indir+'/'+o+'/spire/advanced_products/')
 
 	# Uncertainty relation plots
 	unc_test(indir+'/CDF_archive_pacs_1d_lines.txt', outdir)
