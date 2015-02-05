@@ -424,7 +424,7 @@ def unc_test(filepath,plotdir,png=True):
 
 	print 'Finished the uncertainty plots, check them!'
 
-unc_test('/test/fixedwidth/CDF_archive_pacs_1d_lines.txt', '/test/')
+# unc_test('/test/fixedwidth/CDF_archive_pacs_1d_lines.txt', '/test/')
 
 def fitting_check(indir,outdir):
 	"""
