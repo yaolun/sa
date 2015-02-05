@@ -336,6 +336,10 @@ def unc_test(filepath,plotdir,png=True):
 
 	nullfmt   = NullFormatter()         # no labels
 
+	# a = sig_str[(snr >= 3.0) & (snr < 10.0)]
+	# dum = data[np.argsort(data['ObsWL(um)'])]
+	# print dum[(snr >= 3.0) & (snr < 10.0)][a <=0]
+
 	# data
 	x = np.log10( noise[(snr >= 3.0) & (snr < 10.0)] * fwhm[(snr >= 3.0) & (snr < 10.0)] )
 	y = np.log10( sig_str[(snr >= 3.0) & (snr < 10.0)] )
@@ -382,8 +386,8 @@ def unc_test(filepath,plotdir,png=True):
 	
 	# now determine nice limits by hand:
 	binwidth = 0.05
-	xymax = np.max( [np.max(x), np.max(y)] )
-	xymin = np.min( [np.min(x), np.min(y)] )
+	xymax = np.nanmax( [np.max(x), np.max(y)] )
+	xymin = np.nanmin( [np.min(x), np.min(y)] )
 	ulim = ( int(xymax/binwidth) + 1) * binwidth + 0.5
 	llim = ( int(xymin/binwidth) + 1) * binwidth - 0.5
 
@@ -412,14 +416,15 @@ def unc_test(filepath,plotdir,png=True):
 	[ax.spines[axis].set_linewidth(1.5) for axis in ['top','bottom','left','right']]
 
 	if png == False:
-		plt.savefig(home+plotdir+plotname+'scatter_hist.pdf',format='pdf',dpi=300,bbox_inches='tight')
+		plt.savefig(home+plotdir+plotname+'_scatter_hist.pdf',format='pdf',dpi=300,bbox_inches='tight')
 	else:
-		plt.savefig(home+plotdir+plotname+'scatter_hist.png',format='png',dpi=300,bbox_inches='tight')
+		plt.savefig(home+plotdir+plotname+'_scatter_hist.png',format='png',dpi=300,bbox_inches='tight')
 	plt.cla()
 	plt.clf()
 
 	print 'Finished the uncertainty plots, check them!'
 
+unc_test('/test/fixedwidth/CDF_archive_pacs_1d_lines.txt', '/test/')
 
 def fitting_check(indir,outdir):
 	"""
@@ -635,12 +640,13 @@ def cdf_test(indir,outdir):
 	# Strong lines test
 	objdir = os.walk(home+indir).next()[1]
 	objdir = objdir[objdir != 'contour']
-	# test pacs fitting
-	if os.path.exists(home+indir+'/'+objdir+'/pacs/advanced_products') == True:
-		print objdir, 'PACS:  ', strong_line(home+indir+'/'+objdir+'/pacs/advanced_products/')
-	# test spire fitting
-	if os.path.exists(home+indir+'/'+objdir+'/spire/advanced_products') == True:
-		print objdir, 'SPIRE: ', strong_line(home+indir+'/'+objdir+'/spire/advanced_products/')
+	for obj in objdir:
+		# test pacs fitting
+		if os.path.exists(home+indir+'/'+obj+'/pacs/advanced_products') == True:
+			print obj, 'PACS:  ', strong_line(home+indir+'/'+obj+'/pacs/advanced_products/')
+		# test spire fitting
+		if os.path.exists(home+indir+'/'+obj+'/spire/advanced_products') == True:
+			print obj, 'SPIRE: ', strong_line(home+indir+'/'+obj+'/spire/advanced_products/')
 
 	# Uncertainty relation plots
 	unc_test(indir+'/CDF_archive_pacs_1d_lines.txt', outdir)
