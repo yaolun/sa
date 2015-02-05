@@ -291,7 +291,7 @@ def strong_line(indir):
 
 	# Search for the fitting results tables under the primary directory
 	# only search in the the object directory
-	path2fit = find('*_lines.txt', home+indir)
+	path2fit = find('*_lines.txt', indir)
 	# Header of the all cube fitting results
 	# ====================================================================================================
 	# Object,   Line,			LabWL(um),		ObsWL(um),		Sig_Cen(um),	Str(W/cm2),		Sig_str(W/cm2)
@@ -307,6 +307,8 @@ def strong_line(indir):
 		num_strong = num_strong + len(data[data['SNR'] >= 10.0])
 
 	return num_strong
+
+# print strong_line('/test/BHR71/pacs/advanced_products/')
 
 def unc_test(filepath,plotdir,png=True):
 	"""
