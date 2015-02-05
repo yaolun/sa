@@ -66,14 +66,14 @@ def fits_com(indir):
 			   'L1489','L1527','L1551-IRS5','L483','L723-MM','RCrA-IRS5A','RCrA-IRS7B','RCrA-IRS7C','RNO90','RNO91','RULup','RYLup','SCra','SR21',\
 			   'Serpens-SMM3','Serpens-SMM4','TMC1','TMC1A','TMR1','V1057Cyg','V1331Cyg','V1515Cyg','V1735Cyg','VLA1623','WL12']
 
-	obsid = [['ABAur','1342217842','1342217843','0'],\
+	obsid = [['AB_Aur','1342217842','1342217843','0'],\
 			 ['AS205','1342215737','1342215738','0'],\
 			 ['B1-a','1342216182','1342216183','1342249475'],\
 			 ['B1-c','1342216213','1342216214','1342249476'],\
 			 ['B335','1342208889','1342208888','1342253652'],\
 			 ['BHR71','1342212230','1342212231','1342248249'],\
 			 ['Ced110-IRS4','0','0','1342248246'],\
-			 ['DGTau','1342225730','1342225731','0'],\
+			 ['DG_Tau','1342225730','1342225731','0'],\
 			 ['EC82','1342192975','1342219435','0'],\
 			 ['Elias29','1342228519','1342228520','0'],\
 			 ['FUOri','1342250907','1342250908','1342230412'],\
@@ -102,7 +102,7 @@ def fits_com(indir):
 			 ['HD98922','1342210385','0','0'],\
 			 ['HH46','0','0','1342245084'],\
 			 ['HH100','0','0','1342252897'],\
-			 ['HTLup','1342213920','0','0'],\
+			 ['HT_Lup','1342213920','0','0'],\
 			 ['IRAM04191','1342216654','1342216655','0'],\
 			 ['IRAS03245','1342214677','1342214676','1342249053'],\
 			 ['IRAS03301','1342215668','1342216181','1342249477'],\
@@ -124,8 +124,8 @@ def fits_com(indir):
 			 ['RCrA-IRS7C','1342206990','1342206989','1342242621'],\
 			 ['RNO90','1342228206','0','0'],\
 			 ['RNO91','0','0','1342251285'],\
-			 ['RULup','1342215682','0','0'],\
-			 ['RYLup','1342216171','0','0'],\
+			 ['RU_Lup','1342215682','0','0'],\
+			 ['RY_Lup','1342216171','0','0'],\
 			 ['SCra','1342207809','1342207810','0'],\
 			 ['SR21','1342227209','1342227210','0'],\
 			 ['Serpens-SMM3','1342193216','1342193214','0'],\
@@ -139,61 +139,62 @@ def fits_com(indir):
 			 ['V1735Cyg','1342235849','1342235848','1342219560'],\
 			 ['VLA1623','1342213918','1342213917','1342251287'],\
 			 ['WL12','1342228187','1342228188','1342251290']]
+	nojitter_only = ['IRAM04191','IRS46','L1014','L1455-IRS3','RCrA-IRS5A','RCrA-IRS7C','Serpens-SMM4','EC82','HD98922','HD245906','HD203024','HTLup','HD142666']
 	err = 0
 	for i in range(0, len(obsid)):
 		for j in range(1,3):
 			if obsid[i][j] != '0':
 				# check FITS files for PACS 1d and cube
 				# 1d - 9Spx
-				if os.path.exists(home+indir+'/'+obsid[i][0]+'/pacs/data/fits/OBSID_'+obsid[i][j]+'_'+obsid[i][0]+'_blue_central9Spaxels_PointSourceCorrected_slice_00_os8sf7.fits') == False:
-					print '%s missing OBSID_%s_%s_blue_central9Spaxels_PointSourceCorrected_slice_00_os8sf7.fits' % (obsid[i][0], obsid[i][j], obsid[i][0])
+				if os.path.exists(home+indir+'/'+objlist[i]+'/pacs/data/fits/OBSID_'+obsid[i][j]+'_'+obsid[i][0]+'_blue_central9Spaxels_PointSourceCorrected_slice_00_os8sf7.fits') == False:
+					print '%s missing OBSID_%s_%s_blue_central9Spaxels_PointSourceCorrected_slice_00_os8sf7.fits' % (objlist[i], obsid[i][j], obsid[i][0])
 					err += 1
-				if os.path.exists(home+indir+'/'+obsid[i][0]+'/pacs/data/fits/OBSID_'+obsid[i][j]+'_'+obsid[i][0]+'_red_central9Spaxels_PointSourceCorrected_slice_00_os8sf7.fits') == False:
-					print '%s missing OBSID_%s_%s_red_central9Spaxels_PointSourceCorrected_slice_00_os8sf7.fits' % (obsid[i][0], obsid[i][j], obsid[i][0])
+				if os.path.exists(home+indir+'/'+objlist[i]+'/pacs/data/fits/OBSID_'+obsid[i][j]+'_'+obsid[i][0]+'_red_central9Spaxels_PointSourceCorrected_slice_00_os8sf7.fits') == False:
+					print '%s missing OBSID_%s_%s_red_central9Spaxels_PointSourceCorrected_slice_00_os8sf7.fits' % (objlist[i], obsid[i][j], obsid[i][0])
 					err += 1
 				# 1d - 3x3NO
-				if os.path.exists(home+indir+'/'+obsid[i][0]+'/pacs/data/fits/OBSID_'+obsid[i][j]+'_'+obsid[i][0]+'_blue_centralSpaxel_PointSourceCorrected_Corrected3x3NO_slice_00_os8sf7.fits') == False:
-					print '%s missing OBSID_%s_%s_blue_centralSpaxel_PointSourceCorrected_Corrected3x3NO_slice_00_os8sf7.fits' % (obsid[i][0], obsid[i][j], obsid[i][0])
+				if os.path.exists(home+indir+'/'+objlist[i]+'/pacs/data/fits/OBSID_'+obsid[i][j]+'_'+obsid[i][0]+'_blue_centralSpaxel_PointSourceCorrected_Corrected3x3NO_slice_00_os8sf7.fits') == False:
+					print '%s missing OBSID_%s_%s_blue_centralSpaxel_PointSourceCorrected_Corrected3x3NO_slice_00_os8sf7.fits' % (objlist[i], obsid[i][j], obsid[i][0])
 					err += 1
-				if os.path.exists(home+indir+'/'+obsid[i][0]+'/pacs/data/fits/OBSID_'+obsid[i][j]+'_'+obsid[i][0]+'_red_centralSpaxel_PointSourceCorrected_Corrected3x3NO_slice_00_os8sf7.fits') == False:
-					print '%s missing OBSID_%s_%s_red_centralSpaxel_PointSourceCorrected_Corrected3x3NO_slice_00_os8sf7.fits' % (obsid[i][0], obsid[i][j], obsid[i][0])
+				if os.path.exists(home+indir+'/'+objlist[i]+'/pacs/data/fits/OBSID_'+obsid[i][j]+'_'+obsid[i][0]+'_red_centralSpaxel_PointSourceCorrected_Corrected3x3NO_slice_00_os8sf7.fits') == False:
+					print '%s missing OBSID_%s_%s_red_centralSpaxel_PointSourceCorrected_Corrected3x3NO_slice_00_os8sf7.fits' % (objlist[i], obsid[i][j], obsid[i][0])
 					err += 1
 				# 1d - 3x3YES
-				if os.path.exists(home+indir+'/'+obsid[i][0]+'/pacs/data/fits/OBSID_'+obsid[i][j]+'_'+obsid[i][0]+'_blue_centralSpaxel_PointSourceCorrected_Corrected3x3YES_slice_00_os8sf7.fits') == False:
-					print '%s missing OBSID_%s_%s_blue_centralSpaxel_PointSourceCorrected_Corrected3x3YES_slice_00_os8sf7.fits' % (obsid[i][0], obsid[i][j], obsid[i][0])
+				if os.path.exists(home+indir+'/'+objlist[i]+'/pacs/data/fits/OBSID_'+obsid[i][j]+'_'+obsid[i][0]+'_blue_centralSpaxel_PointSourceCorrected_Corrected3x3YES_slice_00_os8sf7.fits') == False:
+					print '%s missing OBSID_%s_%s_blue_centralSpaxel_PointSourceCorrected_Corrected3x3YES_slice_00_os8sf7.fits' % (objlist[i], obsid[i][j], obsid[i][0])
 					err += 1
-				if os.path.exists(home+indir+'/'+obsid[i][0]+'/pacs/data/fits/OBSID_'+obsid[i][j]+'_'+obsid[i][0]+'_red_centralSpaxel_PointSourceCorrected_Corrected3x3YES_slice_00_os8sf7.fits') == False:
-					print '%s missing OBSID_%s_%s_red_centralSpaxel_PointSourceCorrected_Corrected3x3YES_slice_00_os8sf7.fits' % (obsid[i][0], obsid[i][j], obsid[i][0])
+				if os.path.exists(home+indir+'/'+objlist[i]+'/pacs/data/fits/OBSID_'+obsid[i][j]+'_'+obsid[i][0]+'_red_centralSpaxel_PointSourceCorrected_Corrected3x3YES_slice_00_os8sf7.fits') == False:
+					print '%s missing OBSID_%s_%s_red_centralSpaxel_PointSourceCorrected_Corrected3x3YES_slice_00_os8sf7.fits' % (objlist[i], obsid[i][j], obsid[i][0])
 					err += 1
 				# cube - finalcube
-				if os.path.exists(home+indir+'/'+obsid[i][0]+'/pacs/data/fits/OBSID_'+obsid[i][j]+'_blue_finalcubes_os8_sf7.fits') == False:
-					print '%s missing OBSID_%s_blue_finalcubes_os8_sf7.fits' % (obsid[i][0], obsid[i][j])
+				if os.path.exists(home+indir+'/'+objlist[i]+'/pacs/data/fits/OBSID_'+obsid[i][j]+'_blue_finalcubes_os8_sf7.fits') == False:
+					print '%s missing OBSID_%s_blue_finalcubes_os8_sf7.fits' % (objlist[i], obsid[i][j])
 					err += 1
-				if os.path.exists(home+indir+'/'+obsid[i][0]+'/pacs/data/fits/OBSID_'+obsid[i][j]+'_red_finalcubes_os8_sf7.fits') == False:
-					print '%s missing OBSID_%s_red_finalcubes_os8_sf7.fits' % (obsid[i][0], obsid[i][j])
+				if os.path.exists(home+indir+'/'+objlist[i]+'/pacs/data/fits/OBSID_'+obsid[i][j]+'_red_finalcubes_os8_sf7.fits') == False:
+					print '%s missing OBSID_%s_red_finalcubes_os8_sf7.fits' % (objlist[i], obsid[i][j])
 					err += 1
 				# cube - noda
-				if os.path.exists(home+indir+'/'+obsid[i][0]+'/pacs/data/fits/OBSID_'+obsid[i][j]+'_blue_rebinnedcubesnoda_os8_sf7.fits') == False:
-					print '%s missing OBSID_%s_blue_rebinnedcubesnoda_os8_sf7.fits' % (obsid[i][0], obsid[i][j])
+				if os.path.exists(home+indir+'/'+objlist[i]+'/pacs/data/fits/OBSID_'+obsid[i][j]+'_blue_rebinnedcubesnoda_os8_sf7.fits') == False:
+					print '%s missing OBSID_%s_blue_rebinnedcubesnoda_os8_sf7.fits' % (objlist[i], obsid[i][j])
 					err += 1
-				if os.path.exists(home+indir+'/'+obsid[i][0]+'/pacs/data/fits/OBSID_'+obsid[i][j]+'_red_rebinnedcubesnoda_os8_sf7.fits') == False:
-					print '%s missing OBSID_%s_red_rebinnedcubesnoda_os8_sf7.fits' % (obsid[i][0], obsid[i][j])
+				if os.path.exists(home+indir+'/'+objlist[i]+'/pacs/data/fits/OBSID_'+obsid[i][j]+'_red_rebinnedcubesnoda_os8_sf7.fits') == False:
+					print '%s missing OBSID_%s_red_rebinnedcubesnoda_os8_sf7.fits' % (objlist[i], obsid[i][j])
 					err += 1
 				# cube - nodb
-				if os.path.exists(home+indir+'/'+obsid[i][0]+'/pacs/data/fits/OBSID_'+obsid[i][j]+'_blue_rebinnedcubesnodb_os8_sf7.fits') == False:
-					print '%s missing OBSID_%s_blue_rebinnedcubesnodb_os8_sf7.fits' % (obsid[i][0], obsid[i][j])
+				if os.path.exists(home+indir+'/'+objlist[i]+'/pacs/data/fits/OBSID_'+obsid[i][j]+'_blue_rebinnedcubesnodb_os8_sf7.fits') == False:
+					print '%s missing OBSID_%s_blue_rebinnedcubesnodb_os8_sf7.fits' % (objlist[i], obsid[i][j])
 					err += 1
-				if os.path.exists(home+indir+'/'+obsid[i][0]+'/pacs/data/fits/OBSID_'+obsid[i][j]+'_red_rebinnedcubesnodb_os8_sf7.fits') == False:
-					print '%s missing OBSID_%s_red_rebinnedcubesnodb_os8_sf7.fits' % (obsid[i][0], obsid[i][j])
+				if os.path.exists(home+indir+'/'+objlist[i]+'/pacs/data/fits/OBSID_'+obsid[i][j]+'_red_rebinnedcubesnodb_os8_sf7.fits') == False:
+					print '%s missing OBSID_%s_red_rebinnedcubesnodb_os8_sf7.fits' % (objlist[i], obsid[i][j])
 					err += 1
 		if obsid[i][3] != '0':
 			# check FITS files for SPIRE 1d and cube
-			if (os.path.exists(home+indir+'/'+obsid[i][0]+'/spire/data/fits/'+obsid[i][0]+'_spire_corrected.fits') or \
-				os.path.exists(home+indir+'/'+obsid[i][0]+'/spire/data/fits/'+obsid[i][0].lower()+'_spire_corrected.fits')) == False:
-				print '%s missing %s_spire_corrected.fits' % (obsid[i][0], obsid[i][0].lower())
+			if (os.path.exists(home+indir+'/'+objlist[i]+'/spire/data/fits/'+obsid[i][0]+'_spire_corrected.fits') or \
+				os.path.exists(home+indir+'/'+objlist[i]+'/spire/data/fits/'+obsid[i][0].lower()+'_spire_corrected.fits')) == False:
+				print '%s missing %s_spire_corrected.fits' % (objlist[i], obsid[i][0].lower())
 				err += 1
-			if os.path.exists(home+indir+'/'+obsid[i][0]+'/spire/data/fits/'+obsid[i][3]+'_spectrum_extended_HR_aNB_15.fits') == False:
-				print '%s missing %s_spectrum_extended_HR_aNB_15.fits' % (obsid[i][0], obsid[i][3])
+			if os.path.exists(home+indir+'/'+objlist[i]+'/spire/data/fits/'+obsid[i][3]+'_spectrum_extended_HR_aNB_15.fits') == False:
+				print '%s missing %s_spectrum_extended_HR_aNB_15.fits' % (objlist[i], obsid[i][3])
 				err += 1
 	if err == 0:
 		print 'passed the FITS test!'
