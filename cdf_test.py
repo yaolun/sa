@@ -645,7 +645,7 @@ def cdf_test(indir,outdir):
 	fits_com(indir)
 
 	# Strong lines test
-	objdir = os.walk(home+indir).next()[1]
+	objdir = np.array(os.walk(home+indir).next()[1])
 	objdir = objdir[objdir != 'contour']
 	for o in objdir:
 		# test pacs fitting
