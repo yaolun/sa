@@ -311,6 +311,8 @@ def unc_test(filepath,plotdir,png=True):
 	from scipy.interpolate import interp1d
 	home = os.path.expanduser('~')
 
+	plotname = os.path.splitext(os.path.basename(filepath))[0]
+
 	filepath = home + filepath
 	data = ascii.read(filepath)
 	# Header of the all cube fitting results
@@ -410,9 +412,9 @@ def unc_test(filepath,plotdir,png=True):
 	[ax.spines[axis].set_linewidth(1.5) for axis in ['top','bottom','left','right']]
 
 	if png == False:
-		plt.savefig(home+plotdir+'scatter_hist.pdf',format='pdf',dpi=300,bbox_inches='tight')
+		plt.savefig(home+plotdir+plotname+'scatter_hist.pdf',format='pdf',dpi=300,bbox_inches='tight')
 	else:
-		plt.savefig(home+plotdir+'scatter_hist.png',format='png',dpi=300,bbox_inches='tight')
+		plt.savefig(home+plotdir+plotname+'scatter_hist.png',format='png',dpi=300,bbox_inches='tight')
 	plt.cla()
 	plt.clf()
 
@@ -641,7 +643,10 @@ def cdf_test(indir,outdir):
 		print objdir, 'SPIRE: ', strong_line(home+indir+'/'+objdir+'/spire/advanced_products/')
 
 	# Uncertainty relation plots
-	unc_test(indir, outdir)
+	unc_test(indir+'/CDF_archive_pacs_1d_lines.txt', outdir)
+	unc_test(indir+'/CDF_archive_pacs_cube_lines.txt', outdir)
+	unc_test(indir+'/CDF_archive_spire_1d_lines.txt', outdir)
+	unc_test(indir+'/CDF_archive_spire_cube_lines.txt', outdir)
 
 	# Stats of the fitting results
 	fitting_check(indir, outdir)
