@@ -618,6 +618,7 @@ def cdf_test(indir,outdir):
 	"""
 	import numpy as np
 	import os
+	home = os.path.expanduser('~')
 
 	# Check the existence of the outdir
 	if os.path.exists(home+outdir) == False:
