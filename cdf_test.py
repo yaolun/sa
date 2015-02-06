@@ -46,8 +46,9 @@ def obj_com(indir):
 		if o in spireobj:
 			# Check 1d and cube fitting results
 			if os.path.exists(home+indir+'/'+o+'/spire/advanced_products/'+o+'_spire_corrected_lines.txt') == False:
-				err += 1
-				print 'Missing SPIRE 1d fitting on ', o
+				if (o != 'IRS46') and (o != 'HH100') and (o != 'V1735Cyg'):
+					err += 1
+					print 'Missing SPIRE 1d fitting on ', o
 			if os.path.exists(home+indir+'/'+o+'/spire/advanced_products/cube/'+o+'_SLWC3_lines.txt') == False:
 				err += 1
 				print 'Missing SPIRE-SLW cube fitting on ', o
@@ -260,7 +261,7 @@ def fits_com(indir):
 			if (os.path.exists(home+indir+'/'+objlist[i]+'/spire/data/fits/'+obsid[i][0]+'_spire_corrected.fits') or \
 				os.path.exists(home+indir+'/'+objlist[i]+'/spire/data/fits/'+obsid[i][0].lower()+'_spire_corrected.fits')) == False:
 				# spire-1d spectra of IRS46, HH100, and V1735Cyg are mis-pointed
-				if (objlist[i] != 'IRS46') or (objlist[i] != 'HH100') or (objlist[i] != 'V1735Cyg'):
+				if (objlist[i] != 'IRS46') and (objlist[i] != 'HH100') and (objlist[i] != 'V1735Cyg'):
 					print '%s missing %s_spire_corrected.fits' % (objlist[i], obsid[i][0].lower())
 					err += 1
 			if os.path.exists(home+indir+'/'+objlist[i]+'/spire/data/fits/'+obsid[i][3]+'_spectrum_extended_HR_aNB_15.fits') == False:
