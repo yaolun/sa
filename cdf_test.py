@@ -259,8 +259,10 @@ def fits_com(indir):
 			# check FITS files for SPIRE 1d and cube
 			if (os.path.exists(home+indir+'/'+objlist[i]+'/spire/data/fits/'+obsid[i][0]+'_spire_corrected.fits') or \
 				os.path.exists(home+indir+'/'+objlist[i]+'/spire/data/fits/'+obsid[i][0].lower()+'_spire_corrected.fits')) == False:
-				print '%s missing %s_spire_corrected.fits' % (objlist[i], obsid[i][0].lower())
-				err += 1
+				# spire-1d spectra of IRS46, HH100, and V1735Cyg are mis-pointed
+				if (objlist[i] != 'IRS46') or (objlist[i] != 'HH100') or (objlist[i] != 'V1735Cyg'):
+					print '%s missing %s_spire_corrected.fits' % (objlist[i], obsid[i][0].lower())
+					err += 1
 			if os.path.exists(home+indir+'/'+objlist[i]+'/spire/data/fits/'+obsid[i][3]+'_spectrum_extended_HR_aNB_15.fits') == False:
 				print '%s missing %s_spectrum_extended_HR_aNB_15.fits' % (objlist[i], obsid[i][3])
 				err += 1
