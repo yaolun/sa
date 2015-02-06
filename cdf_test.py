@@ -561,7 +561,7 @@ def fitting_check(indir,outdir):
 	foo.write('\t \t Zeros in line centroid uncertainty: %d and %d with detections.\n' % (num2,num3))
 	foo.write('\t \t Zeros in FWHM uncertainty: %d, %d with detections, and %d with detections and blend Gaussian.\n' % (num4,num5,num6))
 	foo.write('\t \t Zeros in line strength uncertainty: %d, %d with detections, and %d with detections and blend Gaussian.\n' % (num7,num8,num9))
-	foo.write('\t \t Validity = 0 only due to blending with neighbors: %d, %d with detections.') % (num10, num11)
+	foo.write('\t \t Validity = 0 only due to blending with neighbors: %d, %d with detections.' % (num10, num11))
 	foo.write('\t %d detections without anomalous, and %.2f lines per object.\n' % (num_line2,num_line2/num_pacs))
 
 	foo.write('====================================================================================================================\n')
@@ -628,7 +628,7 @@ def fitting_check(indir,outdir):
 	foo.write('\t \t Zeros in line centroid uncertainty: %d and %d with detections.\n' % (num2,num3))
 	foo.write('\t \t Zeros in FWHM uncertainty: %d, %d with detections, and %d with detections and blend Gaussian.\n' % (num4,num5,num6))
 	foo.write('\t \t Zeros in line strength uncertainty: %d, %d with detections, and %d with detections and blend Gaussian.\n' % (num7,num8,num9))
-	foo.write('\t \t Validity = 0 only due to blending with neighbors: %d, %d with detections.') % (num10, num11)
+	foo.write('\t \t Validity = 0 only due to blending with neighbors: %d, %d with detections.' % (num10, num11))
 	foo.write('\t %d detections without anomalous, and %.2f lines per object.\n' % (num_line2,num_line2/num_spire))
 
 	foo.close()
