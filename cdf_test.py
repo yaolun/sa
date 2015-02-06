@@ -576,6 +576,8 @@ def fitting_check(indir,outdir):
 	num7 = 0.0
 	num8 = 0.0
 	num9 = 0.0
+	num10 = 0.0
+	num11 = 0.0
 	num_line2 = 0.0
 	num_dg = 0.0
 	num_dg_line = 0.0
