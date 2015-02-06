@@ -497,6 +497,8 @@ def fitting_check(indir,outdir):
 	num7 = 0.0
 	num8 = 0.0
 	num9 = 0.0
+	num10 = 0.0
+	num11 = 0.0
 	num_line2 = 0.0
 	num_dg = 0.0
 	num_dg_line = 0.0
@@ -527,6 +529,10 @@ def fitting_check(indir,outdir):
 		num7 = len(data[data['Sig_str(W/cm2)'] == 0.0]) + num7
 		num8 = len(data[(data['Sig_str(W/cm2)'] == 0.0) & (data['SNR'] >= 3)]) + num8
 		num9 = len(data[(data['Sig_str(W/cm2)'] == 0.0) & (data['SNR'] >= 3) & (data['Blend'] == 'DoubleGaussian')]) + num9
+
+		num10 = len(data[(data['Sig_Cen(um)'] != -999.0) & (data['Sig_FWHM(um)'] != -999.0) & (data['Sig_str(W/cm2)'] != 0.0)]) + num10
+		num11 = len(data[data['Validity'] == 1]) + num11
+
 		num_line2 = len(data[(data['SNR'] >=3) & (data['Sig_Cen(um)'] != -999.0) & (data['Sig_FWHM(um)'] != -999.0) & \
 							 (data['Sig_str(W/cm2)'] != 0.0) & (data['Validity'] ==1)]) + num_line2
 		num_dg = len(data[data['Blend'] == 'DoubleGaussian']) + num_dg
@@ -545,6 +551,7 @@ def fitting_check(indir,outdir):
 			print data['FWHM(um)'][(data['Sig_str(W/cm2)'] == 0.0) & (data['SNR'] >= 3)]
 			print data['Sig_FWHM(um)'][(data['Sig_str(W/cm2)'] == 0.0) & (data['SNR'] >= 3)]
 
+	print num10, num11
 	# Print out the statistic of the pacs fitting results
 	foo.write('<PACS>\n')
 	foo.write('\t Number of object: %d \n' % num_pacs)
