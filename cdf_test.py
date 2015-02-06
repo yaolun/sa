@@ -529,16 +529,14 @@ def fitting_check(indir,outdir):
 		num7 = len(data[data['Sig_str(W/cm2)'] == 0.0]) + num7
 		num8 = len(data[(data['Sig_str(W/cm2)'] == 0.0) & (data['SNR'] >= 3)]) + num8
 		num9 = len(data[(data['Sig_str(W/cm2)'] == 0.0) & (data['SNR'] >= 3) & (data['Blend'] == 'DoubleGaussian')]) + num9
+		num10 = len(data[(data['Sig_Cen(um)'] != -999.0) & (data['Sig_FWHM(um)'] != -999.0) & (data['Sig_str(W/cm2)'] != 0.0) & \
+						 (data['Validity'] == 0)]) + num10
+		num11 = len(data[(data['Sig_Cen(um)'] != -999.0) & (data['Sig_FWHM(um)'] != -999.0) & (data['Sig_str(W/cm2)'] != 0.0) & \
+						 (data['Validity'] == 0) & (data['SNR'] >= 3)]) + num11
 
-		num10 = len(data[(data['Sig_Cen(um)'] != -999.0) & (data['Sig_FWHM(um)'] != -999.0) & (data['Sig_str(W/cm2)'] != 0.0)]) + num10
-		num11 = len(data[data['Validity'] == 1]) + num11
-
-		num_line2 = len(data[(data['SNR'] >=3) & (data['Sig_Cen(um)'] != -999.0) & (data['Sig_FWHM(um)'] != -999.0) & \
-							 (data['Sig_str(W/cm2)'] != 0.0) & (data['Validity'] ==1)]) + num_line2
+		num_line2 = len(data[(data['SNR'] >=3) & (data['Validity'] ==1)]) + num_line2
 		num_dg = len(data[data['Blend'] == 'DoubleGaussian']) + num_dg
 		num_dg_line = len(data[(data['Blend'] == 'DoubleGaussian') & (data['SNR'] >= 3)]) + num_dg_line
-
-		num_test = len(data[data['Sig_FWHM(um)'] == 0.0]) + num_test
 
 		# Print out the detail information of the line that has zero in line strength uncertainty.
 		if len(data[(data['Sig_str(W/cm2)'] == 0.0) & (data['SNR'] >= 3)]) != 0:
@@ -556,16 +554,15 @@ def fitting_check(indir,outdir):
 	foo.write('<PACS>\n')
 	foo.write('\t Number of object: %d \n' % num_pacs)
 	foo.write('\t %d lines fitted, %.2f lines fitted per object\n' % (num_fit,num_fit/num_pacs))
-	foo.write('\t %d detections, %.2f detections per object.\n' % (num_line,num_line/num_pacs))
+	foo.write('\t %d detections w/ anomalous, %.2f detections per object.\n' % (num_line,num_line/num_pacs))
 	foo.write('\t %d lines fitted with blend Gaussian, %d lines detections among them.\n' % (num_dg,num_dg_line))
 	foo.write('\t <<Anomaly>>\n')
 	foo.write('\t \t SNR anomalies due to the missing spectra: %d \n' % num1)
 	foo.write('\t \t Zeros in line centroid uncertainty: %d and %d with detections.\n' % (num2,num3))
 	foo.write('\t \t Zeros in FWHM uncertainty: %d, %d with detections, and %d with detections and blend Gaussian.\n' % (num4,num5,num6))
 	foo.write('\t \t Zeros in line strength uncertainty: %d, %d with detections, and %d with detections and blend Gaussian.\n' % (num7,num8,num9))
+	foo.write('\t \t Validity = 0 only due to blending with neighbors: %d, %d with detections.') % (num10, num11)
 	foo.write('\t %d detections without anomalous, and %.2f lines per object.\n' % (num_line2,num_line2/num_pacs))
-
-	print num_test
 
 	foo.write('====================================================================================================================\n')
 	num_fit = 0.0
@@ -609,13 +606,14 @@ def fitting_check(indir,outdir):
 		num7 = len(data[data['Sig_str(W/cm2)'] == 0.0]) + num7
 		num8 = len(data[(data['Sig_str(W/cm2)'] == 0.0) & (data['SNR'] >= 3)]) + num8
 		num9 = len(data[(data['Sig_str(W/cm2)'] == 0.0) & (data['SNR'] >= 3) & (data['Blend'] == 'DoubleGaussian')]) + num9
-		num_line2 = len(data[(data['SNR'] >=3) & (data['Sig_Cen(um)'] != -999.0) & (data['Sig_FWHM(um)'] != -999.0) & \
-							 (data['Sig_str(W/cm2)'] != 0.0) & (data['Validity'] == 1)]) + num_line2
+		num10 = len(data[(data['Sig_Cen(um)'] != -999.0) & (data['Sig_FWHM(um)'] != -999.0) & (data['Sig_str(W/cm2)'] != 0.0) & \
+						 (data['Validity'] == 0)]) + num10
+		num11 = len(data[(data['Sig_Cen(um)'] != -999.0) & (data['Sig_FWHM(um)'] != -999.0) & (data['Sig_str(W/cm2)'] != 0.0) & \
+						 (data['Validity'] == 0) & (data['SNR'] >= 3)]) + num11
+
+		num_line2 = len(data[(data['SNR'] >=3) & (data['Validity'] == 1)]) + num_line2
 		num_dg = len(data[data['Blend'] == 'DoubleGaussian']) + num_dg
 		num_dg_line = len(data[(data['Blend'] == 'DoubleGaussian') & (data['SNR'] >= 3)]) + num_dg_line
-
-		num_test = len(data[data['Sig_FWHM(um)'] == 0.0]) + num_test
-
 
 	# Print out the statistic of the pacs fitting results
 	foo.write('<SPIRE>\n')
@@ -628,11 +626,10 @@ def fitting_check(indir,outdir):
 	foo.write('\t \t Zeros in line centroid uncertainty: %d and %d with detections.\n' % (num2,num3))
 	foo.write('\t \t Zeros in FWHM uncertainty: %d, %d with detections, and %d with detections and blend Gaussian.\n' % (num4,num5,num6))
 	foo.write('\t \t Zeros in line strength uncertainty: %d, %d with detections, and %d with detections and blend Gaussian.\n' % (num7,num8,num9))
+	foo.write('\t \t Validity = 0 only due to blending with neighbors: %d, %d with detections.') % (num10, num11)
 	foo.write('\t %d detections without anomalous, and %.2f lines per object.\n' % (num_line2,num_line2/num_spire))
 
 	foo.close()
-
-	print num_test
 
 	print 'Finished the statistic of the fitting results, go check them at %s !' % home+outdir+'stat.txt'
 
