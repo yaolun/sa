@@ -96,7 +96,7 @@ def snr_local_global(pathlocal, pathglobal, cube=True, oned=False):
 	ax.tick_params('both',labelsize=18,width=1.5,which='minor')
 	[ax.spines[axis].set_linewidth(1.5) for axis in ['top','bottom','left','right']]
 
-	fig.savefig('snr_local_global.png', format='png', dpi=300, bbox_inches='tight')
+	fig.savefig(home+'/Copy/snr_local_global.png', format='png', dpi=300, bbox_inches='tight')
 	fig.clf()
 
 snr_local_global('/test/local/', '/test/')
