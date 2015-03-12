@@ -42,13 +42,13 @@ def obj_com(indir):
 				print 'Missing PACS 1d fitting on ', o
 			# temp. test for oversampling rate
 			else:
-				print o, len(open(home+indir+'/'+o+'/pacs/advanced_products/'+o+'_centralSpaxel_PointSourceCorrected_CorrectedYES_trim_lines.txt','r').readlines())
+				print o, len(open(home+indir+'/'+o+'/pacs/data/'+o+'_centralSpaxel_PointSourceCorrected_CorrectedYES_trim.txt','r').readlines())
 			if os.path.exists(home+indir+'/'+o+'/pacs/advanced_products/cube/'+o+'_pacs_pixel13_os8_sf7_lines.txt') == False:
 				err += 1
 				print 'Missing PACS cube fitting on ', o
 			# temp.
 			else:
-				print o, len(open(home+indir+'/'+o+'/pacs/advanced_products/cube/'+o+'_pacs_pixel13_os8_sf7_lines.txt','r').readlines())
+				print o, len(open(home+indir+'/'+o+'/pacs/data/cube/'+o+'_pacs_pixel13_os8_sf7.txt','r').readlines())
 		if o in spireobj:
 			# Check 1d and cube fitting results
 			if os.path.exists(home+indir+'/'+o+'/spire/advanced_products/'+o+'_spire_corrected_lines.txt') == False:
