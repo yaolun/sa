@@ -40,9 +40,15 @@ def obj_com(indir):
 			if os.path.exists(home+indir+'/'+o+'/pacs/advanced_products/'+o+'_centralSpaxel_PointSourceCorrected_CorrectedYES_trim_lines.txt') == False:
 				err += 1
 				print 'Missing PACS 1d fitting on ', o
+			# temp. test for oversampling rate
+			else:
+				print o, len(open(home+indir+'/'+o+'/pacs/advanced_products/'+o+'_centralSpaxel_PointSourceCorrected_CorrectedYES_trim_lines.txt','r').readlines())
 			if os.path.exists(home+indir+'/'+o+'/pacs/advanced_products/cube/'+o+'_pacs_pixel13_os8_sf7_lines.txt') == False:
 				err += 1
 				print 'Missing PACS cube fitting on ', o
+			# temp.
+			else:
+				print o, len(open(home+indir+'/'+o+'/pacs/advanced_products/cube/'+o+'_pacs_pixel13_os8_sf7_lines.txt','r').readlines())
 		if o in spireobj:
 			# Check 1d and cube fitting results
 			if os.path.exists(home+indir+'/'+o+'/spire/advanced_products/'+o+'_spire_corrected_lines.txt') == False:
@@ -67,6 +73,8 @@ def fits_com(indir):
 	"""
 	import os
 	import glob
+	from astropy.io import fits
+
 	home = os.path.expanduser('~')
 
 	# pre-define OBSID info
@@ -212,6 +220,20 @@ def fits_com(indir):
 				if len(glob.glob(home+indir+'/'+objlist[i]+'/pacs/data/fits/OBSID_'+obsid[i][j]+'_red_rebinnedcubesnodb_*sf7_nojitter.fits')) == 0:
 					print '%s missing OBSID_%s_red_rebinnedcubesnodb_os8_sf7_nojitter.fits' % (objlist[i], obsid[i][j])
 					err += 1
+				# print objlist[i]
+				# print fits.open(glob.glob(home+indir+'/'+objlist[i]+'/pacs/data/fits/OBSID_'+obsid[i][j]+'_'+obsid[i][0]+'_blue_central9Spaxels_PointSourceCorrected_*sf7_nojitter.fits')[0])[0].header['DATE']
+				# print fits.open(glob.glob(home+indir+'/'+objlist[i]+'/pacs/data/fits/OBSID_'+obsid[i][j]+'_'+obsid[i][0]+'_red_central9Spaxels_PointSourceCorrected_*sf7_nojitter.fits')[0])[0].header['DATE']
+				# print fits.open(glob.glob(home+indir+'/'+objlist[i]+'/pacs/data/fits/OBSID_'+obsid[i][j]+'_'+obsid[i][0]+'_blue_centralSpaxel_PointSourceCorrected_Corrected3x3NO_*sf7_nojitter.fits')[0])[0].header['DATE']
+				# print fits.open(glob.glob(home+indir+'/'+objlist[i]+'/pacs/data/fits/OBSID_'+obsid[i][j]+'_'+obsid[i][0]+'_red_centralSpaxel_PointSourceCorrected_Corrected3x3NO_*sf7_nojitter.fits')[0])[0].header['DATE']
+				# print fits.open(glob.glob(home+indir+'/'+objlist[i]+'/pacs/data/fits/OBSID_'+obsid[i][j]+'_'+obsid[i][0]+'_blue_centralSpaxel_PointSourceCorrected_Corrected3x3YES_*sf7_nojitter.fits')[0])[0].header['DATE']
+				# print fits.open(glob.glob(home+indir+'/'+objlist[i]+'/pacs/data/fits/OBSID_'+obsid[i][j]+'_'+obsid[i][0]+'_red_centralSpaxel_PointSourceCorrected_Corrected3x3YES_*sf7_nojitter.fits')[0])[0].header['DATE']
+				# print fits.open(glob.glob(home+indir+'/'+objlist[i]+'/pacs/data/fits/OBSID_'+obsid[i][j]+'_blue_finalcubes_*sf7_nojitter.fits')[0])[0].header['DATE']
+				# print fits.open(glob.glob(home+indir+'/'+objlist[i]+'/pacs/data/fits/OBSID_'+obsid[i][j]+'_red_finalcubes_*sf7_nojitter.fits')[0])[0].header['DATE']
+				# print fits.open(glob.glob(home+indir+'/'+objlist[i]+'/pacs/data/fits/OBSID_'+obsid[i][j]+'_blue_rebinnedcubesnoda_*sf7_nojitter.fits')[0])[0].header['DATE']
+				# print fits.open(glob.glob(home+indir+'/'+objlist[i]+'/pacs/data/fits/OBSID_'+obsid[i][j]+'_red_rebinnedcubesnoda_*sf7_nojitter.fits')[0])[0].header['DATE']
+				# print fits.open(glob.glob(home+indir+'/'+objlist[i]+'/pacs/data/fits/OBSID_'+obsid[i][j]+'_blue_rebinnedcubesnodb_*sf7_nojitter.fits')[0])[0].header['DATE']
+				# print fits.open(glob.glob(home+indir+'/'+objlist[i]+'/pacs/data/fits/OBSID_'+obsid[i][j]+'_red_rebinnedcubesnodb_*sf7_nojitter.fits')[0])[0].header['DATE']
+
 				# check jitter FITS
 				if objlist[i] in jitter_exclude == False:
 					# 1d - 9Spx
@@ -256,6 +278,21 @@ def fits_com(indir):
 					if len(glob.glob(home+indir+'/'+objlist[i]+'/pacs/data/fits/OBSID_'+obsid[i][j]+'_red_rebinnedcubesnodb_*sf7.fits')) == 0:
 						print '%s missing OBSID_%s_red_rebinnedcubesnodb_os8_sf7.fits' % (objlist[i], obsid[i][j])
 						err += 1
+
+					# print objlist[i]
+					# print fits.open(glob.glob(home+indir+'/'+objlist[i]+'/pacs/data/fits/OBSID_'+obsid[i][j]+'_'+obsid[i][0]+'_blue_central9Spaxels_PointSourceCorrected_*sf7.fits')[0])[0].header['DATE']
+					# print fits.open(glob.glob(home+indir+'/'+objlist[i]+'/pacs/data/fits/OBSID_'+obsid[i][j]+'_'+obsid[i][0]+'_red_central9Spaxels_PointSourceCorrected_*sf7.fits')[0])[0].header['DATE']
+					# print fits.open(glob.glob(home+indir+'/'+objlist[i]+'/pacs/data/fits/OBSID_'+obsid[i][j]+'_'+obsid[i][0]+'_blue_centralSpaxel_PointSourceCorrected_Corrected3x3NO_*sf7.fits')[0])[0].header['DATE']
+					# print fits.open(glob.glob(home+indir+'/'+objlist[i]+'/pacs/data/fits/OBSID_'+obsid[i][j]+'_'+obsid[i][0]+'_red_centralSpaxel_PointSourceCorrected_Corrected3x3NO_*sf7.fits')[0])[0].header['DATE']
+					# print fits.open(glob.glob(home+indir+'/'+objlist[i]+'/pacs/data/fits/OBSID_'+obsid[i][j]+'_'+obsid[i][0]+'_blue_centralSpaxel_PointSourceCorrected_Corrected3x3YES_*sf7.fits')[0])[0].header['DATE']
+					# print fits.open(glob.glob(home+indir+'/'+objlist[i]+'/pacs/data/fits/OBSID_'+obsid[i][j]+'_'+obsid[i][0]+'_red_centralSpaxel_PointSourceCorrected_Corrected3x3YES_*sf7.fits')[0])[0].header['DATE']
+					# print fits.open(glob.glob(home+indir+'/'+objlist[i]+'/pacs/data/fits/OBSID_'+obsid[i][j]+'_blue_finalcubes_*sf7.fits')[0])[0].header['DATE']
+					# print fits.open(glob.glob(home+indir+'/'+objlist[i]+'/pacs/data/fits/OBSID_'+obsid[i][j]+'_red_finalcubes_*sf7.fits')[0])[0].header['DATE']
+					# print fits.open(glob.glob(home+indir+'/'+objlist[i]+'/pacs/data/fits/OBSID_'+obsid[i][j]+'_blue_rebinnedcubesnoda_*sf7.fits')[0])[0].header['DATE']
+					# print fits.open(glob.glob(home+indir+'/'+objlist[i]+'/pacs/data/fits/OBSID_'+obsid[i][j]+'_red_rebinnedcubesnoda_*sf7.fits')[0])[0].header['DATE']
+					# print fits.open(glob.glob(home+indir+'/'+objlist[i]+'/pacs/data/fits/OBSID_'+obsid[i][j]+'_blue_rebinnedcubesnodb_*sf7.fits')[0])[0].header['DATE']
+					# print fits.open(glob.glob(home+indir+'/'+objlist[i]+'/pacs/data/fits/OBSID_'+obsid[i][j]+'_red_rebinnedcubesnodb_*sf7.fits')[0])[0].header['DATE']
+
 		if obsid[i][3] != '0':
 			# check FITS files for SPIRE 1d and cube
 			if (os.path.exists(home+indir+'/'+objlist[i]+'/spire/data/fits/'+obsid[i][0]+'_spire_corrected.fits') or \
