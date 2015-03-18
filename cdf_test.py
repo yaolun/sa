@@ -40,15 +40,15 @@ def obj_com(indir):
 			if os.path.exists(home+indir+'/'+o+'/pacs/advanced_products/'+o+'_centralSpaxel_PointSourceCorrected_CorrectedYES_trim_lines.txt') == False:
 				err += 1
 				print 'Missing PACS 1d fitting on ', o
-			# temp. test for oversampling rate
-			else:
-				print o, len(open(home+indir+'/'+o+'/pacs/data/'+o+'_centralSpaxel_PointSourceCorrected_CorrectedYES_trim.txt','r').readlines())
+			# # temp. test for oversampling rate
+			# else:
+			# 	print o, len(open(home+indir+'/'+o+'/pacs/data/'+o+'_centralSpaxel_PointSourceCorrected_CorrectedYES_trim.txt','r').readlines())
 			if os.path.exists(home+indir+'/'+o+'/pacs/advanced_products/cube/'+o+'_pacs_pixel13_os8_sf7_lines.txt') == False:
 				err += 1
 				print 'Missing PACS cube fitting on ', o
-			# temp.
-			else:
-				print o, len(open(home+indir+'/'+o+'/pacs/data/cube/'+o+'_pacs_pixel13_os8_sf7.txt','r').readlines())
+			# # temp.
+			# else:
+			# 	print o, len(open(home+indir+'/'+o+'/pacs/data/cube/'+o+'_pacs_pixel13_os8_sf7.txt','r').readlines())
 		if o in spireobj:
 			# Check 1d and cube fitting results
 			if os.path.exists(home+indir+'/'+o+'/spire/advanced_products/'+o+'_spire_corrected_lines.txt') == False:
@@ -368,6 +368,10 @@ def unc_test(filepath,plotdir,png=True):
 
 	filepath = home + filepath
 	data = ascii.read(filepath)
+	if 'Str(W/cm2/as2)' in data.columns:
+		unit = '/as2'
+	else:
+		unit = ''
 	# Header of the all cube fitting results
 	# ====================================================================================================
 	# Object,   Line,			LabWL(um),		ObsWL(um),		Sig_Cen(um),	Str(W/cm2),		Sig_str(W/cm2)
@@ -377,12 +381,14 @@ def unc_test(filepath,plotdir,png=True):
 	header = data.colnames
 	data = data[(np.isnan(data['SNR'])!=True) & (data['Validity']==1)]  # Temperory procedure to exclude the missing segment in the spectrum resulting in the NaN in SNR
 	snr = abs(data['SNR'][np.argsort(data['ObsWL(um)'])])
-	snr_flux = (data['Str(W/cm2)']/data['Sig_str(W/cm2)'])[np.argsort(data['ObsWL(um)'])]
+
+	snr_flux = (data['Str(W/cm2'+unit+')']/data['Sig_str(W/cm2'+unit+')'])[np.argsort(data['ObsWL(um)'])]
 	wl = data['ObsWL(um)'][np.argsort(data['ObsWL(um)'])]
 
-	sig_str = data['Sig_str(W/cm2)'][np.argsort(data['ObsWL(um)'])]
-	noise = data['Noise(W/cm2/um)'][np.argsort(data['ObsWL(um)'])]
+	sig_str = data['Sig_str(W/cm2'+unit+')'][np.argsort(data['ObsWL(um)'])]
+	noise = data['Noise(W/cm2/um'+unit+')'][np.argsort(data['ObsWL(um)'])]
 	fwhm = data['FWHM(um)'][np.argsort(data['ObsWL(um)'])]
+
 
 	print 'Plotting scatter/histogram...'
 	from matplotlib.ticker import NullFormatter
@@ -623,6 +629,10 @@ def fitting_check(indir,outdir):
 	# SPIRE statistic
 	for path in spirepath:
 		data = ascii.read(path)
+		if 'Str(W/cm2/as2)' in data.columns:
+			unit = '/as2'
+		else:
+			unit = ''
 		# Header of the 1-D fitting results
 		# =========================================================================================
 		# Line,		LabWL(um),		ObsWL(um),		Sig_Cen(um),	Str(W/cm2),		Sig_str(W/cm2)
@@ -641,12 +651,12 @@ def fitting_check(indir,outdir):
 		num4 = len(data[data['Sig_FWHM(um)'] == -999.0]) + num4
 		num5 = len(data[(data['Sig_FWHM(um)'] == -999.0) & (data['SNR'] >= 3)]) + num5
 		num6 = len(data[(data['Sig_FWHM(um)'] == -999.0) & (data['SNR'] >= 3) & (data['Blend'] == 'DoubleGaussian')]) + num6
-		num7 = len(data[data['Sig_str(W/cm2)'] == 0.0]) + num7
-		num8 = len(data[(data['Sig_str(W/cm2)'] == 0.0) & (data['SNR'] >= 3)]) + num8
-		num9 = len(data[(data['Sig_str(W/cm2)'] == 0.0) & (data['SNR'] >= 3) & (data['Blend'] == 'DoubleGaussian')]) + num9
-		num10 = len(data[(data['Sig_Cen(um)'] != -999.0) & (data['Sig_FWHM(um)'] != -999.0) & (data['Sig_str(W/cm2)'] != 0.0) & \
+		num7 = len(data[data['Sig_str(W/cm2'+unit+')'] == 0.0]) + num7
+		num8 = len(data[(data['Sig_str(W/cm2'+unit+')'] == 0.0) & (data['SNR'] >= 3)]) + num8
+		num9 = len(data[(data['Sig_str(W/cm2'+unit+')'] == 0.0) & (data['SNR'] >= 3) & (data['Blend'] == 'DoubleGaussian')]) + num9
+		num10 = len(data[(data['Sig_Cen(um)'] != -999.0) & (data['Sig_FWHM(um)'] != -999.0) & (data['Sig_str(W/cm2'+unit+')'] != 0.0) & \
 						 (data['Validity'] == 0)]) + num10
-		num11 = len(data[(data['Sig_Cen(um)'] != -999.0) & (data['Sig_FWHM(um)'] != -999.0) & (data['Sig_str(W/cm2)'] != 0.0) & \
+		num11 = len(data[(data['Sig_Cen(um)'] != -999.0) & (data['Sig_FWHM(um)'] != -999.0) & (data['Sig_str(W/cm2'+unit+')'] != 0.0) & \
 						 (data['Validity'] == 0) & (data['SNR'] >= 3)]) + num11
 
 		num_line2 = len(data[(data['SNR'] >=3) & (data['Validity'] == 1)]) + num_line2
