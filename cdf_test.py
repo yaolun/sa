@@ -52,7 +52,7 @@ def obj_com(indir):
 				err += 1
 				print 'Missing PACS cube fitting on ', o
 			else:
-				wl, ra, dec = np.genfromtxt(home+indir+'/'+o+'/pacs/data/cube/'+o+'_pacs_pixel13_os8_sf7_coord.txt').T
+				wl, ra, dec = np.genfromtxt(home+indir+'/'+o+'/pacs/data/cube/'+o+'_pacs_pixel13_os8_sf7_coord.txt',skip_header=1).T
 				print o, np.std(ra*3600), np.std(dec*3600)
 				ra_std[pacsobj.index(o)] = np.std(ra*3600)
 				dec_std[pacsobj.index(o)] = np.std(dec*3600)
