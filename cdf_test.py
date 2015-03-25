@@ -6,6 +6,8 @@ def obj_com(indir):
 	"""
 	import os
 	home = os.path.expanduser('~')
+	# temp.
+	import numpy as np
 
 	# pre-define the full object list
 
@@ -49,8 +51,6 @@ def obj_com(indir):
 			if os.path.exists(home+indir+'/'+o+'/pacs/advanced_products/cube/'+o+'_pacs_pixel13_os8_sf7_lines.txt') == False:
 				err += 1
 				print 'Missing PACS cube fitting on ', o
-			# temp.
-			import numpy as np
 			else:
 				wl, ra, dec = np.genfromtxt(home+indir+'/'+o+'/pacs/data/cube/'+o+'_pacs_pixel13_os8_sf7_coord.txt').T
 				print o, np.std(ra*3600), np.std(dec*3600)
