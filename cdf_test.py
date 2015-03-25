@@ -69,8 +69,8 @@ def obj_com(indir):
 			if os.path.exists(home+indir+'/'+o+'/spire/advanced_products/cube/'+o+'_SSWD4_lines.txt') == False:
 				err += 1
 				print 'Missing SPIRE-SSW cube fitting on ', o
-	print min(ra_std), max(ra_std)
-	print min(dec_std), max(dec_std)
+	print min(ra_std), max(ra_std), np.mean(ra_std)
+	print min(dec_std), max(dec_std), np.mean(dec_std)
 	if err == 0:
 		print 'Passed the object test!'
 
