@@ -31,6 +31,9 @@ def obj_com(indir):
 	objdir = os.walk(home+indir).next()[1]
 	objdir = objdir[objdir != 'contour']
 	err = 0
+	# temp
+	ra_std = np.empty(len(pacsobj))
+	dec_std = np.empty(len(pacsobj))
 	for o in objlist:
 		if len(objdir[objdir == o]) != 1:
 			print 'Cannot find ', o
@@ -46,8 +49,13 @@ def obj_com(indir):
 			if os.path.exists(home+indir+'/'+o+'/pacs/advanced_products/cube/'+o+'_pacs_pixel13_os8_sf7_lines.txt') == False:
 				err += 1
 				print 'Missing PACS cube fitting on ', o
-			# # temp.
-			# else:
+			# temp.
+			import numpy as np
+			else:
+				wl, ra, dec = np.genfromtxt(home+indir+'/'+o+'/pacs/data/cube/'+o+'_pacs_pixel13_os8_sf7_coord.txt').T
+				print o, np.std(ra*3600), np.std(dec*3600)
+				ra_std[pacsobj.index(o)] = np.std(ra*3600)
+				dec_std[pacsobj.index(o)] = np.std(dec*3600)
 			# 	print o, len(open(home+indir+'/'+o+'/pacs/data/cube/'+o+'_pacs_pixel13_os8_sf7.txt','r').readlines())
 		if o in spireobj:
 			# Check 1d and cube fitting results
@@ -61,6 +69,8 @@ def obj_com(indir):
 			if os.path.exists(home+indir+'/'+o+'/spire/advanced_products/cube/'+o+'_SSWD4_lines.txt') == False:
 				err += 1
 				print 'Missing SPIRE-SSW cube fitting on ', o
+	print min(ra_std), max(ra_std)
+	print min(dec_std), max(dec_std)
 	if err == 0:
 		print 'Passed the object test!'
 
