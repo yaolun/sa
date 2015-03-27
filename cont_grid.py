@@ -1,4 +1,4 @@
-def cont_grid(indir, objlist):
+def cont_grid(indir, objlist, outdir):
     import numpy as np
     import matplotlib.pyplot as plt
     import os
@@ -47,10 +47,10 @@ def cont_grid(indir, objlist):
     fig.text(0, 0.5, r'$\mathrm{log~\nu S_{\nu}~(erg~s^{-1}~cm^{-2})}$', fontsize=20, va='center', rotation='vertical')
     fig.subplots_adjust(hspace=0,wspace=0)
 
-    fig.savefig('/Users/yaolun/test/cont_grid.pdf',format='pdf',dpi=300,bbox_inches='tight',pad_inches=0.5)
+    fig.savefig(outdir+'cont_grid.pdf',format='pdf',dpi=300,bbox_inches='tight',pad_inches=0.5)
 
 
-# indir = '/home/bettyjo/yaolun/FWD_archive/CDF_archive/'    
+# indir = '/home/bettyjo/yaolun/FWD_archive/CDF_archive_feb15/'    
 # objlist = ['B1-a','B1-c','B335','BHR71','IRAS12496','FUOri','GSS30-IRS1','IRAS03245','IRAS03301','L1455-IRS3','L1157','L1551-IRS5',\
            # 'RCrA-IRS7B','TMC1A','TMC1','TMR1','V1057Cyg','V1331Cyg','V1515Cyg','V1735Cyg','VLA1623','WL12']
            # jitter correction failed
