@@ -58,8 +58,8 @@ def cont_grid(indir, objlist):
 # sorted by Tbol
 
 # testing
-indir = '/Users/yaolun/test/'
-objlist = ['BHR71','BHR71','BHR71','BHR71','BHR71','BHR71','BHR71']
-cont_grid(indir, objlist)
+# indir = '/Users/yaolun/test/'
+# objlist = ['BHR71','BHR71','BHR71','BHR71','BHR71','BHR71','BHR71']
+# cont_grid(indir, objlist)
 # Tbol = []
     
