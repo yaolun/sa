@@ -12,7 +12,7 @@ def cont_grid(indir, objlist, outdir):
     row = int(np.ceil(len(objlist)/2.))
     col = 2
 
-    fig, axarr = plt.subplots(row, col, sharex='col', sharey='row')
+    fig, axarr = plt.subplots(row, col, sharex='col', sharey='row', figsize=(12,20))
 
     for i in range(0, row):
         for j in range(0, col):
