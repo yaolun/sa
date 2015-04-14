@@ -9,6 +9,7 @@ def pop_dia_1d(objname,plotdir,pacs=None,spire=None,single=False):
     import os
     from read_fitting import read_fitting_co
     from leastsqfit import lin_leastsqfit
+    import astropy.table as astal
     home = os.path.expanduser('~')
     
     # Constants Setup
@@ -20,16 +21,16 @@ def pop_dia_1d(objname,plotdir,pacs=None,spire=None,single=False):
     
     if (pacs != None) & (spire == None):
         [co_pacs,co_name_pacs] = read_fitting_co(pacs,3)
-        co_data = co_pacs.astype('float')
+        co_data = co_pacs
         co_data_name = co_name_pacs
     if (spire != None) & (pacs == None):
         [co_spire,co_name_spire] = read_fitting_co(spire,3)
-        co_data = co_spire.astype('float')
+        co_data = co_spire
         co_data_name = co_name_spire
     if (pacs != None) & (spire != None):
         [co_pacs,co_name_pacs] = read_fitting_co(pacs,3)
         [co_spire,co_name_spire] = read_fitting_co(spire,3)
-        co_data = np.concatenate((co_pacs,co_spire)).astype('float')
+        co_data = astal.vstack([co_pacs, co_spire])
         co_data_name = np.concatenate((co_name_pacs,co_name_spire))
     if 'co_data_name' not in locals():
         return None
@@ -37,13 +38,13 @@ def pop_dia_1d(objname,plotdir,pacs=None,spire=None,single=False):
         return None
     
     # Calculate the N/g and Eu from the data
-    v = c/(co_data[:,0]*1e-4)
-    N = 4*np.pi*co_data[:,2]*1e7*(178*pc)**2/(co_data[:,5]*h*v)
-    N_sigma = 4*np.pi*co_data[:,3]*1e7*(178*pc)**2/(co_data[:,5]*h*v)
-    x = co_data[:,4]
-    y = np.log10(N/co_data[:,6])
-    yerr_hi = np.log10((N+N_sigma)/co_data[:,6])-np.log10(N/co_data[:,6])
-    yerr_low = np.log10(N/co_data[:,6])-np.log10((N-N_sigma)/co_data[:,6])
+    v = c/(co_data['ObsWL(um)']*1e-4)
+    N = 4*np.pi*co_data['Str(W/cm2)']*1e7*(178*pc)**2/(co_data['A(s-1)']*h*v)
+    N_sigma = 4*np.pi*co_data['Sig_str(W/cm2)']*1e7*(178*pc)**2/(co_data['A(s-1)']*h*v)
+    x = co_data['E_u(K)']
+    y = np.log10(N/co_data['g'])
+    yerr_hi = np.log10((N+N_sigma)/co_data['g'])-np.log10(N/co_data['g'])
+    yerr_low = np.log10(N/co_data['g'])-np.log10((N-N_sigma)/co_data['g'])
     y_sig = y*0
     for i in range(0,len(y)):
             y_sig[i] = max(yerr_hi[i], yerr_low[i])
@@ -51,7 +52,6 @@ def pop_dia_1d(objname,plotdir,pacs=None,spire=None,single=False):
     x = x[ind]
     y = y[ind]
     y_sig = y_sig[ind]
-    
     
     # Single temperature fitting
     #
@@ -68,17 +68,20 @@ def pop_dia_1d(objname,plotdir,pacs=None,spire=None,single=False):
         data, = ax_rot_dia.plot(x,y,'o',color='DarkGreen',markersize=6)
         ax_rot_dia.errorbar(x,y,yerr=y_sig,linestyle='None',color='DarkGreen')
         
-        fit, = ax_rot_dia.plot(x,yfit,color='DarkMagenta')
-        ax_rot_dia.plot(x,yfit+yerr,'--',color='Magenta')
-        ax_rot_dia.plot(x,yfit-yerr,'--',color='Magenta')
+        fit, = ax_rot_dia.plot(x,yfit,color='DarkMagenta', linewidth=1.5)
+        ax_rot_dia.fill_between(x, yfit-yerr, yfit+yerr, facecolor='DarkMagenta', edgecolor='None', alpha=0.5)
+        # ax_rot_dia.plot(x,yfit+yerr,'--',color='Magenta')
+        # ax_rot_dia.plot(x,yfit-yerr,'--',color='Magenta')
         ax_rot_dia.set_xlabel(r'$\mathrm{E_{u}~(K)}$',fontsize=18)
         ax_rot_dia.set_ylabel(r'$\mathrm{log(\mathcal{N}_{J}/g_{J})}$',fontsize=18)
         ax_rot_dia.tick_params('both',labelsize=16,width=1.5,which='major')
         ax_rot_dia.tick_params('both',labelsize=16,width=1.5,which='minor')
         [ax_rot_dia.spines[axis].set_linewidth(1.5) for axis in ['top','bottom','left','right']]
-        ax_rot_dia.set_xlim([50,4500])
-        ax_rot_dia.legend([fit],[r'$\mathrm{T_{rot}= %8.4f \pm %8.4f~K,~\mathcal{N}= %4.3f \times 10^{%d}}$' % (t_rot,sig_t_rot,N_fit/10**np.floor(np.log10(N_fit)),np.floor(np.log10(N_fit)))],numpoints=1,loc='upper right',fontsize=14)
-        fig_rot_dia.savefig(home+plotdir+objname+'_co_rot_single.pdf',format='pdf',dpi=300)
+        ax_rot_dia.set_xlim([0,6000])
+        ax_rot_dia.set_ylim([42,50])
+        ax_rot_dia.legend([fit],[r'$\mathrm{T_{rot}= %5.1f \pm %5.1f~K,~\mathcal{N}= %3.2f \times 10^{%d}~cm^{-2}}$' % (t_rot,sig_t_rot,N_fit/10**np.floor(np.log10(N_fit)),np.floor(np.log10(N_fit)))],\
+            numpoints=1,loc='upper right',fontsize=14,framealpha=0.3)
+        fig_rot_dia.savefig(home+plotdir+objname+'_co_rot_single.pdf',format='pdf',dpi=300, bbox_inches='tight')
         ax_rot_dia.cla()
         fig_rot_dia.clf()
         print 'T_rot: %8.6f K' % t_rot
@@ -86,14 +89,14 @@ def pop_dia_1d(objname,plotdir,pacs=None,spire=None,single=False):
         
     # Two temperature fitting
     #
-        if len(x)>=6:
+        if len(x)>=8:
             best_fit = []
             s_min = []
-            for i in range(int(x[2]+1),int(x[-3]-1),10):
-                turning_pt = i
+            for i in range(3, len(x)-4):
+                turning_pt = x[i]+1
                 [yfit_warm,yerr_warm,t_rot_warm,sig_t_rot_warm,s_min_warm,yoff_warm] = lin_leastsqfit(x[x>=turning_pt], y[x>=turning_pt], y_sig[x>=turning_pt])
                 [yfit_cool,yerr_cool,t_rot_cool,sig_t_rot_cool,s_min_cool,yoff_cool] = lin_leastsqfit(x[x<turning_pt], y[x<turning_pt], y_sig[x<turning_pt])
-                best_fit.append(i)
+                best_fit.append(turning_pt)
                 s_min.append(s_min_warm+s_min_cool)
             best_fit = np.array(best_fit)
             s_min = np.array(s_min)
@@ -102,7 +105,7 @@ def pop_dia_1d(objname,plotdir,pacs=None,spire=None,single=False):
             # ax_s_min.plot(best_fit,s_min)
             # ax_s_min.set_xlabel(r'$\mathrm{Turning~points}$')
             # ax_s_min.set_ylabel(r'$\mathrm{S_{min}}$')
-            # fig_s_min.savefig(home+'/bhr71/plots/rotational_diagram/s_min.eps',format='eps',dpi=300)
+            # fig_s_min.savefig(home+'/bhr71/plots/rotational_diagram/s_min.eps',format='eps',dpi=300, bbox_inches='tight')
             # ax_s_min.cla()
             # fig_s_min.clf()
     
@@ -120,39 +123,42 @@ def pop_dia_1d(objname,plotdir,pacs=None,spire=None,single=False):
                 data, = ax_rot_dia.plot(x,y,'o',color='DarkGreen',markersize=6)
                 ax_rot_dia.errorbar(x,y,yerr=(yerr_low,yerr_hi),linestyle='None',color='DarkGreen')
     
-                fit_warm, = ax_rot_dia.plot(x[x>=turning_pt],yfit_warm,color='DarkMagenta')
-                ax_rot_dia.plot(x[x>=turning_pt],yfit_warm+yerr_warm,'--',color='Magenta')
-                ax_rot_dia.plot(x[x>=turning_pt],yfit_warm-yerr_warm,'--',color='Magenta')
+                fit_warm, = ax_rot_dia.plot(x[x>=turning_pt],yfit_warm,color='DarkMagenta', linewidth=1.5)
+                ax_rot_dia.fill_between(x[x>=turning_pt], yfit_warm-yerr_warm, yfit_warm+yerr_warm, facecolor='DarkMagenta', edgecolor='None', alpha=0.5)
+                # ax_rot_dia.plot(x[x>=turning_pt],yfit_warm+yerr_warm,'--',color='Magenta')
+                # ax_rot_dia.plot(x[x>=turning_pt],yfit_warm-yerr_warm,'--',color='Magenta')
     
-                fit_cool, = ax_rot_dia.plot(x[x<turning_pt],yfit_cool,color='Blue')
-                ax_rot_dia.plot(x[x<turning_pt],yfit_cool+yerr_cool,'--',color='MediumBlue')
-                ax_rot_dia.plot(x[x<turning_pt],yfit_cool-yerr_cool,'--',color='MediumBlue')
+                fit_cool, = ax_rot_dia.plot(x[x<turning_pt],yfit_cool,color='Blue', linewidth=1.5)
+                ax_rot_dia.fill_between(x[x<turning_pt], yfit_cool-yerr_cool, yfit_cool+yerr_cool, facecolor='Blue', edgecolor='None', alpha=0.5)
+                # ax_rot_dia.plot(x[x<turning_pt],yfit_cool+yerr_cool,'--',color='MediumBlue')
+                # ax_rot_dia.plot(x[x<turning_pt],yfit_cool-yerr_cool,'--',color='MediumBlue')
     
                 ax_rot_dia.set_xlabel(r'$\mathrm{E_{u}~(K)}$',fontsize=18)
                 ax_rot_dia.set_ylabel(r'$\mathrm{log(\mathcal{N}_{J}/g_{J})}$',fontsize=18)
                 ax_rot_dia.tick_params('both',labelsize=16,width=1.5,which='major')
                 ax_rot_dia.tick_params('both',labelsize=16,width=1.5,which='minor')
                 [ax_rot_dia.spines[axis].set_linewidth(1.5) for axis in ['top','bottom','left','right']]
-                ax_rot_dia.set_xlim([50,4500])
+                ax_rot_dia.set_xlim([0,6000])
+                ax_rot_dia.set_ylim([42,50])
     
                 ax_rot_dia.legend([fit_warm,fit_cool],\
-                    [r'$\mathrm{T_{rot,warm}= %8.4f \pm %8.4f~K,~\mathcal{N}= %4.3f \times 10^{%d}}$' % (t_rot_warm,sig_t_rot_warm,N_warm_fit/10**np.floor(np.log10(N_warm_fit)),np.floor(np.log10(N_warm_fit))),\
-                         r'$\mathrm{T_{rot,cool}~~= %8.4f \pm %8.4f~K,~\mathcal{N}= %4.3f \times 10^{%d}}$' % (t_rot_cool,sig_t_rot_cool,N_cool_fit/10**np.floor(np.log10(N_cool_fit)),np.floor(np.log10(N_cool_fit)))],\
-                         numpoints=1,loc='upper right',fontsize=14)
-                fig_rot_dia.savefig(home+plotdir+objname+'_co_rot_two.pdf',format='pdf',dpi=300)
+                    [r'$\mathrm{T_{rot,warm}= %5.1f \pm %5.1f~K,~\mathcal{N}= %3.2f \times 10^{%d}~cm^{-2}}$' % (t_rot_warm,sig_t_rot_warm,N_warm_fit/10**np.floor(np.log10(N_warm_fit)),np.floor(np.log10(N_warm_fit))),\
+                         r'$\mathrm{T_{rot,cool}~~= %5.1f \pm %5.1f~K,~\mathcal{N}= %3.2f \times 10^{%d}~cm^{-2}}$' % (t_rot_cool,sig_t_rot_cool,N_cool_fit/10**np.floor(np.log10(N_cool_fit)),np.floor(np.log10(N_cool_fit)))],\
+                         numpoints=1,loc='upper right',fontsize=14,framealpha=0.3)
+                fig_rot_dia.savefig(home+plotdir+objname+'_co_rot_two.pdf',format='pdf',dpi=300, bbox_inches='tight')
                 ax_rot_dia.cla()
                 fig_rot_dia.clf()
-                print 'T_rot(warm): %8.6f K, T_rot(cool): %8.6f K' % (t_rot_warm,t_rot_cool)
+                print 'T_rot(warm): %5.1f K, T_rot(cool): %5.1f K' % (t_rot_warm,t_rot_cool)
             # Three temperature fitting
             #
-            if spire != None and len(x) > 9:
+            if spire != None and len(x) > 12:
                 best_fit = []
                 s_min = []
-                for i in range(int(x[2]+1),int(x[-6]-1),10):
-                    for j in range(int(x[5]+1),int(x[-3]-1),10):
-                        if len(x[(x>=i) & (x<=j)])< 3:
-                            break
-                        turning_pt = [i,j]
+                for i in range(3, len(x)-4):
+                    for j in range(3, len(x)-4):
+                        if (j-i) <4:
+                            continue
+                        turning_pt = [x[i]+1,x[j]+1]
                         [yfit_hot,yerr_hot,t_rot_hot,sig_t_rot_hot,s_min_hot,yoff_hot] = lin_leastsqfit(x[x>=turning_pt[1]], y[x>=turning_pt[1]], y_sig[x>=turning_pt[1]])
                         [yfit_warm,yerr_warm,t_rot_warm,sig_t_rot_warm,s_min_warm,yoff_warm] = lin_leastsqfit(x[(x<turning_pt[1]) & (x>=turning_pt[0])], y[(x<turning_pt[1]) & (x>=turning_pt[0])], y_sig[(x<turning_pt[1]) & (x>=turning_pt[0])])
                         [yfit_cool,yerr_cool,t_rot_cool,sig_t_rot_cool,s_min_cool,yoff_cool] = lin_leastsqfit(x[x<turning_pt[0]], y[x<turning_pt[0]],y_sig[x<turning_pt[0]])
@@ -165,7 +171,8 @@ def pop_dia_1d(objname,plotdir,pacs=None,spire=None,single=False):
                 [yfit_hot,yerr_hot,t_rot_hot,sig_t_rot_hot,s_min_hot,yoff_hot] = lin_leastsqfit(x[x>=turning_pt[1]], y[x>=turning_pt[1]], y_sig[x>=turning_pt[1]])
                 [yfit_warm,yerr_warm,t_rot_warm,sig_t_rot_warm,s_min_warm,yoff_warm] = lin_leastsqfit(x[(x<turning_pt[1]) & (x>=turning_pt[0])], y[(x<turning_pt[1]) & (x>=turning_pt[0])], y_sig[(x<turning_pt[1]) & (x>=turning_pt[0])])
                 [yfit_cool,yerr_cool,t_rot_cool,sig_t_rot_cool,s_min_cool,yoff_cool] = lin_leastsqfit(x[x<turning_pt[0]], y[x<turning_pt[0]],y_sig[x<turning_pt[0]])
-                
+                s_min_triple = s_min_cool+s_min_warm+s_min_hot
+
                 if (s_min_cool+s_min_warm+s_min_hot) < s_min_double:
                     Q_hot  = float(k*t_rot_hot/h/c/B)
                     Q_warm = float(k*t_rot_warm/h/c/B)
@@ -178,21 +185,25 @@ def pop_dia_1d(objname,plotdir,pacs=None,spire=None,single=False):
                     data, = ax_rot_dia.plot(x,y,'o',color='DarkGreen',markersize=6)
                     ax_rot_dia.errorbar(x,y,yerr=y_sig,linestyle='None',color='DarkGreen')
                     
-                    fit_hot,  = ax_rot_dia.plot(x[x>turning_pt[1]],yfit_hot,color='Red')
-                    ax_rot_dia.plot(x[x>turning_pt[1]],yfit_hot+yerr_hot,'--',color='Tomato')
-                    ax_rot_dia.plot(x[x>turning_pt[1]],yfit_hot-yerr_hot,'--',color='Tomato')
+                    fit_hot,  = ax_rot_dia.plot(x[x>turning_pt[1]],yfit_hot,color='Red', linewidth=1.5)
+                    ax_rot_dia.fill_between(x[x>turning_pt[1]], yfit_hot-yerr_hot, yfit_hot+yerr_hot, facecolor='Red', edgecolor='None', alpha=0.5)
+                    # ax_rot_dia.plot(x[x>turning_pt[1]],yfit_hot+yerr_hot,'--',color='Tomato')
+                    # ax_rot_dia.plot(x[x>turning_pt[1]],yfit_hot-yerr_hot,'--',color='Tomato')
         
-                    fit_warm, = ax_rot_dia.plot(x[(x>=turning_pt[0]) & (x<turning_pt[1])],yfit_warm,color='DarkMagenta')
-                    ax_rot_dia.plot(x[(x>=turning_pt[0]) & (x<turning_pt[1])],yfit_warm+yerr_warm,'--',color='Magenta')
-                    ax_rot_dia.plot(x[(x>=turning_pt[0]) & (x<turning_pt[1])],yfit_warm-yerr_warm,'--',color='Magenta')
+                    fit_warm, = ax_rot_dia.plot(x[(x>=turning_pt[0]) & (x<turning_pt[1])],yfit_warm,color='DarkMagenta', linewidth=1.5)
+                    ax_rot_dia.fill_between(x[(x>=turning_pt[0]) & (x<turning_pt[1])], yfit_warm-yerr_warm, yfit_warm+yerr_warm, facecolor='DarkMagenta', edgecolor='None', alpha=0.5)
+                    # ax_rot_dia.plot(x[(x>=turning_pt[0]) & (x<turning_pt[1])],yfit_warm+yerr_warm,'--',color='Magenta')
+                    # ax_rot_dia.plot(x[(x>=turning_pt[0]) & (x<turning_pt[1])],yfit_warm-yerr_warm,'--',color='Magenta')
         
-                    fit_cool, = ax_rot_dia.plot(x[x<turning_pt[0]],yfit_cool,color='Blue')
-                    ax_rot_dia.plot(x[x<turning_pt[0]],yfit_cool+yerr_cool,'--',color='MediumBlue')
-                    ax_rot_dia.plot(x[x<turning_pt[0]],yfit_cool-yerr_cool,'--',color='MediumBlue')
+                    fit_cool, = ax_rot_dia.plot(x[x<turning_pt[0]],yfit_cool,color='Blue', linewidth=1.5)
+                    ax_rot_dia.fill_between(x[x<turning_pt[0]], yfit_cool-yerr_cool, yfit_cool+yerr_cool, facecolor='Blue', edgecolor='None', alpha=0.5)
+                    # ax_rot_dia.plot(x[x<turning_pt[0]],yfit_cool+yerr_cool,'--',color='MediumBlue')
+                    # ax_rot_dia.plot(x[x<turning_pt[0]],yfit_cool-yerr_cool,'--',color='MediumBlue')
         
                     ax_rot_dia.set_xlabel(r'$\mathrm{E_{u}~(K)}$',fontsize=18)
                     ax_rot_dia.set_ylabel(r'$\mathrm{log(\mathcal{N}_{J}/g_{J})}$',fontsize=18)
-                    ax_rot_dia.set_xlim([50,4500])
+                    ax_rot_dia.set_xlim([0,6000])
+                    ax_rot_dia.set_ylim([42,50])
                     
                     ax_rot_dia.tick_params('both',labelsize=16,width=1.5,which='major')
                     ax_rot_dia.tick_params('both',labelsize=16,width=1.5,which='minor')
@@ -200,75 +211,93 @@ def pop_dia_1d(objname,plotdir,pacs=None,spire=None,single=False):
                     # ax_rot_dia.minorticks_on()
 
                     ax_rot_dia.legend([fit_hot,fit_warm,fit_cool],\
-                        [r'$\mathrm{T_{rot,warm}= %8.4f \pm %8.4f~K,~\mathcal{N}= %4.3f \times 10^{%d}}$' % (t_rot_hot,sig_t_rot_hot,N_hot_fit/10**np.floor(np.log10(N_hot_fit)),np.floor(np.log10(N_hot_fit))),\
-                         r'$\mathrm{T_{rot,cool}~~= %8.4f \pm %8.4f~K,~\mathcal{N}= %4.3f \times 10^{%d}}$' % (t_rot_warm,sig_t_rot_warm,N_warm_fit/10**np.floor(np.log10(N_warm_fit)),np.floor(np.log10(N_warm_fit))),\
-                         r'$\mathrm{T_{rot,cold}~~=~~ %8.4f \pm %8.4f~K,~\mathcal{N}= %4.3f \times 10^{%d}}$' % (t_rot_cool,sig_t_rot_cool,N_cool_fit/10**np.floor(np.log10(N_cool_fit)),np.floor(np.log10(N_cool_fit)))],numpoints=1,loc='upper right',fontsize=14)
-                    fig_rot_dia.savefig(home+plotdir+objname+'_co_rot_three.pdf',format='pdf',dpi=300)
+                        [r'$\mathrm{T_{rot,warm}= %5.1f \pm %5.1f~K,~\mathcal{N}= %3.2f \times 10^{%d}~cm^{-2}}$' % (t_rot_hot,sig_t_rot_hot,N_hot_fit/10**np.floor(np.log10(N_hot_fit)),np.floor(np.log10(N_hot_fit))),\
+                         r'$\mathrm{T_{rot,cool}~~= %5.1f \pm %5.1f~K,~\mathcal{N}= %3.2f \times 10^{%d}~cm^{-2}}$' % (t_rot_warm,sig_t_rot_warm,N_warm_fit/10**np.floor(np.log10(N_warm_fit)),np.floor(np.log10(N_warm_fit))),\
+                         r'$\mathrm{T_{rot,cold}~~=~~ %5.1f \pm %5.1f~K,~\mathcal{N}= %3.2f \times 10^{%d}~cm^{-2}}$' % (t_rot_cool,sig_t_rot_cool,N_cool_fit/10**np.floor(np.log10(N_cool_fit)),np.floor(np.log10(N_cool_fit)))],\
+                         numpoints=1,loc='upper right',fontsize=14,framealpha=0.3)
+                    fig_rot_dia.savefig(home+plotdir+objname+'_co_rot_three.pdf',format='pdf',dpi=300, bbox_inches='tight')
                     ax_rot_dia.cla()
                     fig_rot_dia.clf()
-                    print 'T_rot(hot): %8.6f K, T_rot(warm): %8.6f K, T_rot(cool): %8.6f K' % (t_rot_hot,t_rot_warm,t_rot_cool)
-            # four temperature fitting
-            # if (spire != None) and (len(x) > 12):
-            #     best_fit = []
-            #     s_min = []
-            #     for i in range(int(x[2]+1),int(x[-6]-1),10):
-            #         for j in range(int(x[5]+1),int(x[-3]-1),10):
-            #             if len(x[(x>=i) & (x<=j)])< 3:
-            #                 break
-            #             turning_pt = [i,j]
-            #             [yfit_hot,yerr_hot,t_rot_hot,sig_t_rot_hot,s_min_hot,yoff_hot] = lin_leastsqfit(x[x>=turning_pt[1]], y[x>=turning_pt[1]], y_sig[x>=turning_pt[1]])
-            #             [yfit_warm,yerr_warm,t_rot_warm,sig_t_rot_warm,s_min_warm,yoff_warm] = lin_leastsqfit(x[(x<turning_pt[1]) & (x>=turning_pt[0])], y[(x<turning_pt[1]) & (x>=turning_pt[0])], y_sig[(x<turning_pt[1]) & (x>=turning_pt[0])])
-            #             [yfit_cool,yerr_cool,t_rot_cool,sig_t_rot_cool,s_min_cool,yoff_cool] = lin_leastsqfit(x[x<turning_pt[0]], y[x<turning_pt[0]],y_sig[x<turning_pt[0]])
-            #             best_fit.append(turning_pt)
-            #             s_min.append(s_min_hot+s_min_warm+s_min_cool)
+                    print 'T_rot(hot): %5.1f K, T_rot(warm): %5.1f K, T_rot(cool): %5.1f K' % (t_rot_hot,t_rot_warm,t_rot_cool)
+                # four temperature fitting
+                if (spire != None) and (len(x) > 16):
+                    best_fit = []
+                    s_min = []
+                    for i in range(3, len(x)-4):
+                        for j in range(3, len(x)-4):
+                            for jj in range(3, len(x)-4):
+                                if (j-i<4) or (jj-j<4) or (jj-i<8):
+                                    continue
+                                turning_pt = [x[i]+1, x[j]+1, x[jj]+1]
+                                [yfit_hot,yerr_hot,t_rot_hot,sig_t_rot_hot,s_min_hot,yoff_hot] = lin_leastsqfit(x[x>=turning_pt[2]], y[x>=turning_pt[2]], y_sig[x>=turning_pt[2]])
+                                [yfit_warm,yerr_warm,t_rot_warm,sig_t_rot_warm,s_min_warm,yoff_warm] = lin_leastsqfit(x[(x<turning_pt[2]) & (x>=turning_pt[1])], y[(x<turning_pt[2]) & (x>=turning_pt[1])], y_sig[(x<turning_pt[2]) & (x>=turning_pt[1])])
+                                [yfit_cool,yerr_cool,t_rot_cool,sig_t_rot_cool,s_min_cool,yoff_cool] = lin_leastsqfit(x[(x<turning_pt[1]) & (x>=turning_pt[0])], y[(x<turning_pt[1]) & (x>=turning_pt[0])], y_sig[(x<turning_pt[1]) & (x>=turning_pt[0])])
+                                [yfit_cold,yerr_cold,t_rot_cold,sig_t_rot_cold,s_min_cold,yoff_cold] = lin_leastsqfit(x[x<turning_pt[0]], y[x<turning_pt[0]],y_sig[x<turning_pt[0]])
+                                best_fit.append(turning_pt)
+                                s_min.append(s_min_hot+s_min_warm+s_min_cool+s_min_cold)
+                            
+                    best_fit = np.array(best_fit)
+                    s_min = np.array(s_min)
+                    turning_pt = [np.mean(best_fit[s_min == min(s_min),0]),np.mean(best_fit[s_min == min(s_min),1]),np.mean(best_fit[s_min == min(s_min),2])]
+                    [yfit_hot,yerr_hot,t_rot_hot,sig_t_rot_hot,s_min_hot,yoff_hot] = lin_leastsqfit(x[x>=turning_pt[2]], y[x>=turning_pt[2]], y_sig[x>=turning_pt[2]])
+                    [yfit_warm,yerr_warm,t_rot_warm,sig_t_rot_warm,s_min_warm,yoff_warm] = lin_leastsqfit(x[(x<turning_pt[2]) & (x>=turning_pt[1])], y[(x<turning_pt[2]) & (x>=turning_pt[1])], y_sig[(x<turning_pt[2]) & (x>=turning_pt[1])])
+                    [yfit_cool,yerr_cool,t_rot_cool,sig_t_rot_cool,s_min_cool,yoff_cool] = lin_leastsqfit(x[(x<turning_pt[1]) & (x>=turning_pt[0])], y[(x<turning_pt[1]) & (x>=turning_pt[0])], y_sig[(x<turning_pt[1]) & (x>=turning_pt[0])])
+                    [yfit_cold,yerr_cold,t_rot_cold,sig_t_rot_cold,s_min_cold,yoff_cold] = lin_leastsqfit(x[x<turning_pt[0]], y[x<turning_pt[0]],y_sig[x<turning_pt[0]])
+                    
+                    if (s_min_cold+s_min_cool+s_min_warm+s_min_hot) < s_min_triple:
+                        Q_hot  = float(k*t_rot_hot/h/c/B)
+                        Q_warm = float(k*t_rot_warm/h/c/B)
+                        Q_cool = float(k*t_rot_cool/h/c/B)
+                        Q_cold = float(k*t_rot_cold/h/c/B)
+                        N_hot_fit  = Q_hot *10**(float(yoff_hot))
+                        N_warm_fit = Q_warm*10**(float(yoff_warm))
+                        N_cool_fit = Q_cool*10**(float(yoff_cool))
+                        N_cold_fit = Q_cold*10**(float(yoff_cold))
+                        fig_rot_dia = plt.figure()
+                        ax_rot_dia = fig_rot_dia.add_subplot(111)
+                        data, = ax_rot_dia.plot(x,y,'o',color='DarkGreen',markersize=6)
+                        ax_rot_dia.errorbar(x,y,yerr=y_sig,linestyle='None',color='DarkGreen')
                         
-            #     best_fit = np.array(best_fit)
-            #     s_min = np.array(s_min)
-            #     turning_pt = [np.mean(best_fit[s_min == min(s_min),0]),np.mean(best_fit[s_min == min(s_min),1])]
-            #     [yfit_hot,yerr_hot,t_rot_hot,sig_t_rot_hot,s_min_hot,yoff_hot] = lin_leastsqfit(x[x>=turning_pt[1]], y[x>=turning_pt[1]], y_sig[x>=turning_pt[1]])
-            #     [yfit_warm,yerr_warm,t_rot_warm,sig_t_rot_warm,s_min_warm,yoff_warm] = lin_leastsqfit(x[(x<turning_pt[1]) & (x>=turning_pt[0])], y[(x<turning_pt[1]) & (x>=turning_pt[0])], y_sig[(x<turning_pt[1]) & (x>=turning_pt[0])])
-            #     [yfit_cool,yerr_cool,t_rot_cool,sig_t_rot_cool,s_min_cool,yoff_cool] = lin_leastsqfit(x[x<turning_pt[0]], y[x<turning_pt[0]],y_sig[x<turning_pt[0]])
-                
-            #     if (s_min_cool+s_min_warm+s_min_hot) < s_min_double:
-            #         Q_hot  = float(k*t_rot_hot/h/c/B)
-            #         Q_warm = float(k*t_rot_warm/h/c/B)
-            #         Q_cool = float(k*t_rot_cool/h/c/B)
-            #         N_hot_fit  = Q_hot *10**(float(yoff_hot))
-            #         N_warm_fit = Q_warm*10**(float(yoff_warm))
-            #         N_cool_fit = Q_cool*10**(float(yoff_cool))
-            #         fig_rot_dia = plt.figure()
-            #         ax_rot_dia = fig_rot_dia.add_subplot(111)
-            #         data, = ax_rot_dia.plot(x,y,'o',color='DarkGreen',markersize=6)
-            #         ax_rot_dia.errorbar(x,y,yerr=y_sig,linestyle='None',color='DarkGreen')
-                    
-            #         fit_hot,  = ax_rot_dia.plot(x[x>turning_pt[1]],yfit_hot,color='Red')
-            #         ax_rot_dia.plot(x[x>turning_pt[1]],yfit_hot+yerr_hot,'--',color='Tomato')
-            #         ax_rot_dia.plot(x[x>turning_pt[1]],yfit_hot-yerr_hot,'--',color='Tomato')
-        
-            #         fit_warm, = ax_rot_dia.plot(x[(x>=turning_pt[0]) & (x<turning_pt[1])],yfit_warm,color='DarkMagenta')
-            #         ax_rot_dia.plot(x[(x>=turning_pt[0]) & (x<turning_pt[1])],yfit_warm+yerr_warm,'--',color='Magenta')
-            #         ax_rot_dia.plot(x[(x>=turning_pt[0]) & (x<turning_pt[1])],yfit_warm-yerr_warm,'--',color='Magenta')
-        
-            #         fit_cool, = ax_rot_dia.plot(x[x<turning_pt[0]],yfit_cool,color='Blue')
-            #         ax_rot_dia.plot(x[x<turning_pt[0]],yfit_cool+yerr_cool,'--',color='MediumBlue')
-            #         ax_rot_dia.plot(x[x<turning_pt[0]],yfit_cool-yerr_cool,'--',color='MediumBlue')
-        
-            #         ax_rot_dia.set_xlabel(r'$\mathrm{E_{u}~(K)}$',fontsize=18)
-            #         ax_rot_dia.set_ylabel(r'$\mathrm{log(\mathcal{N}_{J}/g_{J})}$',fontsize=18)
-            #         ax_rot_dia.set_xlim([50,4500])
-                    
-            #         ax_rot_dia.tick_params('both',labelsize=16,width=1.5,which='major')
-            #         ax_rot_dia.tick_params('both',labelsize=16,width=1.5,which='minor')
-            #         # ax_rot_dia.minorticks_on()
+                        fit_hot,  = ax_rot_dia.plot(x[x>turning_pt[2]],yfit_hot,linewidth=1.5, color='Red')
+                        ax_rot_dia.fill_between(x[x>turning_pt[2]], yfit_hot-yerr_hot, yfit_hot+yerr_hot, color='Red', edgecolor='None', alpha=0.5)
+                        # ax_rot_dia.plot(x[x>turning_pt[2]],yfit_hot+yerr_hot,'--',color='Tomato')
+                        # ax_rot_dia.plot(x[x>turning_pt[2]],yfit_hot-yerr_hot,'--',color='Tomato')
+            
+                        fit_warm, = ax_rot_dia.plot(x[(x>=turning_pt[1]) & (x<turning_pt[2])],yfit_warm,linewidth=1.5, color='Orange')
+                        ax_rot_dia.fill_between(x[(x>=turning_pt[1]) & (x<turning_pt[2])], yfit_warm-yerr_warm, yfit_warm+yerr_warm, color='Orange', edgecolor='None', alpha=0.5)
+                        # ax_rot_dia.plot(x[(x>=turning_pt[1]) & (x<turning_pt[2])],yfit_warm+yerr_warm,'--',color='Magenta')
+                        # ax_rot_dia.plot(x[(x>=turning_pt[1]) & (x<turning_pt[2])],yfit_warm-yerr_warm,'--',color='Magenta')
+            
+                        fit_cool, = ax_rot_dia.plot(x[(x>=turning_pt[0]) & (x<turning_pt[1])],yfit_cool,linewidth=1.5, color='DarkMagenta')
+                        ax_rot_dia.fill_between(x[(x>=turning_pt[0]) & (x<turning_pt[1])], yfit_cool-yerr_cool, yfit_cool+yerr_cool, color='DarkMagenta', edgecolor='None', alpha=0.5)
+                        # ax_rot_dia.plot(x[(x>=turning_pt[0]) & (x<turning_pt[1])],yfit_cool+yerr_cool,'--',color='MediumBlue')
+                        # ax_rot_dia.plot(x[(x>=turning_pt[0]) & (x<turning_pt[1])],yfit_cool-yerr_cool,'--',color='MediumBlue')
 
-            #         ax_rot_dia.legend([fit_hot,fit_warm,fit_cool],\
-            #             [r'$\mathrm{T_{rot,warm}= %8.4f \pm %8.4f~K,~\mathcal{N}= %4.3f \times 10^{%d}}$' % (t_rot_hot,sig_t_rot_hot,N_hot_fit/10**np.floor(np.log10(N_hot_fit)),np.floor(np.log10(N_hot_fit))),\
-            #              r'$\mathrm{T_{rot,cool}~~= %8.4f \pm %8.4f~K,~\mathcal{N}= %4.3f \times 10^{%d}}$' % (t_rot_warm,sig_t_rot_warm,N_warm_fit/10**np.floor(np.log10(N_warm_fit)),np.floor(np.log10(N_warm_fit))),\
-            #              r'$\mathrm{T_{rot,cold}~~=~~ %8.4f \pm %8.4f~K,~\mathcal{N}= %4.3f \times 10^{%d}}$' % (t_rot_cool,sig_t_rot_cool,N_cool_fit/10**np.floor(np.log10(N_cool_fit)),np.floor(np.log10(N_cool_fit)))],numpoints=1,loc='upper right',fontsize=14)
-            #         fig_rot_dia.savefig(home+plotdir+objname+'_co_rot_three.eps',format='eps',dpi=300)
-            #         ax_rot_dia.cla()
-            #         fig_rot_dia.clf()
-            #         print 'T_rot(hot): %8.6f K, T_rot(warm): %8.6f K, T_rot(cool): %8.6f K' % (t_rot_hot,t_rot_warm,t_rot_cool)
+                        fit_cold, = ax_rot_dia.plot(x[x<turning_pt[0]],yfit_cold,linewidth=1.5, color='Blue')
+                        ax_rot_dia.fill_between(x[x<turning_pt[0]], yfit_cold-yerr_cold, yfit_cold+yerr_cold, color='Blue', edgecolor='None', alpha=0.5)
+                        # ax_rot_dia.plot(x[x<turning_pt[0]],yfit_cold+yerr_cold,'--',color='MediumBlue')
+                        # ax_rot_dia.plot(x[x<turning_pt[0]],yfit_cold-yerr_cold,'--',color='MediumBlue')                        
+            
+                        ax_rot_dia.set_xlabel(r'$\mathrm{E_{u}~(K)}$',fontsize=18)
+                        ax_rot_dia.set_ylabel(r'$\mathrm{log(\mathcal{N}_{J}/g_{J})}$',fontsize=18)
+                        ax_rot_dia.set_xlim([0,6000])
+                        ax_rot_dia.set_ylim([42,50])
+                        
+                        ax_rot_dia.tick_params('both',labelsize=16,width=1.5,which='major')
+                        ax_rot_dia.tick_params('both',labelsize=16,width=1.5,which='minor')
+                        [ax_rot_dia.spines[axis].set_linewidth(1.5) for axis in ['top','bottom','left','right']]
+                        # ax_rot_dia.minorticks_on()
+
+                        ax_rot_dia.legend([fit_hot,fit_warm,fit_cool,fit_cold],\
+                            [r'$\mathrm{T_{rot,hot}= %5.1f \pm %5.1f~K,~\mathcal{N}= %3.2f \times 10^{%d}~cm^{-2}}$' % (t_rot_hot,sig_t_rot_hot,N_hot_fit/10**np.floor(np.log10(N_hot_fit)),np.floor(np.log10(N_hot_fit))),\
+                             r'$\mathrm{T_{rot,warm}~~= %5.1f \pm %5.1f~K,~\mathcal{N}= %3.2f \times 10^{%d}~cm^{-2}}$' % (t_rot_warm,sig_t_rot_warm,N_warm_fit/10**np.floor(np.log10(N_warm_fit)),np.floor(np.log10(N_warm_fit))),\
+                             r'$\mathrm{T_{rot,cool}~~=~~ %5.1f \pm %5.1f~K,~\mathcal{N}= %3.2f \times 10^{%d}~cm^{-2}}$' % (t_rot_cool,sig_t_rot_cool,N_cool_fit/10**np.floor(np.log10(N_cool_fit)),np.floor(np.log10(N_cool_fit))),\
+                             r'$\mathrm{T_{rot,cold}~~=~~ %5.1f \pm %5.1f~K,~\mathcal{N}= %3.2f \times 10^{%d}~cm^{-2}}$' % (t_rot_cold,sig_t_rot_cold,N_cold_fit/10**np.floor(np.log10(N_cold_fit)),np.floor(np.log10(N_cold_fit)))],\
+                             numpoints=1,loc='upper right',fontsize=14,framealpha=0.3)
+                        fig_rot_dia.savefig(home+plotdir+objname+'_co_rot_four.pdf',format='pdf',dpi=300, bbox_inches='tight')
+                        ax_rot_dia.cla()
+                        fig_rot_dia.clf()
+                        print 'T_rot(hot): %8.6f K, T_rot(warm): %8.6f K, T_rot(cool): %8.6f K, T_rot(cold): %8.6f K' % (t_rot_hot,t_rot_warm,t_rot_cool,t_rot_cold)
 
 
 def pop_dia_h2o_1d(objname,plotdir,pacs=None,spire=None):
@@ -370,7 +399,7 @@ def pop_dia_h2o_1d(objname,plotdir,pacs=None,spire=None):
         print '%s %8.6f %6.2f %8.6e %8.6e' % (water_name[t],water_data[t,0],x[t],y[t],y_sig[t])
 
     if len(water_name) <= 2:
-        fig_rot_dia.savefig(home+plotdir+objname+'_h2o_rot_dia.eps',format='eps',dpi=300)
+        fig_rot_dia.savefig(home+plotdir+objname+'_h2o_rot_dia.eps',format='eps',dpi=300, bbox_inches='tight')
         ax_rot_dia.cla()
         fig_rot_dia.clf()
         return None
@@ -395,7 +424,7 @@ def pop_dia_h2o_1d(objname,plotdir,pacs=None,spire=None):
         lg_fit = ax_rot_dia.legend([fit],[r'$\mathrm{T_{rot}= %8.4f \pm %8.6f~K,~\mathcal{N}= %.3e~g/cm^{2}}$' % (t_rot,sig_t_rot,N_fit)],numpoints=1,loc='lower left',fontsize=12)
         lg_data = ax_rot_dia.legend([oh2o,ph2o],[r'$\mathrm{o-H_{2}O}$',r'$\mathrm{p-H_{2}O}$'],loc='lower right',fontsize=14,numpoints=1)
         plt.gca().add_artist(lg_fit)
-        fig_rot_dia.savefig(home+plotdir+objname+'_h2o_rot_single.eps',format='eps',dpi=300)
+        fig_rot_dia.savefig(home+plotdir+objname+'_h2o_rot_single.eps',format='eps',dpi=300, bbox_inches='tight')
         ax_rot_dia.cla()
         fig_rot_dia.clf()
         print 'T_rot: %8.6f K' % t_rot
@@ -409,24 +438,24 @@ from read_fitting import read_fitting_co
 from leastsqfit import lin_leastsqfit
 home = os.path.expanduser('~')
 
-pacs = '/bhr71/fitting/unc_test/pacs/advanced_products/BHR71_centralSpaxel_PointSourceCorrected_CorrectedYES_trim_lines.txt'
-spire = '/bhr71/fitting/1107/spire/advanced_products/BHR71_spire_corrected_lines.txt'
+pacs = '/bhr71/fitting/latest/pacs/advanced_products/BHR71_centralSpaxel_PointSourceCorrected_CorrectedYES_trim_lines.txt'
+spire = '/bhr71/fitting/latest/spire/advanced_products/BHR71_spire_corrected_lines.txt'
 pop_dia_1d('BHR71','/bhr71/plots/',pacs=pacs,spire=spire)
-pacs_cube = '/bhr71/fitting/unc_test/pacs/advanced_products/cube/BHR71_pacs_pixel'
-# pacs_cube = [pacs_cube+str(i)+'_os8_sf7_lines.txt' for i in range(1,26)]
-for i in range(1,26):
-    print i
-    pop_dia_1d('BHR71_pacs_pixel'+str(i),'/bhr71/plots/',pacs=pacs_cube+str(i)+'_os8_sf7_lines.txt')
+pacs_cube = '/bhr71/fitting/latest/pacs/advanced_products/cube/BHR71_pacs_pixel'
+# # pacs_cube = [pacs_cube+str(i)+'_os8_sf7_lines.txt' for i in range(1,26)]
+# for i in range(1,26):
+#     print i
+#     pop_dia_1d('BHR71_pacs_pixel'+str(i),'/bhr71/plots/',pacs=pacs_cube+str(i)+'_os8_sf7_lines.txt')
 
 # pop_dia_h2o_1d('BHR71','/bhr71/plots/',pacs=pacs,spire=spire)
 # <codecell>
 
 
 
-pacs = '/bhr71/fitting/unc_test/pacs/advanced_products/BHR71_centralSpaxel_PointSourceCorrected_CorrectedYES_trim_lines.txt'
-[co_pacs,co_name_pacs] = read_fitting_co(pacs,3)
-spire = '/bhr71/fitting/1107/spire/advanced_products/BHR71_spire_corrected_lines.txt'
-[co_spire,co_name_spire] = read_fitting_co(spire,3)
+# pacs = '/bhr71/fitting/latest/pacs/advanced_products/BHR71_centralSpaxel_PointSourceCorrected_CorrectedYES_trim_lines.txt'
+# [co_pacs,co_name_pacs] = read_fitting_co(pacs,3)
+# spire = '/bhr71/fitting/latest/spire/advanced_products/BHR71_spire_corrected_lines.txt'
+# [co_spire,co_name_spire] = read_fitting_co(spire,3)
 
 # # <codecell>
 

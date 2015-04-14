@@ -2,6 +2,13 @@ import numpy as np
 from astropy.io import ascii
 import os
 home = os.path.expanduser('~')
+# Header of the 1-D fitting results
+# =========================================================================================
+# Line,     LabWL(um),      ObsWL(um),      Sig_Cen(um),    Str(W/cm2),     Sig_str(W/cm2)
+# FWHM(um), Sig_FWHM(um),   Base(W/cm2/um), SNR,            E_u(K),         A(s-1)        
+# g,        RA(deg),        Dec(deg),       Blend,          Validity
+# =========================================================================================
+
 def read_fitting(filepath,noiselevel,obj=False,cube=False):
     data = ascii.read(home+filepath)
     # data = np.genfromtxt(home+filepath, skip_header=1, dtype=str)
@@ -10,38 +17,27 @@ def read_fitting(filepath,noiselevel,obj=False,cube=False):
     data = data[(data['SNR']>noiselevel) & (data['Validity']!=0) & (data['Str(W/cm2)']!=0)]
     return data, header
 def read_fitting_co(filepath,noiselevel,save_txt=True):
+    from astropy.io import ascii
     co_label = []
-    upper_level = 40
+    upper_level = 48
     lower_level = 4
     for level in range(0,upper_level-lower_level):
         co_label.append('CO'+str(lower_level+level)+'-'+str(lower_level+level-1))
-    data = np.genfromtxt(home+filepath, skip_header=1, dtype=str)
+    data = ascii.read(home+filepath)
+    # data = np.genfromtxt(home+filepath, skip_header=1, dtype=str)
     # header = data[0]
     # data = data[1:,:]
-    header = []
-    data = data
+    header = data.colnames
+    data = data[(data['SNR']>noiselevel) & (data['Validity']!=0) & (data['Str(W/cm2)']>0)]
     #data = data.astype(float)
-    detection = np.empty(len(data[0,:]))
-    i=0
-    while i != len(data[:,0]):
-        if abs(float(data[i,9])) < noiselevel:
-            data = np.delete(data, i, 0)
-        else:
-            i += 1
-    name = data[:,0]
-    data = data[:,1:]#.astype(float)
-    co_data = []
-    co_data_name = []
-    for line in name:
-        line = str(line)
-        if (line in co_label) == True:
+
+    ind_co = []
+    for i in range(0, len(data['Line'])):
+        if data['Line'][i] in co_label:
             #wl, wl_sig, flux, flux_sig, E_u, A, g
-            if np.reshape(data[np.where(name == line),3],1).astype('float') > 0:
-                co_data_name.append(line)
-                co_data.append([data[np.where(name == line),1],data[np.where(name == line),2],data[np.where(name == line),3],data[np.where(name == line),4],data[np.where(name == line),9],data[np.where(name == line),10],data[np.where(name == line),11]])
-    co_data = np.array(co_data)
-    co_data = co_data.reshape(len(co_data_name),7)
-    return co_data, co_data_name
+            ind_co.append(i)
+    co_data = data[ind_co]
+    return co_data, co_data['Line']
 def read_fitting_h2o(filepath,noiselevel,positive=False):
     label = ['p-H2O','o-H2O']
     data = np.genfromtxt(home+filepath, skip_header=1, dtype=str)
