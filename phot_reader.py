@@ -1,4 +1,4 @@
-def phot_reader(datadir, objname):
+def phot_reader(datadir, objname, pacs=True, spire=True):
 	import numpy as np
 	from astropy.io import ascii
 
@@ -7,10 +7,12 @@ def phot_reader(datadir, objname):
 	wave = []
 	flux = [] 	# in Jy
 
-	wave.extend((data['wavelength'][data['Name'] == 'PACS']).data.tolist())
-	wave.extend((data['wavelength'][data['Name'] == 'SPIRE']).data.tolist())
-	flux.extend((data['flux(Jy)'][data['Name'] == 'PACS']).data.tolist())
-	flux.extend((data['flux(Jy)'][data['Name'] == 'SPIRE']).data.tolist())
+	if pacs == True:
+		wave.extend((data['wavelength'][data['Name'] == 'PACS']).data.tolist())
+		flux.extend((data['flux(Jy)'][data['Name'] == 'PACS']).data.tolist())
+	if spire == True:
+		wave.extend((data['wavelength'][data['Name'] == 'SPIRE']).data.tolist())
+		flux.extend((data['flux(Jy)'][data['Name'] == 'SPIRE']).data.tolist())
 	# check duplicate wavelength
 	import collections
 	for x, y in collections.Counter(wave).items():
