@@ -22,13 +22,19 @@ data_dict = {'object': [], 'phot': [], 'spec_phot': [], 'archival_spec_phot': []
 def herschel_spec_phot(wl, flux, pacs=True, spire=False, filter_func=False):
 	import numpy as np
 	from scipy.interpolate import interp1d
+	from phot_filter import phot_filter
 	phot_wl = []
 	if pacs == True:
-		phot_wl.extend([70,100,160])
+		phot_wl.extend([70,100]) # no enough point in longer wavelength to make an accurate 160um photometry
 	if spire == True:
 		phot_wl.extend([250,350,500])
 	phot_wl = np.array(phot_wl)
 	phot_flux = np.empty_like(phot_wl)
+
+	# clean up NaN value in observation
+	wl = wl[np.isnan(flux) == False]
+	flux = flux[np.isnan(flux) == False]
+
 	for i in range(len(phot_wl)):
 		if filter_func == False:
 			res = 3     # temp. resolution to mimic the photometry filters
@@ -51,13 +57,19 @@ def herschel_spec_phot(wl, flux, pacs=True, spire=False, filter_func=False):
 			elif phot_wl[i] == 500:
 				fil_name = 'Herschel SPIRE 500um'
 
-			filter_func = phot_filter(filname)
+			filter_func = phot_filter(fil_name)
 
 			# trim the filter function
+			if phot_wl[i] in [70,100,160]:
+				filter_func = filter_func[(filter_func['wave']/1e4 >= max(54.8,min(wl)))*((filter_func['wave']/1e4 <= 95.05)+(filter_func['wave']/1e4 >=103))*(filter_func['wave']/1e4 <= min(190.31,max(wl)))]
+			elif phot_wl[i] in [250,350,500]:
+				filter_func = filter_func[(filter_func['wave']/1e4 >= 195)]
 
 			f = interp1d(wl, flux)
-
-			np.trapz(filter_func['wave']/1e4, f(filter_func['wave']/1e4))
+			# print fil_name
+			# print filter_func['wave']/1e4
+			# print min(wl), max(wl)
+			phot_flux[i] = np.trapz(filter_func['wave']/1e4, f(filter_func['wave']/1e4)*filter_func['transmission'])/np.trapz(filter_func['wave']/1e4, filter_func['transmission'])
 
 	return phot_wl, phot_flux
 
@@ -80,11 +92,11 @@ for i in range(len(objlist)):
 	else:
 		spec_CDF = ascii.read(CDFdir+objlist[i]+'/pacs/advanced_products/'+objlist[i]+'_centralSpaxel_PointSourceCorrected_CorrectedYES_trim_continuum.txt',\
 							header_start=None, data_start=1, names=['wave','flux','uncertainty'], fill_values=('NaN',np.nan))
-	spec_phot_wl, spec_phot_flux = herschel_spec_phot(spec_CDF['wave'].data, spec_CDF['flux'].data)
+	spec_phot_wl, spec_phot_flux = herschel_spec_phot(spec_CDF['wave'].data, spec_CDF['flux'].data, filter_func=True)
 
 	# get the spectra photometry from archival data
 	spec_archival = ascii.read(archival_dir+objlist[i]+'/'+objlist[i]+'_pacs_summed_3x3.txt', header_start=None, names=['wave','flux'])
-	archival_phot_wl, archival_phot_flux = herschel_spec_phot(spec_archival['wave'].data, spec_archival['flux'].data)
+	archival_phot_wl, archival_phot_flux = herschel_spec_phot(spec_archival['wave'].data, spec_archival['flux'].data, filter_func=True)
 
 	# find the matched photometry and store them into data_dict
 	mutual_wl = []
