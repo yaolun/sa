@@ -1,20 +1,20 @@
 def phot_filter(fil_name):
-	import numpy as np
-	from astropy.io import ascii
-	from pprint import pprint
-	import os
-	filename = os.path.expanduser('~')+'/programs/spectra_analysis/allfilters.dat'
-	foo = open(filename, 'r')
-	index = []
-	filter_name = []
-	for i, line in enumerate(foo):
-	    if line[0] == '#':
-	        index.append(i)
-	        filter_name.append(line.split('#')[1].lstrip().rstrip())
-	index = np.array(index)
-	filter_name = np.array(filter_name)
+    import numpy as np
+    from astropy.io import ascii
+    from pprint import pprint
+    import os
+    filename = os.path.expanduser('~')+'/programs/spectra_analysis/allfilters.dat'
+    foo = open(filename, 'r')
+    index = []
+    filter_name = []
+    for i, line in enumerate(foo):
+        if line[0] == '#':
+            index.append(i)
+            filter_name.append(line.split('#')[1].lstrip().rstrip())
+    index = np.array(index)
+    filter_name = np.array(filter_name)
 
-	ind, =np.where(filter_name == fil_name)
+    ind, =np.where(filter_name == fil_name)
 
     while len(ind) == 0:
         if fil_name != 'ls':
@@ -29,4 +29,4 @@ def phot_filter(fil_name):
     else:
         phot_filter = ascii.read(filename, data_start=index[ind]-ind, names=['wave','transmission'],header_start=None)
 
-	return phot_filter
+    return phot_filter
