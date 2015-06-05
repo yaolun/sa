@@ -1,5 +1,7 @@
 def co_line_flux(obj='BHR71', indir='/Users/yaolun/bhr71/fitting/', plotdir='/Users/yaolun/test/'):
     import numpy as np
+    import matplotlib as mpl
+    mpl.use('Agg')
     import matplotlib.pyplot as plt
     import astropy as apy
     
@@ -66,5 +68,13 @@ def co_line_flux(obj='BHR71', indir='/Users/yaolun/bhr71/fitting/', plotdir='/Us
     ax.tick_params('both',labelsize=18,width=1.5,which='major',pad=15,length=5)
     ax.tick_params('both',labelsize=18,width=1.5,which='minor',pad=15,length=2.5)
     ax.set_xlim([0,46])
+
+    # fix the tick label font
+    ticks_font = mpl.font_manager.FontProperties(family='STIXGeneral',size=18)
+    for label in ax.get_xticklabels():
+        label.set_fontproperties(ticks_font)
+    for label in ax.get_yticklabels():
+        label.set_fontproperties(ticks_font)
+
     
     fig.savefig(plotdir+obj+'_co_flux.pdf', format='pdf', dpi=300, bbox_inches='tight')
