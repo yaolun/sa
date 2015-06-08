@@ -78,3 +78,4 @@ def co_line_flux(obj='BHR71', indir='/Users/yaolun/bhr71/fitting/', plotdir='/Us
 
     
     fig.savefig(plotdir+obj+'_co_flux.pdf', format='pdf', dpi=300, bbox_inches='tight')
+    fig.clf()
