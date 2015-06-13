@@ -73,7 +73,7 @@ def obj_com(indir):
 	print min(dec_std), max(dec_std), np.mean(dec_std)
 	if err == 0:
 		print 'Passed the object test!'
-		return True
+		return ra_std, dec_std# True
 
 def fits_com(indir):
 	"""
