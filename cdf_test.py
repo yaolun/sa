@@ -53,8 +53,8 @@ def obj_com(indir):
 				print 'Missing PACS cube fitting on ', o
 			else:
 				wl, ra, dec = np.genfromtxt(home+indir+'/'+o+'/pacs/data/cube/'+o+'_pacs_pixel13_os8_sf7_coord.txt',skip_header=1).T
-				print o, np.std(ra*3600), np.std(dec*3600)
-				ra_std[pacsobj.index(o)] = np.std(ra*3600)
+				print o, np.std(ra*np.cos(np.mean(dec)*np.pi/180.)*3600), np.std(dec*3600)
+				ra_std[pacsobj.index(o)] = np.std(ra*np.cos(np.mean(dec)*np.pi/180.)*3600)
 				dec_std[pacsobj.index(o)] = np.std(dec*3600)
 			# 	print o, len(open(home+indir+'/'+o+'/pacs/data/cube/'+o+'_pacs_pixel13_os8_sf7.txt','r').readlines())
 		if o in spireobj:
@@ -73,6 +73,7 @@ def obj_com(indir):
 	print min(dec_std), max(dec_std), np.mean(dec_std)
 	if err == 0:
 		print 'Passed the object test!'
+		return True
 
 def fits_com(indir):
 	"""
@@ -316,6 +317,7 @@ def fits_com(indir):
 				err += 1
 	if err == 0:
 		print 'passed the FITS test!'
+		return True
 
 def strong_line(indir):
 	"""
@@ -690,6 +692,34 @@ def fitting_check(indir,outdir):
 	foo.close()
 
 	print 'Finished the statistic of the fitting results, go check them at %s !' % home+outdir+'stat.txt'
+
+def pointing_test(indir):
+	import numpy as np
+	from astropy.io import ascii
+
+	pacsobj = ['ABAur','AS205','B1-a','B1-c','B335','BHR71','DGTau','EC82','Elias29','FUOri','GSS30-IRS1','HD100453','HD100546','HD104237','HD135344B','HD139614',\
+			   'HD141569','HD142527','HD142666','HD144432','HD144668','HD150193','HD163296','HD169142','HD179218','HD203024','HD245906','HD35187','HD36112','HD38120','HD50138',\
+			   'HD97048','HD98922','HTLup','IRAM04191','IRAS03245','IRAS03301','IRAS12496','IRS46','IRS48','IRS63','L1014','L1157','L1448-MM','L1455-IRS3',\
+			   'L1489','L1527','L1551-IRS5','RCrA-IRS5A','RCrA-IRS7B','RCrA-IRS7C','RNO90','RULup','RYLup','SCra','SR21',\
+			   'Serpens-SMM3','Serpens-SMM4','TMC1','TMC1A','TMR1','V1057Cyg','V1331Cyg','V1515Cyg','V1735Cyg','VLA1623','WL12']
+
+
+	spireobj = ['B1-a','B1-c','B335','BHR71','Ced110-IRS4','FUOri','GSS30-IRS1','HH46','HH100','IRAS03245','IRAS03301','IRAS12496','IRAS15398','IRS46','L1014',\
+			   'L1157','L1455-IRS3','L1551-IRS5','L483','L723-MM','RCrA-IRS5A','RCrA-IRS7B','RCrA-IRS7C','RNO91','TMC1','TMC1A','TMR1','V1057Cyg','V1331Cyg',\
+			   'V1515Cyg','V1735Cyg','VLA1623','WL12']
+
+	objlist = [pacsobj, spireobj]
+
+	objlist = ['ABAur','AS205','B1-a','B1-c','B335','BHR71','Ced110-IRS4','DGTau','EC82','Elias29','FUOri','GSS30-IRS1','HD100453','HD100546','HD104237','HD135344B','HD139614',\
+			   'HD141569','HD142527','HD142666','HD144432','HD144668','HD150193','HD163296','HD169142','HD179218','HD203024','HD245906','HD35187','HD36112','HD38120','HD50138',\
+			   'HD97048','HD98922','HH46','HH100','HTLup','IRAM04191','IRAS03245','IRAS03301','IRAS12496','IRAS15398','IRS46','IRS48','IRS63','L1014','L1157','L1448-MM','L1455-IRS3',\
+			   'L1489','L1527','L1551-IRS5','L483','L723-MM','RCrA-IRS5A','RCrA-IRS7B','RCrA-IRS7C','RNO90','RNO91','RULup','RYLup','SCra','SR21',\
+			   'Serpens-SMM3','Serpens-SMM4','TMC1','TMC1A','TMR1','V1057Cyg','V1331Cyg','V1515Cyg','V1735Cyg','VLA1623','WL12']
+
+	# read the PACS coordinates
+	# only check the central spaxel
+	for obj in pacsobj:
+		coord_dum = np.genfromtxt(indir+'/'+obj+'/pacs/data/cube/'+obj+'_pacs_pixel13_os8_sf7_coord.txt')
 
 def cdf_test(indir,outdir):
 	"""
