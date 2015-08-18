@@ -135,7 +135,7 @@ mean_phot = np.mean(total_phot)
 std_spec_phot = np.std(delta_spec_phot)/mean_phot
 std_archival_spec_phot = np.std(delta_archival_spec_phot)/mean_phot
 
-print data_dict['phot'][:]
+# print data_dict['phot'][:]
 
 # plot!
 
@@ -148,6 +148,7 @@ spec_phot = []
 for i in range(len(data_dict['object'])):
 	cdf, = ax.plot(data_dict['phot'][i], data_dict['spec_phot'][i], 'o', color='Blue', mec='None', alpha=0.7)
 	archiv, = ax.plot(data_dict['phot'][i], data_dict['archival_spec_phot'][i], 'o', color='Red', mec='None', alpha=0.7)
+	print data_dict['phot'][i], data_dict['spec_phot'][i], data_dict['archival_spec_phot'][i]
 	phot.extend(data_dict['phot'][i])
 	spec_phot.extend(data_dict['spec_phot'][i])
 
