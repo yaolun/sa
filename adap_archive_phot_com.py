@@ -142,8 +142,8 @@ std_archival_spec_phot = np.std(delta_archival_spec_phot)/mean_phot
 fig = plt.figure(figsize=(8,6))
 ax = fig.add_subplot(111)
 
-phot = np.array()
-spec_phot = np.array()
+phot = np.array([])
+spec_phot = np.array([])
 
 for i in range(len(data_dict['object'])):
 	cdf, = ax.plot(data_dict['phot'][i], data_dict['spec_phot'][i], 'o', color='Blue', mec='None', alpha=0.7)
