@@ -153,6 +153,7 @@ for i in range(len(data_dict['object'])):
 	np.hstack((spec_phot, data_dict['spec_phot'][i]))
 
 # fit the cdf-only spectrophotometric data
+print phot
 fit_para = np.polyfit(phot, spec_phot, 1)
 cdf_fit = fit_para[0] + fit_para[1]*data_dict['phot']
 
