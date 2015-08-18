@@ -135,6 +135,10 @@ mean_phot = np.mean(total_phot)
 std_spec_phot = np.std(delta_spec_phot)/mean_phot
 std_archival_spec_phot = np.std(delta_archival_spec_phot)/mean_phot
 
+# fit the cdf-only spectrophotometric data
+fit_para = np.polyfit(data_dict['phot'], data_dict['spec_phot'], 1)
+cdf_fit = fit_para[0] + fit_para[1]*data_dict['phot']
+
 # plot!
 
 fig = plt.figure(figsize=(8,6))
@@ -143,6 +147,8 @@ ax = fig.add_subplot(111)
 for i in range(len(data_dict['object'])):
 	cdf, = ax.plot(data_dict['phot'][i], data_dict['spec_phot'][i], 'o', color='Blue', mec='None', alpha=0.7)
 	archiv, = ax.plot(data_dict['phot'][i], data_dict['archival_spec_phot'][i], 'o', color='Red', mec='None', alpha=0.7)
+
+fit, = ax.plot(data_dict['phot'], cdf_fit, color='Blue', alpha=0.7)
 ax.plot([min(data_dict['phot']), max(data_dict['phot'])], [min(data_dict['phot']), max(data_dict['phot'])], '-', color='k', linewidth=1.5)
 
 ax.set_xscale('log')
@@ -150,7 +156,8 @@ ax.set_yscale('log')
 ax.set_xlim([0.3,1000])
 ax.set_ylim([0.3,1000])
 
-ax.legend([cdf, archiv], [r'$\rm{DIGIT-COPS-FOOSH\,(\sigma/<F_{phot.}>=%2.2f)}$' % std_spec_phot, r'$\rm{HSA\,(\sigma/<F_{phot.}>=%2.2f)}$' % std_archival_spec_phot],\
+ax.legend([cdf, archiv, fit], [r'$\rm{DIGIT-COPS-FOOSH\,(\sigma/<F_{phot.}>=%2.2f)}$' % std_spec_phot, \
+	r'$\rm{HSA\,(\sigma/<F_{phot.}>=%2.2f)}$' % std_archival_spec_phot, r'$rm{CDF\,fit}$'],\
 	numpoints=1, fontsize=14, loc='best', framealpha=0.5)
 ax.set_xlabel(r'$\rm{log(F_{photometry})\,[Jy]}$', fontsize=18)
 ax.set_ylabel(r'$\rm{log(F_{spec.\,phot})\,[Jy]}$', fontsize=18)
@@ -160,3 +167,4 @@ ax.tick_params('both',labelsize=18,width=1.5,which='major',pad=10,length=5)
 ax.tick_params('both',labelsize=18,width=1.5,which='minor',pad=10,length=2.5)
 
 fig.savefig('/Users/yaolun/test/phot_com.pdf', format='pdf', dpi=300, bbox_inches='tight')
+fig.clf()
