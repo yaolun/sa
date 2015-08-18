@@ -136,7 +136,7 @@ std_spec_phot = np.std(delta_spec_phot)/mean_phot
 std_archival_spec_phot = np.std(delta_archival_spec_phot)/mean_phot
 
 # fit the cdf-only spectrophotometric data
-fit_para = np.polyfit(data_dict['phot'], data_dict['spec_phot'], 1)
+fit_para = np.polyfit(data_dict['phot'][:], data_dict['spec_phot'][:], 1)
 cdf_fit = fit_para[0] + fit_para[1]*data_dict['phot']
 
 # plot!
