@@ -142,18 +142,16 @@ std_archival_spec_phot = np.std(delta_archival_spec_phot)/mean_phot
 fig = plt.figure(figsize=(8,6))
 ax = fig.add_subplot(111)
 
-phot = []
-spec_phot = []
+phot = np.array()
+spec_phot = np.array()
 
 for i in range(len(data_dict['object'])):
 	cdf, = ax.plot(data_dict['phot'][i], data_dict['spec_phot'][i], 'o', color='Blue', mec='None', alpha=0.7)
 	archiv, = ax.plot(data_dict['phot'][i], data_dict['archival_spec_phot'][i], 'o', color='Red', mec='None', alpha=0.7)
 	print data_dict['phot'][i], data_dict['spec_phot'][i], data_dict['archival_spec_phot'][i]
-	phot.extend(data_dict['phot'][i])
-	spec_phot.extend(data_dict['spec_phot'][i])
+	np.hstack((phot, data_dict['phot'][i]))
+	np.hstack((spec_phot, data_dict['spec_phot'][i]))
 
-phot = np.array(phot)
-spec_phot = np.array(spec_phot)
 # fit the cdf-only spectrophotometric data
 fit_para = np.polyfit(data_dict['phot'][:], data_dict['spec_phot'][:], 1)
 cdf_fit = fit_para[0] + fit_para[1]*data_dict['phot']
