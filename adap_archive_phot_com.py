@@ -149,8 +149,8 @@ for i in range(len(data_dict['object'])):
 	cdf, = ax.plot(data_dict['phot'][i], data_dict['spec_phot'][i], 'o', color='Blue', mec='None', alpha=0.7)
 	archiv, = ax.plot(data_dict['phot'][i], data_dict['archival_spec_phot'][i], 'o', color='Red', mec='None', alpha=0.7)
 	print data_dict['phot'][i], data_dict['spec_phot'][i], data_dict['archival_spec_phot'][i]
-	np.hstack((phot, data_dict['phot'][i]))
-	np.hstack((spec_phot, data_dict['spec_phot'][i]))
+	np.hstack((phot, np.array(data_dict['phot'][i])))
+	np.hstack((spec_phot, np.array(data_dict['spec_phot'][i])))
 
 # fit the cdf-only spectrophotometric data
 print phot
