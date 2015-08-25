@@ -61,7 +61,9 @@ def obj_com(indir, noise_fix=False):
                 dec_std[pacsobj.index(o)] = np.std(dec*3600)
             #   print o, len(open(home+indir+'/'+o+'/pacs/data/cube/'+o+'_pacs_pixel13_os8_sf7.txt','r').readlines())
             if noise_fix:
-                extract_noise(home+indir+'/'+o, obj=o, pacs=True)
+                extract_noise(home+indir+'/'+o+'/pacs/advanced_products/', obj=o, pacs=True)
+                for i in range(1, 26):
+                    extract_noise(home+indir+'/'+o+'/pacs/advanced_products/cube/', cube=str(i), pacs=True)
 
         if o in spireobj:
             # Check 1d and cube fitting results
@@ -87,7 +89,12 @@ def obj_com(indir, noise_fix=False):
                     err += 1
                     print 'SSW spectra is not included.'
             if noise_fix:
-                extract_noise(home+indir+'/'+o, obj=o, spire=True)
+                spaxel = ['SLWA1','SLWA2','SLWA3','SLWB1','SLWB2','SLWB3','SLWB4','SLWC1','SLWC2','SLWC3','SLWC4','SLWC5','SLWD1','SLWD2','SLWD3','SLWD4','SLWE1','SLWE2','SLWE3',\
+                          'SSWA1','SSWA2','SSWA3','SSWA4','SSWB1','SSWB2','SSWB3','SSWB4','SSWB5','SSWC1','SSWC2','SSWC3','SSWC4','SSWC5','SSWC6','SSWD1','SSWD2','SSWD3','SSWD4',\
+                          'SSWD6','SSWD7','SSWE1','SSWE2','SSWE3','SSWE4','SSWE5','SSWE6','SSWF1','SSWF2','SSWF3','SSWF5','SSWG1','SSWG2','SSWG3','SSWG4']
+                extract_noise(home+indir+'/'+o+'/spire/advanced_products/', obj=o, spire=True)
+                for i in range(0, len(spaxel)):
+                    extract_noise(home+indir+'/'+o+'/spire/advanced_products/cube/', cube=spaxel[i], spire=True)
 
     print min(ra_std), max(ra_std), np.mean(ra_std)
     print min(dec_std), max(dec_std), np.mean(dec_std)
