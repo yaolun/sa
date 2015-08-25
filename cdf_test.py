@@ -69,6 +69,16 @@ def obj_com(indir):
 			if os.path.exists(home+indir+'/'+o+'/spire/advanced_products/cube/'+o+'_SSWD4_lines.txt') == False:
 				err += 1
 				print 'Missing SPIRE-SSW cube fitting on ', o
+			# temp.
+			# check the completeness of SPIRE spectra
+			if os.path.exists(home+indir+'/'+o+'/spire/data/'+o+'_spire_corrected.txt') == False:
+				err += 1
+				print 'Cannot find SPIRE 1-D ASCII spectra.  Bug in the fitting routine.'
+			else:
+				(wl, flux) = np.genfromtxt(home+indir+'/'+o+'/spire/data/'+o+'_spire_corrected.txt', skip_header=1).T
+				if min(wl) > 220:
+					err += 1
+					print 'SSW spectra is not included.'
 	print min(ra_std), max(ra_std), np.mean(ra_std)
 	print min(dec_std), max(dec_std), np.mean(dec_std)
 	if err == 0:
