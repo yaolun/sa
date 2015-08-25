@@ -1,4 +1,4 @@
-def obj_com(indir):
+def obj_com(indir, noise_fix=False):
     """
     Test the completeness of the objects directories and the fitting results of both 1d and cube
     Usage:
@@ -8,6 +8,9 @@ def obj_com(indir):
     home = os.path.expanduser('~')
     # temp.
     import numpy as np
+    import sys
+    sys.path.append('/Users/yaolun/programs/line_fitting')
+    from extract_noise import *
 
     # pre-define the full object list
 
@@ -53,10 +56,13 @@ def obj_com(indir):
                 print 'Missing PACS cube fitting on ', o
             else:
                 wl, ra, dec = np.genfromtxt(home+indir+'/'+o+'/pacs/data/cube/'+o+'_pacs_pixel13_os8_sf7_coord.txt',skip_header=1).T
-                print o, np.std(ra*np.cos(np.mean(dec)*np.pi/180.)*3600), np.std(dec*3600)
+                # print o, np.std(ra*np.cos(np.mean(dec)*np.pi/180.)*3600), np.std(dec*3600)
                 ra_std[pacsobj.index(o)] = np.std(ra*np.cos(np.mean(dec)*np.pi/180.)*3600)
                 dec_std[pacsobj.index(o)] = np.std(dec*3600)
             #   print o, len(open(home+indir+'/'+o+'/pacs/data/cube/'+o+'_pacs_pixel13_os8_sf7.txt','r').readlines())
+            if noise_fix:
+                extract_noise(home+indir+'/'+o, obj=o, pacs=True)
+
         if o in spireobj:
             # Check 1d and cube fitting results
             if os.path.exists(home+indir+'/'+o+'/spire/advanced_products/'+o+'_spire_corrected_lines.txt') == False:
@@ -72,13 +78,17 @@ def obj_com(indir):
             # temp.
             # check the completeness of SPIRE spectra
             if os.path.exists(home+indir+'/'+o+'/spire/data/'+o+'_spire_corrected.txt') == False:
-                err += 1
-                print 'Cannot find SPIRE 1-D ASCII spectra.  Bug in the fitting routine.'
+                if (o != 'IRS46') and (o != 'HH100') and (o != 'V1735Cyg'):
+                    err += 1
+                    print 'Cannot find SPIRE 1-D ASCII spectra.  Bug in the fitting routine.'
             else:
                 (wl, flux) = np.genfromtxt(home+indir+'/'+o+'/spire/data/'+o+'_spire_corrected.txt', skip_header=1).T
                 if min(wl) > 220:
                     err += 1
                     print 'SSW spectra is not included.'
+            if noise_fix:
+                extract_noise(home+indir+'/'+o, obj=o, spire=True)
+
     print min(ra_std), max(ra_std), np.mean(ra_std)
     print min(dec_std), max(dec_std), np.mean(dec_std)
     if err == 0:
@@ -750,7 +760,7 @@ def cdf_test(indir,outdir):
         os.makedirs(home+outdir)
 
     # Object completeness test
-    obj_com(indir)
+    obj_com(indir, noise_fix=True)
 
     # FITS files completeness test
     fits_com(indir)
