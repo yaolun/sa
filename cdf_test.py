@@ -380,6 +380,10 @@ def unc_test(filepath,plotdir,png=True):
 	"""
 	from astropy.io import ascii
 	import numpy as np
+	# to avoid X server error
+    import matplotlib as mpl
+    mpl.use('Agg')
+    #
 	import matplotlib.pyplot as plt
 	import os
 	import astropy.constants as const
