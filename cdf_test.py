@@ -447,8 +447,8 @@ def unc_test(filepath,plotdir,png=True):
 	axHisty = fig.add_axes(rect_histy)
 
 	# set labels for scatter plot
-	axScatter.set_xlabel(r'$\mathrm{log(Noise\times FWHM)~(W~cm^{-2})}$', fontsize=22)
-	axScatter.set_ylabel(r'$\mathrm{log(\sigma_{fit})~(W~cm^{-2})}$', fontsize=22)
+	axScatter.set_xlabel(r'$\rm{log(Noise\times FWHM)\,(W\,cm^{-2})}$', fontsize=22)
+	axScatter.set_ylabel(r'$\rm{log(\sigma_{fit})\,(W\,cm^{-2})}$', fontsize=22)
 
 	# no labels
 	axHistx.xaxis.set_major_formatter(nullfmt)
@@ -462,7 +462,7 @@ def unc_test(filepath,plotdir,png=True):
 	low = axScatter.scatter(x, y, c='g', s=27, lw=0.5)
 	high = axScatter.scatter(xx, yy, c='r', s=27, lw=0.5)
 	slope, = axScatter.plot(line, line, 'b-', linewidth=1.5)
-	lg = plt.legend([low, high, slope],[r'$\mathrm{3<SNR<10}$',r'$\mathrm{10<SNR}$',r'$\mathrm{Equality}$'],\
+	lg = plt.legend([low, high, slope],[r'$\rm{3<SNR<10}$',r'$\rm{10<SNR}$',r'$\rm{Equality}$'],\
 					loc='best', bbox_to_anchor=[0.35,1],bbox_transform=axScatter.transAxes, numpoints=1, scatterpoints=1, fontsize=18)
 	
 	# now determine nice limits by hand:
