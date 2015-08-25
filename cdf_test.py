@@ -10,7 +10,7 @@ def obj_com(indir, noise_fix=False):
     import numpy as np
     import sys
     sys.path.append('/Users/yaolun/programs/line_fitting')
-    from extract_noise import *
+    from extract_noise import extract_noise
 
     # pre-define the full object list
 
