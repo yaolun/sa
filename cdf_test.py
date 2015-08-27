@@ -40,6 +40,7 @@ def obj_com(indir, noise_fix=False):
     ra_std = np.empty(len(pacsobj))
     dec_std = np.empty(len(pacsobj))
     diff = []
+    flux_pacs = []
     for o in objlist:
         if len(objdir[objdir == o]) != 1:
             print 'Cannot find ', o
@@ -103,7 +104,7 @@ def obj_com(indir, noise_fix=False):
                 print o, np.mean(flux_pacs[(wl_pacs > 180) & (wl_pacs < max(wl_pacs))]),\
                         (np.mean(flux_pacs[(wl_pacs > 180) & (wl_pacs < max(wl_pacs))])-np.mean(flux_spire[(wl_spire > min(wl_spire)) & (wl_spire < 210)]))/np.mean(flux_pacs[(wl_pacs > 180) & (wl_pacs < max(wl_pacs))])
                 diff.append((np.mean(flux_pacs[(wl_pacs > 180) & (wl_pacs < max(wl_pacs))])-np.mean(flux_spire[(wl_spire > min(wl_spire)) & (wl_spire < 210)]))/np.mean(flux_pacs[(wl_pacs > 180) & (wl_pacs < max(wl_pacs))]))
-
+                pacs_flux.append(np.mean(flux_pacs[(wl_pacs > 180) & (wl_pacs < max(wl_pacs))]))
 
             if noise_fix == True:
                 spaxel = ['SLWA1','SLWA2','SLWA3','SLWB1','SLWB2','SLWB3','SLWB4','SLWC1','SLWC2','SLWC3','SLWC4','SLWC5','SLWD1','SLWD2','SLWD3','SLWD4','SLWE1','SLWE2','SLWE3',\
@@ -125,7 +126,12 @@ def obj_com(indir, noise_fix=False):
     print min(ra_std), max(ra_std), np.mean(ra_std)
     print min(dec_std), max(dec_std), np.mean(dec_std)
     diff = np.array(diff)
+    flux_pacs = np.array(flux_pacs)
     print min(diff), max(diff), np.mean(diff)
+    # make a plot of it
+    import matplotlib.pyplot as plt
+    plt.plot(flux_pacs, diff, 'o')
+    plt.savefig('/home/bettyjo/yaolun/test/diff.pdf', format='pdf', dpi=300, bbox_inches='tight')
     if err == 0:
         print 'Passed the object test!'
         return ra_std, dec_std# True
