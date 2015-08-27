@@ -100,7 +100,7 @@ def obj_com(indir, noise_fix=False):
                 (wl_pacs, flux_pacs, unc_pacs) = np.genfromtxt(home+indir+'/'+o+'/pacs/data/'+o+'_centralSpaxel_PointSourceCorrected_CorrectedYES_trim.txt', skip_header=1).T
                 (wl_spire, flux_spire) = np.genfromtxt(home+indir+'/'+o+'/spire/data/'+o+'_spire_corrected.txt', skip_header=1).T
                 # print flux_pacs[wl_pacs == max(wl_pacs)], flux_spire[wl_spire == min(wl_spire)], flux_spire[wl_spire == min(wl_spire)]-flux_pacs[wl_pacs == max(wl_pacs)]
-                print flux_pacs[wl_pacs == max(wl_pacs)], (flux_spire[wl_spire == min(wl_spire)]-flux_pacs[wl_pacs == max(wl_pacs)])/flux_pacs[wl_pacs == max(wl_pacs)]
+                print o, flux_pacs[wl_pacs == max(wl_pacs)], (flux_spire[wl_spire == min(wl_spire)]-flux_pacs[wl_pacs == max(wl_pacs)])/flux_pacs[wl_pacs == max(wl_pacs)]
                 diff.append(float(flux_spire[wl_spire == min(wl_spire)]-flux_pacs[wl_pacs == max(wl_pacs)]))
 
 
