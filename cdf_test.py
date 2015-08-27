@@ -90,7 +90,7 @@ def obj_com(indir, noise_fix=False):
                     err += 1
                     print 'SSW spectra is not included.'
             # print the offset between PACS and SPIRE
-            if (o in pacsobj) and (o != 'IRS46') and (o != 'HH100') and (o != 'V1735Cyg')::
+            if (o in pacsobj) and (o != 'IRS46') and (o != 'HH100') and (o != 'V1735Cyg'):
                 (wl_pacs, flux_pacs, unc_pacs) = np.genfromtxt(home+indir+'/'+o+'/pacs/data/'+o+'_centralSpaxel_PointSourceCorrected_CorrectedYES_trim.txt', skip_header=1).T
                 (wl_spire, flux_spire) = np.genfromtxt(home+indir+'/'+o+'/spire/data/'+o+'_spire_corrected.txt', skip_header=1).T
                 print flux_pacs[wl_pacs == max(wl_pacs)], flux_spire[wl_spire == min(wl_spire)], flux_spire[wl_spire == min(wl_spire)]-flux_pacs[wl_pacs == max(wl_pacs)]
