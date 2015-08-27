@@ -126,11 +126,11 @@ def obj_com(indir, noise_fix=False):
     print min(ra_std), max(ra_std), np.mean(ra_std)
     print min(dec_std), max(dec_std), np.mean(dec_std)
     diff = np.array(diff)
-    pacs_flux = np.array(pcas_flux)
+    pacs_flux = np.array(pacs_flux)
     print min(diff), max(diff), np.mean(diff)
     # make a plot of it
     import matplotlib.pyplot as plt
-    plt.plot(pcas_flux, diff, 'o')
+    plt.plot(pacs_flux, diff, 'o')
     plt.savefig('/home/bettyjo/yaolun/test/diff.pdf', format='pdf', dpi=300, bbox_inches='tight')
     if err == 0:
         print 'Passed the object test!'
