@@ -12,6 +12,9 @@ objlist = ['AS205','B1-a','B1-c','B335','BHR71','Elias29','FUOri','GSS30-IRS1','
 		   'IRAS03245','IRAS03301','IRAS12496','IRS46','IRS63','L1014','L1157','L1448-MM','L1455-IRS3','L1489','L1527',\
 		   'L1551-IRS5','RCrA-IRS5A','RCrA-IRS7B','RCrA-IRS7C','SCra','Serpens-SMM3','Serpens-SMM4','TMC1','TMC1A',\
 		   'TMR1','V1331Cyg','V1515Cyg','V1735Cyg','VLA1623','WL12'] #HD135344
+		   
+# print objlist
+# objlist = ['AS205','B1-a','B1-c','B335','BHR71','Elias29','FUOri','GSS30-IRS1','HD100546']
 
 photdir = '/Users/yaolun/data/herschel_phot/'
 CDFdir = '/Users/yaolun/data/CDF_archive/'
@@ -25,9 +28,9 @@ def herschel_spec_phot(wl, flux, pacs=True, spire=False, filter_func=False):
 	from phot_filter import phot_filter
 	phot_wl = []
 	if pacs == True:
-		phot_wl.extend([70,100]) # no enough point in longer wavelength to make an accurate 160um photometry
+		phot_wl.extend([70.,100.]) # no enough point in longer wavelength to make an accurate 160um photometry
 	if spire == True:
-		phot_wl.extend([250,350,500])
+		phot_wl.extend([250.,350.,500.])
 	phot_wl = np.array(phot_wl)
 	phot_flux = np.empty_like(phot_wl)
 
@@ -60,9 +63,9 @@ def herschel_spec_phot(wl, flux, pacs=True, spire=False, filter_func=False):
 			filter_func = phot_filter(fil_name)
 
 			# trim the filter function
-			if phot_wl[i] in [70,100,160]:
+			if phot_wl[i] in [70.,100.,160.]:
 				filter_func = filter_func[(filter_func['wave']/1e4 >= max(54.8,min(wl)))*((filter_func['wave']/1e4 <= 95.05)+(filter_func['wave']/1e4 >=103))*(filter_func['wave']/1e4 <= min(190.31,max(wl)))]
-			elif phot_wl[i] in [250,350,500]:
+			elif phot_wl[i] in [250.,350.,500.]:
 				filter_func = filter_func[(filter_func['wave']/1e4 >= 195)]
 
 			f = interp1d(wl, flux)
@@ -142,23 +145,33 @@ std_archival_spec_phot = np.std(delta_archival_spec_phot)/mean_phot
 fig = plt.figure(figsize=(8,6))
 ax = fig.add_subplot(111)
 
-phot = np.array([])
-spec_phot = np.array([])
+# phot = np.array([])
+# spec_phot = np.array([])
+phot = []
+spec_phot = []
 
 for i in range(len(data_dict['object'])):
 	cdf, = ax.plot(data_dict['phot'][i], data_dict['spec_phot'][i], 'o', color='Blue', mec='None', alpha=0.7)
 	archiv, = ax.plot(data_dict['phot'][i], data_dict['archival_spec_phot'][i], 'o', color='Red', mec='None', alpha=0.7)
-	print data_dict['phot'][i], data_dict['spec_phot'][i], data_dict['archival_spec_phot'][i]
-	np.hstack((phot, np.array(data_dict['phot'][i])))
-	np.hstack((spec_phot, np.array(data_dict['spec_phot'][i])))
+	# print data_dict['phot'][i], data_dict['spec_phot'][i], data_dict['archival_spec_phot'][i]
+	if (np.mean(np.array(data_dict['phot'][i])/np.array(data_dict['spec_phot'][i])) > 10.) or (np.mean(np.array(data_dict['phot'][i])/np.array(data_dict['spec_phot'][i])) < 0.1):
+		continue
+	phot.extend(data_dict['phot'][i])
+	spec_phot.extend(data_dict['spec_phot'][i])
+	# np.hstack((phot, np.array(data_dict['phot'][i])))
+	# np.hstack((spec_phot, np.array(data_dict['spec_phot'][i])))
 
 # fit the cdf-only spectrophotometric data
-print phot
-fit_para = np.polyfit(phot, spec_phot, 1)
-cdf_fit = fit_para[0] + fit_para[1]*data_dict['phot']
+phot = np.array(phot)
+spec_phot = np.array(spec_phot)
+# print phot
+# print spec_phot
+fit_para = np.polyfit(np.log10(phot), np.log10(spec_phot), 1)
+cdf_fit = fit_para[0]*np.log10(phot) + fit_para[1]
 
-fit, = ax.plot(data_dict['phot'], cdf_fit, color='Blue', alpha=0.7)
-ax.plot([min(data_dict['phot']), max(data_dict['phot'])], [min(data_dict['phot']), max(data_dict['phot'])], '-', color='k', linewidth=1.5)
+# cdf, = ax.plot(phot, spec_phot, 'o', color='Blue', mec='None', alpha=0.7)
+fit, = ax.plot(phot, 10**cdf_fit, color='Blue', alpha=0.7, linewidth=1.5)
+ax.plot([min(phot), max(phot)], [min(phot), max(phot)], '-', color='k', linewidth=1.5)
 
 ax.set_xscale('log')
 ax.set_yscale('log')
@@ -166,7 +179,7 @@ ax.set_xlim([0.3,1000])
 ax.set_ylim([0.3,1000])
 
 ax.legend([cdf, archiv, fit], [r'$\rm{DIGIT-COPS-FOOSH\,(\sigma/<F_{phot.}>=%2.2f)}$' % std_spec_phot, \
-	r'$\rm{HSA\,(\sigma/<F_{phot.}>=%2.2f)}$' % std_archival_spec_phot, r'$rm{CDF\,fit}$'],\
+	r'$\rm{HSA\,(\sigma/<F_{phot.}>=%2.2f)}$' % std_archival_spec_phot, r'$\rm{CDF\,fit}$'],\
 	numpoints=1, fontsize=14, loc='best', framealpha=0.5)
 ax.set_xlabel(r'$\rm{log(F_{photometry})\,[Jy]}$', fontsize=18)
 ax.set_ylabel(r'$\rm{log(F_{spec.\,phot})\,[Jy]}$', fontsize=18)
