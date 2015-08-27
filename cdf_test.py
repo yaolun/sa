@@ -39,6 +39,7 @@ def obj_com(indir, noise_fix=False):
     # temp
     ra_std = np.empty(len(pacsobj))
     dec_std = np.empty(len(pacsobj))
+    diff = []
     for o in objlist:
         if len(objdir[objdir == o]) != 1:
             print 'Cannot find ', o
@@ -88,6 +89,14 @@ def obj_com(indir, noise_fix=False):
                 if min(wl) > 220:
                     err += 1
                     print 'SSW spectra is not included.'
+            # print the offset between PACS and SPIRE
+            if o in pacsobj:
+                (wl_pacs, flux_pacs, unc_pacs) = np.genfromtxt(home+indir+'/'+o+'/pacs/data/'+o+'_centralSpaxel_PointSourceCorrected_CorrectedYES_trim.txt', skip_header=1).T
+                (wl_spire, flux_spire) = np.genfromtxt(home+indir+'/'+o+'/spire/data/'+o+'_spire_corrected.txt', skip_header=1).T
+                print flux_pacs[wl_pacs == max(wl_pacs)], flux_spire[wl_spire == min(wl_spire)], flux_spire[wl_spire == min(wl_spire)]-flux_pacs[wl_pacs == max(wl_pacs)]
+                diff.append(float(flux_spire[wl_spire == min(wl_spire)]-flux_pacs[wl_pacs == max(wl_pacs)]))
+
+
             if noise_fix:
                 spaxel = ['SLWA1','SLWA2','SLWA3','SLWB1','SLWB2','SLWB3','SLWB4','SLWC1','SLWC2','SLWC3','SLWC4','SLWC5','SLWD1','SLWD2','SLWD3','SLWD4','SLWE1','SLWE2','SLWE3',\
                           'SSWA1','SSWA2','SSWA3','SSWA4','SSWB1','SSWB2','SSWB3','SSWB4','SSWB5','SSWC1','SSWC2','SSWC3','SSWC4','SSWC5','SSWC6','SSWD1','SSWD2','SSWD3','SSWD4',\
@@ -98,6 +107,8 @@ def obj_com(indir, noise_fix=False):
 
     print min(ra_std), max(ra_std), np.mean(ra_std)
     print min(dec_std), max(dec_std), np.mean(dec_std)
+    diff = np.array(diff)
+    print min(diff), max(diff), np.mean(diff)
     if err == 0:
         print 'Passed the object test!'
         return ra_std, dec_std# True
