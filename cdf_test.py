@@ -69,7 +69,7 @@ def obj_com(indir, noise_fix=False):
                 if os.path.exists(home+indir+'/'+o+'/pacs/advanced_products/'+o+'_centralSpaxel_PointSourceCorrected_CorrectedYES_trim_noise.txt'):
                     os.remove(home+indir+'/'+o+'/pacs/advanced_products/'+o+'_centralSpaxel_PointSourceCorrected_CorrectedYES_trim_noise.txt')
                 for i in range(1, 26):
-                    if os.path.exists(home+indir+'/'+o+'/pacs/advanced_products/cube/'+o+'_pacs_pixel'+str(i)+'_os8_sf7_noise.txt')
+                    if os.path.exists(home+indir+'/'+o+'/pacs/advanced_products/cube/'+o+'_pacs_pixel'+str(i)+'_os8_sf7_noise.txt'):
                     os.remove(home+indir+'/'+o+'/pacs/advanced_products/cube/'+o+'_pacs_pixel'+str(i)+'_os8_sf7_noise.txt')
 
         if o in spireobj:
