@@ -129,6 +129,10 @@ def obj_com(indir, noise_fix=False):
     pacs_flux = np.array(pacs_flux)
     print min(diff), max(diff), np.mean(diff)
     # make a plot of it
+    # to avoid X server error
+    import matplotlib as mpl
+    mpl.use('Agg')
+    #
     import matplotlib.pyplot as plt
     plt.plot(pacs_flux, diff, 'o')
     plt.savefig('/home/bettyjo/yaolun/test/diff.pdf', format='pdf', dpi=300, bbox_inches='tight')
