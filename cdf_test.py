@@ -126,7 +126,7 @@ def obj_com(indir, noise_fix=False):
     print min(ra_std), max(ra_std), np.mean(ra_std)
     print min(dec_std), max(dec_std), np.mean(dec_std)
     diff = np.array(diff)
-    pcas_flux = np.array(pcas_flux)
+    pacs_flux = np.array(pcas_flux)
     print min(diff), max(diff), np.mean(diff)
     # make a plot of it
     import matplotlib.pyplot as plt
