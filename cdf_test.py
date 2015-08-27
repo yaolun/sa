@@ -61,7 +61,7 @@ def obj_com(indir, noise_fix=False):
                 ra_std[pacsobj.index(o)] = np.std(ra*np.cos(np.mean(dec)*np.pi/180.)*3600)
                 dec_std[pacsobj.index(o)] = np.std(dec*3600)
             #   print o, len(open(home+indir+'/'+o+'/pacs/data/cube/'+o+'_pacs_pixel13_os8_sf7.txt','r').readlines())
-            if noise_fix:
+            if noise_fix == True:
                 extract_noise(home+indir+'/'+o+'/pacs/advanced_products/', o, pacs=True)
                 for i in range(1, 26):
                     extract_noise(home+indir+'/'+o+'/pacs/advanced_products/cube/', o, cube=str(i), pacs=True)
@@ -97,7 +97,7 @@ def obj_com(indir, noise_fix=False):
                 diff.append(float(flux_spire[wl_spire == min(wl_spire)]-flux_pacs[wl_pacs == max(wl_pacs)]))
 
 
-            if noise_fix:
+            if noise_fix == True:
                 spaxel = ['SLWA1','SLWA2','SLWA3','SLWB1','SLWB2','SLWB3','SLWB4','SLWC1','SLWC2','SLWC3','SLWC4','SLWC5','SLWD1','SLWD2','SLWD3','SLWD4','SLWE1','SLWE2','SLWE3',\
                           'SSWA1','SSWA2','SSWA3','SSWA4','SSWB1','SSWB2','SSWB3','SSWB4','SSWB5','SSWC1','SSWC2','SSWC3','SSWC4','SSWC5','SSWC6','SSWD1','SSWD2','SSWD3','SSWD4',\
                           'SSWD6','SSWD7','SSWE1','SSWE2','SSWE3','SSWE4','SSWE5','SSWE6','SSWF1','SSWF2','SSWF3','SSWF5','SSWG1','SSWG2','SSWG3','SSWG4']
