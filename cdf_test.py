@@ -127,7 +127,7 @@ def obj_com(indir, noise_fix=False):
     print min(dec_std), max(dec_std), np.mean(dec_std)
     diff = np.array(diff)
     pacs_flux = np.array(pacs_flux)
-    print min(diff), max(diff), np.mean(diff)
+    print min(diff), max(diff), np.mean(diff), np.median(diff)
     # make a plot of it
     # to avoid X server error
     import matplotlib as mpl
