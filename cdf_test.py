@@ -504,7 +504,7 @@ def unc_test(filepath,plotdir,png=True):
     rect_histy = [left_h, bottom, 0.2, height]
 
     # start with a rectangular Figure
-    fig = plt.figure(1,figsize=(12,12))
+    fig = plt.figure(figsize=(12,12))
 
     axScatter = fig.add_axes(rect_scatter)
     axHistx = fig.add_axes(rect_histx)
@@ -559,6 +559,13 @@ def unc_test(filepath,plotdir,png=True):
     ax.tick_params('both',labelsize=14,width=1.5,which='major')
     ax.tick_params('both',labelsize=14,width=1.5,which='minor')
     [ax.spines[axis].set_linewidth(1.5) for axis in ['top','bottom','left','right']]
+
+    # fix the tick label font
+    ticks_font = mpl.font_manager.FontProperties(family='STIXGeneral',size=14)
+    for label in ax.get_xticklabels():
+        label.set_fontproperties(ticks_font)
+    for label in ax.get_yticklabels():
+        label.set_fontproperties(ticks_font)
 
     if png == False:
         plt.savefig(home+plotdir+plotname+'_scatter_hist.pdf',format='pdf',dpi=300,bbox_inches='tight')
