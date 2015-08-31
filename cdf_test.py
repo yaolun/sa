@@ -103,7 +103,8 @@ def obj_com(indir, noise_fix=False):
                 # print flux_pacs[wl_pacs == max(wl_pacs)], flux_spire[wl_spire == min(wl_spire)], flux_spire[wl_spire == min(wl_spire)]-flux_pacs[wl_pacs == max(wl_pacs)]
                 print o, np.mean(flux_pacs[(wl_pacs > 180) & (wl_pacs < max(wl_pacs))]),\
                         (np.mean(flux_pacs[(wl_pacs > 180) & (wl_pacs < max(wl_pacs))])-np.mean(flux_spire[(wl_spire > min(wl_spire)) & (wl_spire < 210)]))/np.mean(flux_pacs[(wl_pacs > 180) & (wl_pacs < max(wl_pacs))])
-                diff.append((np.mean(flux_pacs[(wl_pacs > 180) & (wl_pacs < max(wl_pacs))])-np.mean(flux_spire[(wl_spire > min(wl_spire)) & (wl_spire < 210)]))/np.mean(flux_pacs[(wl_pacs > 180) & (wl_pacs < max(wl_pacs))]))
+                # diff.append((np.mean(flux_pacs[(wl_pacs > 180) & (wl_pacs < max(wl_pacs))])-np.mean(flux_spire[(wl_spire > min(wl_spire)) & (wl_spire < 210)]))/np.mean(flux_pacs[(wl_pacs > 180) & (wl_pacs < max(wl_pacs))]))
+                diff.append((np.mean(flux_spire[(wl_spire > min(wl_spire)) & (wl_spire < 210)]))/np.mean(flux_pacs[(wl_pacs > 180) & (wl_pacs < max(wl_pacs))]))
                 pacs_flux.append(np.mean(flux_pacs[(wl_pacs > 180) & (wl_pacs < max(wl_pacs))]))
 
             if noise_fix == True:
