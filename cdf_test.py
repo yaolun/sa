@@ -134,8 +134,13 @@ def obj_com(indir, noise_fix=False):
     mpl.use('Agg')
     #
     import matplotlib.pyplot as plt
-    plt.plot(pacs_flux, diff, 'o')
-    plt.savefig('/home/bettyjo/yaolun/test/diff.pdf', format='pdf', dpi=300, bbox_inches='tight')
+
+    fig = plt.figure(figsize=(8,6))
+    ax = fig.add_subplot(111)
+
+    ax.plot(pacs_flux, diff, 'o')
+    fig.savefig('/home/bettyjo/yaolun/test/diff.pdf', format='pdf', dpi=300, bbox_inches='tight')
+    plt.clf()
     if err == 0:
         print 'Passed the object test!'
         return ra_std, dec_std# True
