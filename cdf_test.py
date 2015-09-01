@@ -429,7 +429,7 @@ def strong_line(indir):
         header = data.colnames
         data = data[(np.isnan(data['SNR'])!=True) & (data['Validity']==1)]  # Temperory procedure to exclude the missing segment in the spectrum resulting in the NaN in SNR
         num_strong = num_strong + len(data[data['SNR'] >= 10.0])
-        snr_sum = snr_sum + np.sum(data[data['SNR'] >= 10.0])
+        snr_sum = snr_sum + np.sum(data['SNR'][data['SNR'] >= 10.0])
 
     return num_strong, snr_sum
 
