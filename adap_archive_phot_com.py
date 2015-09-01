@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from astropy.io import ascii
 import sys
 import os
+import pdb
 sys.path.append('/Users/yaolun/programs/spectra_analysis')
 from phot_reader import phot_reader
 from phot_filter import phot_filter
@@ -12,7 +13,7 @@ objlist = ['AS205','B1-a','B1-c','B335','BHR71','Elias29','FUOri','GSS30-IRS1','
 		   'IRAS03245','IRAS03301','IRAS12496','IRS46','IRS63','L1014','L1157','L1448-MM','L1455-IRS3','L1489','L1527',\
 		   'L1551-IRS5','RCrA-IRS5A','RCrA-IRS7B','RCrA-IRS7C','SCra','Serpens-SMM3','Serpens-SMM4','TMC1','TMC1A',\
 		   'TMR1','V1331Cyg','V1515Cyg','V1735Cyg','VLA1623','WL12'] #HD135344
-		   
+
 # print objlist
 # objlist = ['AS205','B1-a','B1-c','B335','BHR71','Elias29','FUOri','GSS30-IRS1','HD100546']
 
@@ -81,7 +82,7 @@ no_match_obj = []
 total_phot = []
 delta_spec_phot = []
 delta_archival_spec_phot = []
-
+# pdb.set_trace()
 for i in range(len(objlist)):
 	print 'Processing %s' % objlist[i]
 	# get the photometry data
@@ -149,6 +150,7 @@ ax = fig.add_subplot(111)
 # spec_phot = np.array([])
 phot = []
 spec_phot = []
+archival_spec_phot = []
 
 for i in range(len(data_dict['object'])):
 	cdf, = ax.plot(data_dict['phot'][i], data_dict['spec_phot'][i], 'o', color='Blue', mec='None', alpha=0.7)
@@ -158,29 +160,35 @@ for i in range(len(data_dict['object'])):
 		continue
 	phot.extend(data_dict['phot'][i])
 	spec_phot.extend(data_dict['spec_phot'][i])
+	archival_spec_phot.extend(data_dict['archival_spec_phot'][i])
 	# np.hstack((phot, np.array(data_dict['phot'][i])))
 	# np.hstack((spec_phot, np.array(data_dict['spec_phot'][i])))
 
 # fit the cdf-only spectrophotometric data
 phot = np.array(phot)
 spec_phot = np.array(spec_phot)
-# print phot
-# print spec_phot
+archival_spec_phot = np.array(archival_spec_phot)
+
 fit_para = np.polyfit(np.log10(phot), np.log10(spec_phot), 1)
+fit_para_arc = np.polyfit(np.log10(phot), np.log10(archival_spec_phot), 1)
 cdf_fit = fit_para[0]*np.log10(phot) + fit_para[1]
+arc_fit = fit_para_arc[0]*np.log10(phot) + fit_para_arc[1]
+print fit_para
+print fit_para_arc
 
 # cdf, = ax.plot(phot, spec_phot, 'o', color='Blue', mec='None', alpha=0.7)
 fit, = ax.plot(phot, 10**cdf_fit, color='Blue', alpha=0.7, linewidth=1.5)
-ax.plot([min(phot), max(phot)], [min(phot), max(phot)], '-', color='k', linewidth=1.5)
+fit_arc, = ax.plot(phot, 10**arc_fit, color='Red', alpha=0.7, linewidth=1.5)
+equal, = ax.plot([min(phot), max(phot)], [min(phot), max(phot)], '-', color='k', linewidth=1.5)
 
 ax.set_xscale('log')
 ax.set_yscale('log')
 ax.set_xlim([0.3,1000])
 ax.set_ylim([0.3,1000])
 
-ax.legend([cdf, archiv, fit], [r'$\rm{DIGIT-COPS-FOOSH\,(\sigma/<F_{phot.}>=%2.2f)}$' % std_spec_phot, \
-	r'$\rm{HSA\,(\sigma/<F_{phot.}>=%2.2f)}$' % std_archival_spec_phot, r'$\rm{CDF\,fit}$'],\
-	numpoints=1, fontsize=14, loc='best', framealpha=0.5)
+ax.legend([cdf, archiv, fit, fit_arc], [r'$\rm{CDF\,(\sigma/<F_{phot.}>=%2.2f)}$' % std_spec_phot, \
+	r'$\rm{HSA\,(\sigma/<F_{phot.}>=%2.2f)}$' % std_archival_spec_phot, r'$\rm{CDF\,fit}$', r'$\rm{HSA\,fit}$'],\
+	numpoints=1, fontsize=14, loc='upper left', framealpha=0.5)
 ax.set_xlabel(r'$\rm{log(F_{photometry})\,[Jy]}$', fontsize=18)
 ax.set_ylabel(r'$\rm{log(F_{spec.\,phot})\,[Jy]}$', fontsize=18)
 [ax.spines[axis].set_linewidth(1.5) for axis in ['top','bottom','left','right']]

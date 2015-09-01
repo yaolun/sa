@@ -97,15 +97,15 @@ def obj_com(indir, noise_fix=False):
                     err += 1
                     print 'SSW spectra is not included.'
             # print the offset between PACS and SPIRE
-            if (o in pacsobj) and (o != 'IRS46') and (o != 'HH100') and (o != 'V1735Cyg'):
-                (wl_pacs, flux_pacs, unc_pacs) = np.genfromtxt(home+indir+'/'+o+'/pacs/data/'+o+'_centralSpaxel_PointSourceCorrected_CorrectedYES_trim.txt', skip_header=1).T
-                (wl_spire, flux_spire) = np.genfromtxt(home+indir+'/'+o+'/spire/data/'+o+'_spire_corrected.txt', skip_header=1).T
-                # print flux_pacs[wl_pacs == max(wl_pacs)], flux_spire[wl_spire == min(wl_spire)], flux_spire[wl_spire == min(wl_spire)]-flux_pacs[wl_pacs == max(wl_pacs)]
-                print o, np.mean(flux_pacs[(wl_pacs > 180) & (wl_pacs < max(wl_pacs))]),\
-                        (np.mean(flux_pacs[(wl_pacs > 180) & (wl_pacs < max(wl_pacs))])-np.mean(flux_spire[(wl_spire > min(wl_spire)) & (wl_spire < 210)]))/np.mean(flux_pacs[(wl_pacs > 180) & (wl_pacs < max(wl_pacs))])
-                # diff.append((np.mean(flux_pacs[(wl_pacs > 180) & (wl_pacs < max(wl_pacs))])-np.mean(flux_spire[(wl_spire > min(wl_spire)) & (wl_spire < 210)]))/np.mean(flux_pacs[(wl_pacs > 180) & (wl_pacs < max(wl_pacs))]))
-                diff.append((np.mean(flux_spire[(wl_spire > min(wl_spire)) & (wl_spire < 210)]))/np.mean(flux_pacs[(wl_pacs > 180) & (wl_pacs < max(wl_pacs))]))
-                pacs_flux.append(np.mean(flux_pacs[(wl_pacs > 180) & (wl_pacs < max(wl_pacs))]))
+            # if (o in pacsobj) and (o != 'IRS46') and (o != 'HH100') and (o != 'V1735Cyg'):
+            #     (wl_pacs, flux_pacs, unc_pacs) = np.genfromtxt(home+indir+'/'+o+'/pacs/data/'+o+'_centralSpaxel_PointSourceCorrected_CorrectedYES_trim.txt', skip_header=1).T
+            #     (wl_spire, flux_spire) = np.genfromtxt(home+indir+'/'+o+'/spire/data/'+o+'_spire_corrected.txt', skip_header=1).T
+            #     # print flux_pacs[wl_pacs == max(wl_pacs)], flux_spire[wl_spire == min(wl_spire)], flux_spire[wl_spire == min(wl_spire)]-flux_pacs[wl_pacs == max(wl_pacs)]
+            #     print o, np.mean(flux_pacs[(wl_pacs > 180) & (wl_pacs < max(wl_pacs))]),\
+            #             (np.mean(flux_pacs[(wl_pacs > 180) & (wl_pacs < max(wl_pacs))])-np.mean(flux_spire[(wl_spire > min(wl_spire)) & (wl_spire < 210)]))/np.mean(flux_pacs[(wl_pacs > 180) & (wl_pacs < max(wl_pacs))])
+            #     # diff.append((np.mean(flux_pacs[(wl_pacs > 180) & (wl_pacs < max(wl_pacs))])-np.mean(flux_spire[(wl_spire > min(wl_spire)) & (wl_spire < 210)]))/np.mean(flux_pacs[(wl_pacs > 180) & (wl_pacs < max(wl_pacs))]))
+            #     diff.append((np.mean(flux_spire[(wl_spire > min(wl_spire)) & (wl_spire < 210)]))/np.mean(flux_pacs[(wl_pacs > 180) & (wl_pacs < max(wl_pacs))]))
+            #     pacs_flux.append(np.mean(flux_pacs[(wl_pacs > 180) & (wl_pacs < max(wl_pacs))]))
 
             if noise_fix == True:
                 spaxel = ['SLWA1','SLWA2','SLWA3','SLWB1','SLWB2','SLWB3','SLWB4','SLWC1','SLWC2','SLWC3','SLWC4','SLWC5','SLWD1','SLWD2','SLWD3','SLWD4','SLWE1','SLWE2','SLWE3',\
@@ -124,24 +124,24 @@ def obj_com(indir, noise_fix=False):
                     if os.path.exists(home+indir+'/'+o+'/spire/advanced_products/cube/'+o+'_'+str(spaxel[i])+'_noise.txt'):
                         os.remove(home+indir+'/'+o+'/spire/advanced_products/cube/'+o+'_'+str(spaxel[i])+'_noise.txt')
 
-    print min(ra_std), max(ra_std), np.mean(ra_std)
-    print min(dec_std), max(dec_std), np.mean(dec_std)
-    diff = np.array(diff)
-    pacs_flux = np.array(pacs_flux)
-    print min(diff), max(diff), np.mean(diff[pacs_flux<25]), np.median(diff[pacs_flux<25])
-    # make a plot of it
-    # to avoid X server error
-    import matplotlib as mpl
-    mpl.use('Agg')
-    #
-    import matplotlib.pyplot as plt
+    # print min(ra_std), max(ra_std), np.mean(ra_std)
+    # print min(dec_std), max(dec_std), np.mean(dec_std)
+    # diff = np.array(diff)
+    # pacs_flux = np.array(pacs_flux)
+    # print min(diff), max(diff), np.mean(diff[pacs_flux<25]), np.median(diff[pacs_flux<25])
+    # # make a plot of it
+    # # to avoid X server error
+    # import matplotlib as mpl
+    # mpl.use('Agg')
+    # #
+    # import matplotlib.pyplot as plt
 
-    fig = plt.figure(figsize=(8,6))
-    ax = fig.add_subplot(111)
+    # fig = plt.figure(figsize=(8,6))
+    # ax = fig.add_subplot(111)
 
-    ax.plot(pacs_flux, diff, 'o')
-    fig.savefig('/home/bettyjo/yaolun/test/diff.pdf', format='pdf', dpi=300, bbox_inches='tight')
-    plt.clf()
+    # ax.plot(pacs_flux, diff, 'o')
+    # fig.savefig('/home/bettyjo/yaolun/test/diff.pdf', format='pdf', dpi=300, bbox_inches='tight')
+    # plt.clf()
     if err == 0:
         print 'Passed the object test!'
         return ra_std, dec_std# True
