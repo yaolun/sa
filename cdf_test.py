@@ -422,14 +422,16 @@ def strong_line(indir):
     # g,        RA(deg),        Dec(deg),       Blend,          Validity
     # ====================================================================================================
     num_strong = 0
+    snr_sum = 0
     # Read the data
     for path in path2fit:
         data = ascii.read(path)
         header = data.colnames
         data = data[(np.isnan(data['SNR'])!=True) & (data['Validity']==1)]  # Temperory procedure to exclude the missing segment in the spectrum resulting in the NaN in SNR
         num_strong = num_strong + len(data[data['SNR'] >= 10.0])
+        snr_sum = snr_sum + np.sum(data[data['SNR'] >= 10.0])
 
-    return num_strong
+    return num_strong, snr_sum
 
 # print strong_line('/test/BHR71/pacs/advanced_products/')
 
