@@ -103,7 +103,6 @@ def obj_com(indir, noise_fix=False):
             #####
             else:
                 spaxel = ['SLWA1','SLWA2','SLWA3','SLWB1','SLWB2','SLWB3','SLWB4','SLWC1','SLWC2','SLWC3','SLWC4','SLWC5','SLWD1','SLWD2','SLWD3','SLWD4','SLWE1','SLWE2','SLWE3']
-                          ]
                 for spx in spaxel:
                     os.rename(home+indir+'/'+o+'/spire/advanced_products/cube/'+o+'_'+spx+'_noise_spectrum.txt',\
                         home+indir+'/'+o+'/spire/advanced_products/cube/'+o+'_'+spx+'_residual_spectrum.txt')
