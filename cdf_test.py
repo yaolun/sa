@@ -50,6 +50,12 @@ def obj_com(indir, noise_fix=False):
             if os.path.exists(home+indir+'/'+o+'/pacs/advanced_products/'+o+'_centralSpaxel_PointSourceCorrected_CorrectedYES_trim_lines.txt') == False:
                 err += 1
                 print 'Missing PACS 1d fitting on ', o
+            #####
+            else:
+                os.rename(home+indir+'/'+o+'/pacs/advanced_products/'+o+'_centralSpaxel_PointSourceCorrected_CorrectedYES_trim_noise_spectrum.txt',\
+                    home+indir+'/'+o+'/pacs/advanced_products/'+o+'_centralSpaxel_PointSourceCorrected_CorrectedYES_trim_residual_spectrum.txt')
+            #####
+
             # # temp. test for oversampling rate
             # else:
             #   print o, len(open(home+indir+'/'+o+'/pacs/data/'+o+'_centralSpaxel_PointSourceCorrected_CorrectedYES_trim.txt','r').readlines())
@@ -61,17 +67,24 @@ def obj_com(indir, noise_fix=False):
                 # print o, np.std(ra*np.cos(np.mean(dec)*np.pi/180.)*3600), np.std(dec*3600)
                 ra_std[pacsobj.index(o)] = np.std(ra*np.cos(np.mean(dec)*np.pi/180.)*3600)
                 dec_std[pacsobj.index(o)] = np.std(dec*3600)
+
+                #####
+                for pix in range(1,26):
+                    os.rename(home+indir+'/'+o+'/pacs/data/cube/'+o+'_pacs_pixel'+str(pix)+'_os8_sf7_noise_spectrum.txt',\
+                        home+indir+'/'+o+'/pacs/data/cube/'+o+'_pacs_pixel'+str(pix)+'_os8_sf7_residual_spectrum.txt')
+                #####
+
             #   print o, len(open(home+indir+'/'+o+'/pacs/data/cube/'+o+'_pacs_pixel13_os8_sf7.txt','r').readlines())
-            if noise_fix == True:
-                extract_noise(home+indir+'/'+o+'/pacs/advanced_products/', o, pacs=True)
-                for i in range(1, 26):
-                    extract_noise(home+indir+'/'+o+'/pacs/advanced_products/cube/', o, cube=str(i), pacs=True)
-            else:
-                if os.path.exists(home+indir+'/'+o+'/pacs/advanced_products/'+o+'_centralSpaxel_PointSourceCorrected_CorrectedYES_trim_noise.txt'):
-                    os.remove(home+indir+'/'+o+'/pacs/advanced_products/'+o+'_centralSpaxel_PointSourceCorrected_CorrectedYES_trim_noise.txt')
-                for i in range(1, 26):
-                    if os.path.exists(home+indir+'/'+o+'/pacs/advanced_products/cube/'+o+'_pacs_pixel'+str(i)+'_os8_sf7_noise.txt'):
-                        os.remove(home+indir+'/'+o+'/pacs/advanced_products/cube/'+o+'_pacs_pixel'+str(i)+'_os8_sf7_noise.txt')
+            # if noise_fix == True:
+            #     extract_noise(home+indir+'/'+o+'/pacs/advanced_products/', o, pacs=True)
+            #     for i in range(1, 26):
+            #         extract_noise(home+indir+'/'+o+'/pacs/advanced_products/cube/', o, cube=str(i), pacs=True)
+            # else:
+            #     if os.path.exists(home+indir+'/'+o+'/pacs/advanced_products/'+o+'_centralSpaxel_PointSourceCorrected_CorrectedYES_trim_noise.txt'):
+            #         os.remove(home+indir+'/'+o+'/pacs/advanced_products/'+o+'_centralSpaxel_PointSourceCorrected_CorrectedYES_trim_noise.txt')
+            #     for i in range(1, 26):
+            #         if os.path.exists(home+indir+'/'+o+'/pacs/advanced_products/cube/'+o+'_pacs_pixel'+str(i)+'_os8_sf7_noise.txt'):
+            #             os.remove(home+indir+'/'+o+'/pacs/advanced_products/cube/'+o+'_pacs_pixel'+str(i)+'_os8_sf7_noise.txt')
 
         if o in spireobj:
             # Check 1d and cube fitting results
@@ -79,12 +92,33 @@ def obj_com(indir, noise_fix=False):
                 if (o != 'IRS46') and (o != 'HH100') and (o != 'V1735Cyg'):
                     err += 1
                     print 'Missing SPIRE 1d fitting on ', o
+            #####
+            else:
+                os.rename(home+indir+'/'+o+'/spire/advanced_products/'+o+'_spire_corrected_noise_spectrum.txt',\
+                    home+indir+'/'+o+'/spire/advanced_products/'+o+'_spire_corrected_residual_spectrum.txt')
+            #####
             if os.path.exists(home+indir+'/'+o+'/spire/advanced_products/cube/'+o+'_SLWC3_lines.txt') == False:
                 err += 1
                 print 'Missing SPIRE-SLW cube fitting on ', o
+            #####
+            else:
+                spaxel = ['SLWA1','SLWA2','SLWA3','SLWB1','SLWB2','SLWB3','SLWB4','SLWC1','SLWC2','SLWC3','SLWC4','SLWC5','SLWD1','SLWD2','SLWD3','SLWD4','SLWE1','SLWE2','SLWE3']
+                          ]
+                for spx in spaxel:
+                    os.rename(home+indir+'/'+o+'/spire/advanced_products/cube/'+o+'_'+spx+'_noise_spectrum.txt',\
+                        home+indir+'/'+o+'/spire/advanced_products/cube/'+o+'_'+spx+'_residual_spectrum.txt')
+            #####
             if os.path.exists(home+indir+'/'+o+'/spire/advanced_products/cube/'+o+'_SSWD4_lines.txt') == False:
                 err += 1
                 print 'Missing SPIRE-SSW cube fitting on ', o
+            #####
+            else:
+                spaxel = ['SSWA1','SSWA2','SSWA3','SSWA4','SSWB1','SSWB2','SSWB3','SSWB4','SSWB5','SSWC1','SSWC2','SSWC3','SSWC4','SSWC5','SSWC6','SSWD1','SSWD2','SSWD3','SSWD4',\
+                          'SSWD6','SSWD7','SSWE1','SSWE2','SSWE3','SSWE4','SSWE5','SSWE6','SSWF1','SSWF2','SSWF3','SSWF5','SSWG1','SSWG2','SSWG3','SSWG4']
+                for spx in spaxel:
+                    os.rename(home+indir+'/'+o+'/spire/advanced_products/cube/'+o+'_'+spx+'_noise_spectrum.txt',\
+                        home+indir+'/'+o+'/spire/advanced_products/cube/'+o+'_'+spx+'_residual_spectrum.txt')
+            #####
             # temp.
             # check the completeness of SPIRE spectra
             if os.path.exists(home+indir+'/'+o+'/spire/data/'+o+'_spire_corrected.txt') == False:
@@ -107,22 +141,22 @@ def obj_com(indir, noise_fix=False):
             #     diff.append((np.mean(flux_spire[(wl_spire > min(wl_spire)) & (wl_spire < 210)]))/np.mean(flux_pacs[(wl_pacs > 180) & (wl_pacs < max(wl_pacs))]))
             #     pacs_flux.append(np.mean(flux_pacs[(wl_pacs > 180) & (wl_pacs < max(wl_pacs))]))
 
-            if noise_fix == True:
-                spaxel = ['SLWA1','SLWA2','SLWA3','SLWB1','SLWB2','SLWB3','SLWB4','SLWC1','SLWC2','SLWC3','SLWC4','SLWC5','SLWD1','SLWD2','SLWD3','SLWD4','SLWE1','SLWE2','SLWE3',\
-                          'SSWA1','SSWA2','SSWA3','SSWA4','SSWB1','SSWB2','SSWB3','SSWB4','SSWB5','SSWC1','SSWC2','SSWC3','SSWC4','SSWC5','SSWC6','SSWD1','SSWD2','SSWD3','SSWD4',\
-                          'SSWD6','SSWD7','SSWE1','SSWE2','SSWE3','SSWE4','SSWE5','SSWE6','SSWF1','SSWF2','SSWF3','SSWF5','SSWG1','SSWG2','SSWG3','SSWG4']
-                extract_noise(home+indir+'/'+o+'/spire/advanced_products/', o, spire=True)
-                for i in range(0, len(spaxel)):
-                    extract_noise(home+indir+'/'+o+'/spire/advanced_products/cube/', o, cube=spaxel[i], spire=True)
-            else:
-                if os.path.exists(home+indir+'/'+o+'/spire/advanced_products/'+o+'_spire_corrected_noise.txt'):
-                    os.remove(home+indir+'/'+o+'/spire/advanced_products/'+o+'_spire_corrected_noise.txt')
-                spaxel = ['SLWA1','SLWA2','SLWA3','SLWB1','SLWB2','SLWB3','SLWB4','SLWC1','SLWC2','SLWC3','SLWC4','SLWC5','SLWD1','SLWD2','SLWD3','SLWD4','SLWE1','SLWE2','SLWE3',\
-                          'SSWA1','SSWA2','SSWA3','SSWA4','SSWB1','SSWB2','SSWB3','SSWB4','SSWB5','SSWC1','SSWC2','SSWC3','SSWC4','SSWC5','SSWC6','SSWD1','SSWD2','SSWD3','SSWD4',\
-                          'SSWD6','SSWD7','SSWE1','SSWE2','SSWE3','SSWE4','SSWE5','SSWE6','SSWF1','SSWF2','SSWF3','SSWF5','SSWG1','SSWG2','SSWG3','SSWG4']
-                for i in range(0, len(spaxel)):
-                    if os.path.exists(home+indir+'/'+o+'/spire/advanced_products/cube/'+o+'_'+str(spaxel[i])+'_noise.txt'):
-                        os.remove(home+indir+'/'+o+'/spire/advanced_products/cube/'+o+'_'+str(spaxel[i])+'_noise.txt')
+            # if noise_fix == True:
+            #     spaxel = ['SLWA1','SLWA2','SLWA3','SLWB1','SLWB2','SLWB3','SLWB4','SLWC1','SLWC2','SLWC3','SLWC4','SLWC5','SLWD1','SLWD2','SLWD3','SLWD4','SLWE1','SLWE2','SLWE3',\
+            #               'SSWA1','SSWA2','SSWA3','SSWA4','SSWB1','SSWB2','SSWB3','SSWB4','SSWB5','SSWC1','SSWC2','SSWC3','SSWC4','SSWC5','SSWC6','SSWD1','SSWD2','SSWD3','SSWD4',\
+            #               'SSWD6','SSWD7','SSWE1','SSWE2','SSWE3','SSWE4','SSWE5','SSWE6','SSWF1','SSWF2','SSWF3','SSWF5','SSWG1','SSWG2','SSWG3','SSWG4']
+            #     extract_noise(home+indir+'/'+o+'/spire/advanced_products/', o, spire=True)
+            #     for i in range(0, len(spaxel)):
+            #         extract_noise(home+indir+'/'+o+'/spire/advanced_products/cube/', o, cube=spaxel[i], spire=True)
+            # else:
+            #     if os.path.exists(home+indir+'/'+o+'/spire/advanced_products/'+o+'_spire_corrected_noise.txt'):
+            #         os.remove(home+indir+'/'+o+'/spire/advanced_products/'+o+'_spire_corrected_noise.txt')
+            #     spaxel = ['SLWA1','SLWA2','SLWA3','SLWB1','SLWB2','SLWB3','SLWB4','SLWC1','SLWC2','SLWC3','SLWC4','SLWC5','SLWD1','SLWD2','SLWD3','SLWD4','SLWE1','SLWE2','SLWE3',\
+            #               'SSWA1','SSWA2','SSWA3','SSWA4','SSWB1','SSWB2','SSWB3','SSWB4','SSWB5','SSWC1','SSWC2','SSWC3','SSWC4','SSWC5','SSWC6','SSWD1','SSWD2','SSWD3','SSWD4',\
+            #               'SSWD6','SSWD7','SSWE1','SSWE2','SSWE3','SSWE4','SSWE5','SSWE6','SSWF1','SSWF2','SSWF3','SSWF5','SSWG1','SSWG2','SSWG3','SSWG4']
+            #     for i in range(0, len(spaxel)):
+            #         if os.path.exists(home+indir+'/'+o+'/spire/advanced_products/cube/'+o+'_'+str(spaxel[i])+'_noise.txt'):
+            #             os.remove(home+indir+'/'+o+'/spire/advanced_products/cube/'+o+'_'+str(spaxel[i])+'_noise.txt')
 
     # print min(ra_std), max(ra_std), np.mean(ra_std)
     # print min(dec_std), max(dec_std), np.mean(dec_std)

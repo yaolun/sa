@@ -102,7 +102,9 @@ for i in range(len(objlist)):
 	spec_archival = ascii.read(archival_dir+objlist[i]+'/'+objlist[i]+'_pacs_summed_3x3.txt', header_start=None, names=['wave','flux'])
 	archival_cen = ascii.read(archival_dir+objlist[i]+'/cube/'+objlist[i]+'_pacs_pixel13_archival.txt', header_start=None, names=['wave','flux','uncertainty'])
 	# perform scaling from central spaxel to 3x3 spaxls
-	archival_phot_wl, archival_phot_flux = herschel_spec_phot(spec_archival['wave'].data, archival_cen['flux'].data * (spec_archival['flux'].data/archival_cen['flux'].data), filter_func=True)
+	spec_archival['flux'] = archival_cen['flux'] * (spec_archival['flux']/archival_cen['flux'])
+	print (spec_archival['flux'].data/archival_cen['flux'].data)
+	archival_phot_wl, archival_phot_flux = herschel_spec_phot(spec_archival['wave'].data, spec_archival['flux'].data, filter_func=True)
 
 	# find the matched photometry and store them into data_dict
 	mutual_wl = []
