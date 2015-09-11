@@ -70,8 +70,8 @@ def obj_com(indir, noise_fix=False):
 
                 #####
                 for pix in range(1,26):
-                    os.rename(home+indir+'/'+o+'/pacs/data/cube/'+o+'_pacs_pixel'+str(pix)+'_os8_sf7_noise_spectrum.txt',\
-                        home+indir+'/'+o+'/pacs/data/cube/'+o+'_pacs_pixel'+str(pix)+'_os8_sf7_residual_spectrum.txt')
+                    os.rename(home+indir+'/'+o+'/pacs/advanced_products/cube/'+o+'_pacs_pixel'+str(pix)+'_os8_sf7_noise_spectrum.txt',\
+                        home+indir+'/'+o+'/pacs/advanced_products/cube/'+o+'_pacs_pixel'+str(pix)+'_os8_sf7_residual_spectrum.txt')
                 #####
 
             #   print o, len(open(home+indir+'/'+o+'/pacs/data/cube/'+o+'_pacs_pixel13_os8_sf7.txt','r').readlines())
