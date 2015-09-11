@@ -100,7 +100,7 @@ for i in range(len(objlist)):
 
 	# get the spectra photometry from archival data
 	spec_archival = ascii.read(archival_dir+objlist[i]+'/'+objlist[i]+'_pacs_summed_3x3.txt', header_start=None, names=['wave','flux'])
-	archival_cen = ascii.read(archival_dir+objlist[i]+'/cube/'+objlist[i]+'_pacs_pixel13_os8_sf7.txt', header_start=None, names=['wave','flux'])
+	archival_cen = ascii.read(archival_dir+objlist[i]+'/cube/'+objlist[i]+'_pacs_pixel13_archival.txt', header_start=None, names=['wave','flux','uncertainty'])
 	# perform scaling from central spaxel to 3x3 spaxls
 	archival_phot_wl, archival_phot_flux = herschel_spec_phot(spec_archival['wave'].data, spec_cen['flux'].data * (spec_archival['flux'].data/spec_cen['flux'].data), filter_func=True)
 
