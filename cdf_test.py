@@ -70,7 +70,7 @@ def obj_com(indir, noise_fix=False):
                 dec_std[pacsobj.index(o)] = np.std(dec*3600)
 
                 #####
-                if ox.path.exists(home+indir+'/'+o+'/pacs/advanced_products/cube/'+o+'_pacs_pixel13_os8_sf7_noise_spectrum.txt'):
+                if os.path.exists(home+indir+'/'+o+'/pacs/advanced_products/cube/'+o+'_pacs_pixel13_os8_sf7_noise_spectrum.txt'):
                     for pix in range(1,26):
                         os.rename(home+indir+'/'+o+'/pacs/advanced_products/cube/'+o+'_pacs_pixel'+str(pix)+'_os8_sf7_noise_spectrum.txt',\
                             home+indir+'/'+o+'/pacs/advanced_products/cube/'+o+'_pacs_pixel'+str(pix)+'_os8_sf7_residual_spectrum.txt')
