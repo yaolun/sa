@@ -95,7 +95,7 @@ for i in range(len(objlist)):
 		print '--- continuum not found, original data is read instead'
 	else:
 		spec_CDF = ascii.read(CDFdir+objlist[i]+'/pacs/advanced_products/'+objlist[i]+'_centralSpaxel_PointSourceCorrected_CorrectedYES_trim_continuum.txt',\
-							header_start=None, data_start=1, names=['wave','flux','uncertainty'], fill_values=('NaN',np.nan))
+							header_start=None, data_start=1, names=['wave','flux'], fill_values=('NaN',np.nan))
 	spec_phot_wl, spec_phot_flux = herschel_spec_phot(spec_CDF['wave'].data, spec_CDF['flux'].data, filter_func=True)
 
 	# get the spectra photometry from archival data
