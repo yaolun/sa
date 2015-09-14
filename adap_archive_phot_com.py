@@ -103,7 +103,7 @@ for i in range(len(objlist)):
 	archival_cen = ascii.read(archival_dir+objlist[i]+'/cube/'+objlist[i]+'_pacs_pixel13_archival.txt', header_start=None, names=['wave','flux','uncertainty'])
 	# perform scaling from central spaxel to 3x3 spaxls
 	spec_archival['flux'] = archival_cen['flux'] * (spec_archival['flux']/archival_cen['flux'])
-	print (spec_archival['flux'].data/archival_cen['flux'].data)
+	# print (spec_archival['flux'].data/archival_cen['flux'].data)
 	archival_phot_wl, archival_phot_flux = herschel_spec_phot(spec_archival['wave'].data, spec_archival['flux'].data, filter_func=True)
 
 	# find the matched photometry and store them into data_dict
@@ -191,7 +191,7 @@ ax.set_xlim([0.3,1000])
 ax.set_ylim([0.3,1000])
 
 ax.legend([cdf, archiv, fit, fit_arc], [r'$\rm{CDF\,(\sigma/<F_{phot.}>=%2.2f)}$' % std_spec_phot, \
-	r'$\rm{HSA\,(\sigma/<F_{phot.}>=%2.2f)}$' % std_archival_spec_phot, r'$\rm{CDF\,fit}$', r'$\rm{HSA\,fit}$'],\
+	r'$\rm{HSA\,(HIPE\,11)\,(\sigma/<F_{phot.}>=%2.2f)}$' % std_archival_spec_phot, r'$\rm{CDF\,fit}$', r'$\rm{HSA\,fit}$'],\
 	numpoints=1, fontsize=14, loc='upper left', framealpha=0.5)
 ax.set_xlabel(r'$\rm{log(F_{photometry})\,[Jy]}$', fontsize=18)
 ax.set_ylabel(r'$\rm{log(F_{spec.\,phot})\,[Jy]}$', fontsize=18)
