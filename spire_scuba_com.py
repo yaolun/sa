@@ -13,9 +13,10 @@ objlist = ['B1-a','B1-c','B335','BHR71','Ced110-IRS4','FUOri','GSS30-IRS1','HH46
 # objlist = ['B1-a','B335','BHR71']
 
 
-photdir = '/Users/yaolun/data/herschel_phot/'
+photpath = '/Users/yaolun/data/350_450_um_flux.txt'
 CDFdir = '/Users/yaolun/data/CDF_archive/'
-archival_dir = '/Users/yaolun/data/herschel_archival/'
+
+submm = ascii.read(photpath)
 
 SLW_beam = np.pi/4.*34**2
 SSW_beam = np.pi/4.*19**2
@@ -89,7 +90,10 @@ delta_archival_spec_phot = []
 for i in range(len(objlist)):
 	print 'Processing %s' % objlist[i]
 	# get the photometry data
-	phot_dum = phot_reader(photdir, objlist[i], spire=True)
+	# phot_dum = phot_reader(photdir, objlist[i], spire=True)
+	if objlist[i] not in submm['Object']:
+		print 'No submm data for this object.  Object is not included!'
+		continue
 
 	# get the archival data
 	# read in SLWC3 and SSWD4 spectra and combine them with the same trimming scheme in the CDF archive
@@ -130,14 +134,14 @@ for i in range(len(objlist)):
 	spec_phot = []
 	archival_spec_phot = []
 
-	for wl in phot_dum['wave']:
+	for wl in submm['wave'][submm['Object'] == objlist[i]]:
 		if (wl in spec_phot_wl) and (wl in archival_phot_wl):
 			mutual_wl.append(wl)
-			phot.append(float(phot_dum['flux'][phot_dum['wave'] == wl]))
+			phot.append(float(submm['Sv_40as'][(submm['wave'] == wl) & (submm['Object'] == objlist[i])]))
 			spec_phot.append(float(spec_phot_flux[spec_phot_wl == wl]))
 			archival_spec_phot.append(float(archival_phot_flux[archival_phot_wl == wl]))
 
-			total_phot.append(float(phot_dum['flux'][phot_dum['wave'] == wl]))
+			total_phot.append(float(submm['Sv_40as'][(submm['wave'] == wl) & (submm['Object'] == objlist[i])]))
 			delta_spec_phot.append(float(spec_phot_flux[spec_phot_wl == wl])-float(phot_dum['flux'][phot_dum['wave'] == wl]))
 			delta_archival_spec_phot.append(float(archival_phot_flux[archival_phot_wl == wl])-float(phot_dum['flux'][phot_dum['wave'] == wl]))
 	if len(mutual_wl) != 0:
