@@ -3,27 +3,26 @@ import matplotlib.pyplot as plt
 from astropy.io import ascii
 import sys
 import os
-import pdb
-sys.path.append('/Users/yaolun/programs/spectra_analysis')
 from phot_reader import phot_reader
 from phot_filter import phot_filter
 
-objlist = ['AS205','B1-a','B1-c','B335','BHR71','Elias29','FUOri','GSS30-IRS1','HD100546',\
-		   'HD104237','HD141569','HD142527','HD142666','HD169142','HD97048','HD98922','IRAM04191',\
-		   'IRAS03245','IRAS03301','IRAS12496','IRS46','IRS63','L1014','L1157','L1448-MM','L1455-IRS3','L1489','L1527',\
-		   'L1551-IRS5','RCrA-IRS5A','RCrA-IRS7B','RCrA-IRS7C','SCra','Serpens-SMM3','Serpens-SMM4','TMC1','TMC1A',\
-		   'TMR1','V1331Cyg','V1515Cyg','V1735Cyg','VLA1623','WL12'] #HD135344
+objlist = ['B1-a','B1-c','B335','BHR71','Ced110-IRS4','FUOri','GSS30-IRS1','HH46','HH100','IRAS03245',\
+		   'IRAS03301','IRAS12496','IRAS15398','IRS46','L1014','L1157','L1455-IRS3','L1551-IRS5','L483','L723-MM',\
+		   'RCrA-IRS5A','RCrA-IRS7B','RCrA-IRS7C','RNO91','TMC1','TMC1A','TMR1','V1057Cyg','V1331Cyg','V1515Cyg',\
+		   'V1735Cyg','VLA1623','WL12'] #HD135344
+# objlist = ['B1-a','B335','BHR71']
 
-# print objlist
-# objlist = ['AS205','B1-a','B1-c','B335','BHR71','Elias29','FUOri','GSS30-IRS1','HD100546']
 
 photdir = '/Users/yaolun/data/herschel_phot/'
 CDFdir = '/Users/yaolun/data/CDF_archive/'
 archival_dir = '/Users/yaolun/data/herschel_archival/'
 
-data_dict = {'object': [], 'phot': [], 'spec_phot': [], 'archival_spec_phot': []}
+SLW_beam = np.pi/4.*34**2
+SSW_beam = np.pi/4.*19**2
 
-def herschel_spec_phot(wl, flux, pacs=True, spire=False, filter_func=False):
+data_dict = {'object': [], 'phot': [], 'spec_phot': [], 'archival_spec_phot': [], 'wave': []}
+
+def herschel_spec_phot(wl, flux, pacs=False, spire=False, scuba=True, filter_func=False):
 	import numpy as np
 	from scipy.interpolate import interp1d
 	from phot_filter import phot_filter
@@ -32,6 +31,8 @@ def herschel_spec_phot(wl, flux, pacs=True, spire=False, filter_func=False):
 		phot_wl.extend([70.,100.]) # no enough point in longer wavelength to make an accurate 160um photometry
 	if spire == True:
 		phot_wl.extend([250.,350.,500.])
+	if scuba == True:
+		phot_wl.extend([450.])
 	phot_wl = np.array(phot_wl)
 	phot_flux = np.empty_like(phot_wl)
 
@@ -60,6 +61,8 @@ def herschel_spec_phot(wl, flux, pacs=True, spire=False, filter_func=False):
 				fil_name = 'Herschel SPIRE 350um'
 			elif phot_wl[i] == 500:
 				fil_name = 'Herschel SPIRE 500um'
+			elif phot_wl[i] == 450:
+				fil_name = 'SCUBA 450WB'
 
 			filter_func = phot_filter(fil_name)
 
@@ -67,7 +70,7 @@ def herschel_spec_phot(wl, flux, pacs=True, spire=False, filter_func=False):
 			if phot_wl[i] in [70.,100.,160.]:
 				filter_func = filter_func[(filter_func['wave']/1e4 >= max(54.8,min(wl)))*((filter_func['wave']/1e4 <= 95.05)+(filter_func['wave']/1e4 >=103))*(filter_func['wave']/1e4 <= min(190.31,max(wl)))]
 			elif phot_wl[i] in [250.,350.,500.]:
-				filter_func = filter_func[(filter_func['wave']/1e4 >= 195)]
+				filter_func = filter_func[(filter_func['wave']/1e4 >= 195) & (filter_func['wave']/1e4 <= 670)]
 
 			f = interp1d(wl, flux)
 			# print fil_name
@@ -86,32 +89,46 @@ delta_archival_spec_phot = []
 for i in range(len(objlist)):
 	print 'Processing %s' % objlist[i]
 	# get the photometry data
-	phot_dum = phot_reader(photdir, objlist[i], spire=False)
+	phot_dum = phot_reader(photdir, objlist[i], spire=True)
 
-	# get the spectra photometry from continuum, our product
-	if not os.path.exists(CDFdir+objlist[i]+'/pacs/advanced_products/'+objlist[i]+'_centralSpaxel_PointSourceCorrected_CorrectedYES_trim_continuum.txt'):
-		spec_CDF = ascii.read(CDFdir+objlist[i]+'/pacs/data/'+objlist[i]+'_centralSpaxel_PointSourceCorrected_CorrectedYES_trim.txt',\
-							header_start=None, data_start=1, names=['wave','flux','uncertainty'], fill_values=('NaN',np.nan))
-		print '--- continuum not found, original data is read instead'
+	# get the archival data
+	# read in SLWC3 and SSWD4 spectra and combine them with the same trimming scheme in the CDF archive
+	if not (os.path.exists(CDFdir+objlist[i]+'/spire/advanced_products/cube/'+objlist[i]+'_SLWC3_continuum.txt') and \
+			os.path.exists(CDFdir+objlist[i]+'/spire/advanced_products/cube/'+objlist[i]+'_SSWD4_continuum.txt')):
+		CDF_slw = ascii.read(CDFdir+objlist[i]+'/spire/data/cube/'+objlist[i]+'_SLWC3.txt',\
+					header_start=None, data_start=1, names=['wave','intensity'], fill_values=('NaN',np.nan))
+		CDF_ssw = ascii.read(CDFdir+objlist[i]+'/spire/data/cube/'+objlist[i]+'_SSWD4.txt',\
+					header_start=None, data_start=1, names=['wave','intensity'], fill_values=('NaN',np.nan))
+		print '--- either SLWC3 or SSWD4 continuum not found, original data is read instead.'
 	else:
-		spec_CDF = ascii.read(CDFdir+objlist[i]+'/pacs/advanced_products/'+objlist[i]+'_centralSpaxel_PointSourceCorrected_CorrectedYES_trim_continuum.txt',\
-							header_start=None, data_start=1, names=['wave','flux'], fill_values=('NaN',np.nan))
-	spec_phot_wl, spec_phot_flux = herschel_spec_phot(spec_CDF['wave'].data, spec_CDF['flux'].data, filter_func=True)
+		CDF_slw = ascii.read(CDFdir+objlist[i]+'/spire/advanced_products/cube/'+objlist[i]+'_SLWC3_continuum.txt',\
+					header_start=None, data_start=1, names=['wave','intensity'], fill_values=('NaN',np.nan))
+		CDF_ssw = ascii.read(CDFdir+objlist[i]+'/spire/advanced_products/cube/'+objlist[i]+'_SSWD4_continuum.txt',\
+					header_start=None, data_start=1, names=['wave','intensity'], fill_values=('NaN',np.nan))
+	# trim and combine two spectra
+	spec_archival = {'wave': np.hstack((CDF_ssw['wave'][(CDF_ssw['wave'] >= 195.) & (CDF_ssw['wave'] <= 310. )], \
+								   CDF_slw['wave'][CDF_slw['wave'] > 310.])),
+				'flux': np.hstack((CDF_ssw['intensity'][(CDF_ssw['wave'] >= 195.) & (CDF_ssw['intensity'] <= 310. )]*SSW_beam, \
+								   		CDF_slw['intensity'][CDF_slw['wave'] > 310.]*SLW_beam))}
 
-	# get the spectra photometry from archival data
-	spec_archival = ascii.read(archival_dir+objlist[i]+'/'+objlist[i]+'_pacs_summed_3x3.txt', header_start=None, names=['wave','flux'])
-	archival_cen = ascii.read(archival_dir+objlist[i]+'/cube/'+objlist[i]+'_pacs_pixel13_archival.txt', header_start=None, names=['wave','flux','uncertainty'])
-	# perform scaling from central spaxel to 3x3 spaxls
-	spec_archival['flux'] = archival_cen['flux'] * (spec_archival['flux']/archival_cen['flux'])
-	# print (spec_archival['flux'].data/archival_cen['flux'].data)
-	archival_phot_wl, archival_phot_flux = herschel_spec_phot(spec_archival['wave'].data, spec_archival['flux'].data, filter_func=True)
+	archival_phot_wl, archival_phot_flux = herschel_spec_phot(spec_archival['wave'], spec_archival['flux'], filter_func=True)
+
+	# get the spectra photometry from the CDF archive 
+	if not os.path.exists(CDFdir+objlist[i]+'/spire/advanced_products/'+objlist[i]+'_spire_corrected_continuum.txt'):
+		spec_CDF = ascii.read(CDFdir+objlist[i]+'/spire/data/'+objlist[i]+'_spire_corrected.txt',\
+							  header_start=None, data_start=1, names=['wave','flux'])
+		print '--- the continuum of extended-corrected spectrum is not found, original data is read instead'
+	else:
+		spec_CDF = ascii.read(CDFdir+objlist[i]+'/spire/advanced_products/'+objlist[i]+'_spire_corrected_continuum.txt',\
+							  header_start=None, data_start=1, names=['wave','flux'])
+	# get the filter-convolved spectro-photometry
+	spec_phot_wl, spec_phot_flux = herschel_spec_phot(spec_CDF['wave'].data, spec_CDF['flux'].data, filter_func=True)
 
 	# find the matched photometry and store them into data_dict
 	mutual_wl = []
 	phot = []
 	spec_phot = []
 	archival_spec_phot = []
-
 
 	for wl in phot_dum['wave']:
 		if (wl in spec_phot_wl) and (wl in archival_phot_wl):
@@ -124,10 +141,11 @@ for i in range(len(objlist)):
 			delta_spec_phot.append(float(spec_phot_flux[spec_phot_wl == wl])-float(phot_dum['flux'][phot_dum['wave'] == wl]))
 			delta_archival_spec_phot.append(float(archival_phot_flux[archival_phot_wl == wl])-float(phot_dum['flux'][phot_dum['wave'] == wl]))
 	if len(mutual_wl) != 0:
-		data_dict['object'].append(objlist[i])
-		data_dict['phot'].append(phot)
-		data_dict['spec_phot'].append(spec_phot)
-		data_dict['archival_spec_phot'].append(archival_spec_phot)
+		data_dict['object'].append(np.array(objlist[i]))
+		data_dict['phot'].append(np.array(phot))
+		data_dict['spec_phot'].append(np.array(spec_phot))
+		data_dict['archival_spec_phot'].append(np.array(archival_spec_phot))
+		data_dict['wave'].append(np.array(mutual_wl))
 	else:
 		print '--- No matched photometry data.  Object not included!'
 		no_match_obj.append(objlist[i])
@@ -157,8 +175,10 @@ spec_phot = []
 archival_spec_phot = []
 
 for i in range(len(data_dict['object'])):
-	cdf, = ax.plot(data_dict['phot'][i], data_dict['spec_phot'][i], 'o', color='Blue', mec='None', alpha=0.7)
-	archiv, = ax.plot(data_dict['phot'][i], data_dict['archival_spec_phot'][i], 'o', color='Red', mec='None', alpha=0.7)
+	cdf, = ax.plot(data_dict['phot'][i], \
+				   data_dict['spec_phot'][i], 'o', color='Blue', mec='None', alpha=0.7)
+	archiv, = ax.plot(data_dict['phot'][i], \
+					  data_dict['archival_spec_phot'][i], 'o', color='Red', mec='None', alpha=0.7)
 	# print data_dict['phot'][i], data_dict['spec_phot'][i], data_dict['archival_spec_phot'][i]
 	if (np.mean(np.array(data_dict['phot'][i])/np.array(data_dict['spec_phot'][i])) > 10.) or (np.mean(np.array(data_dict['phot'][i])/np.array(data_dict['spec_phot'][i])) < 0.1):
 		continue
@@ -200,5 +220,5 @@ ax.minorticks_on()
 ax.tick_params('both',labelsize=18,width=1.5,which='major',pad=10,length=5)
 ax.tick_params('both',labelsize=18,width=1.5,which='minor',pad=10,length=2.5)
 
-fig.savefig('/Users/yaolun/test/phot_com.pdf', format='pdf', dpi=300, bbox_inches='tight')
+fig.savefig('/Users/yaolun/test/phot_com_scuba.pdf', format='pdf', dpi=300, bbox_inches='tight')
 fig.clf()
