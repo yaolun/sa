@@ -6,7 +6,7 @@ import os
 from phot_reader import phot_reader
 from phot_filter import phot_filter
 
-objlist = ['B1-a','B1-c','B335','BHR71','Ced110-IRS4','FUOri','GSS30-IRS1','HH46','HH100','IRAS03245',\
+objlist = ['B1-a','B1-c','B335','BHR71','FUOri','GSS30-IRS1','HH46','HH100','IRAS03245',\
 		   'IRAS03301','IRAS12496','IRAS15398','IRS46','L1014','L1157','L1455-IRS3','L1551-IRS5','L483','L723-MM',\
 		   'RCrA-IRS5A','RCrA-IRS7B','RCrA-IRS7C','RNO91','TMC1','TMC1A','TMR1','V1057Cyg','V1331Cyg','V1515Cyg',\
 		   'V1735Cyg','VLA1623','WL12'] #HD135344
@@ -108,8 +108,8 @@ for i in range(len(objlist)):
 	# trim and combine two spectra
 	spec_archival = {'wave': np.hstack((CDF_ssw['wave'][(CDF_ssw['wave'] >= 195.) & (CDF_ssw['wave'] <= 310. )], \
 								   CDF_slw['wave'][CDF_slw['wave'] > 310.])),
-				'flux': np.hstack((CDF_ssw['intensity'][(CDF_ssw['wave'] >= 195.) & (CDF_ssw['intensity'] <= 310. )]*SSW_beam, \
-								   		CDF_slw['intensity'][CDF_slw['wave'] > 310.]*SLW_beam))}
+					 'flux': np.hstack((CDF_ssw['intensity'][(CDF_ssw['wave'] >= 195.) & (CDF_ssw['intensity'] <= 310. )]*SSW_beam, \
+								   CDF_slw['intensity'][CDF_slw['wave'] > 310.]*SLW_beam))}
 
 	archival_phot_wl, archival_phot_flux = herschel_spec_phot(spec_archival['wave'], spec_archival['flux'], filter_func=True)
 
