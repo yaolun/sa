@@ -33,7 +33,7 @@ def herschel_spec_phot(wl, flux, pacs=False, spire=False, scuba=True, filter_fun
 	if spire == True:
 		phot_wl.extend([250.,350.,500.])
 	if scuba == True:
-		phot_wl.extend([450.])
+		phot_wl.extend([350., 450.])
 	phot_wl = np.array(phot_wl)
 	phot_flux = np.empty_like(phot_wl)
 
@@ -59,7 +59,8 @@ def herschel_spec_phot(wl, flux, pacs=False, spire=False, scuba=True, filter_fun
 			elif phot_wl[i] == 250:
 				fil_name = 'Herschel SPIRE 250um'
 			elif phot_wl[i] == 350:
-				fil_name = 'Herschel SPIRE 350um'
+				# fil_name = 'Herschel SPIRE 350um'
+				fil_name = 'SHARC-II 350um extracted'
 			elif phot_wl[i] == 500:
 				fil_name = 'Herschel SPIRE 500um'
 			elif phot_wl[i] == 450:
@@ -133,17 +134,24 @@ for i in range(len(objlist)):
 	phot = []
 	spec_phot = []
 	archival_spec_phot = []
+	aper = 'Sv_40as'
+	# if objlist[i] in ['B1-a', 'B1-c', 'B335', 'IRAS03245', 'L1157']:
+		# aper = 'Sv_20as'
 
 	for wl in submm['wave'][submm['Object'] == objlist[i]]:
+		if np.isnan(float(submm[aper][(submm['wave'] == wl) & (submm['Object'] == objlist[i])])):
+			continue
 		if (wl in spec_phot_wl) and (wl in archival_phot_wl):
 			mutual_wl.append(wl)
-			phot.append(float(submm['Sv_40as'][(submm['wave'] == wl) & (submm['Object'] == objlist[i])]))
+			phot.append(float(submm[aper][(submm['wave'] == wl) & (submm['Object'] == objlist[i])]))
 			spec_phot.append(float(spec_phot_flux[spec_phot_wl == wl]))
 			archival_spec_phot.append(float(archival_phot_flux[archival_phot_wl == wl]))
 
-			total_phot.append(float(submm['Sv_40as'][(submm['wave'] == wl) & (submm['Object'] == objlist[i])]))
-			delta_spec_phot.append(float(spec_phot_flux[spec_phot_wl == wl])-float(phot_dum['flux'][phot_dum['wave'] == wl]))
-			delta_archival_spec_phot.append(float(archival_phot_flux[archival_phot_wl == wl])-float(phot_dum['flux'][phot_dum['wave'] == wl]))
+			print objlist[i], wl, float(submm[aper][(submm['wave'] == wl) & (submm['Object'] == objlist[i])])
+
+			total_phot.append(float(submm[aper][(submm['wave'] == wl) & (submm['Object'] == objlist[i])]))
+			delta_spec_phot.append(float(spec_phot_flux[spec_phot_wl == wl])-float(submm[aper][(submm['wave'] == wl) & (submm['Object'] == objlist[i])]))
+			delta_archival_spec_phot.append(float(archival_phot_flux[archival_phot_wl == wl])-float(submm[aper][(submm['wave'] == wl) & (submm['Object'] == objlist[i])]))
 	if len(mutual_wl) != 0:
 		data_dict['object'].append(np.array(objlist[i]))
 		data_dict['phot'].append(np.array(phot))
@@ -156,7 +164,7 @@ for i in range(len(objlist)):
 
 from pprint import pprint
 print no_match_obj
-print 'number of objects: ', len(data_dict['object'])-len(no_match_obj)
+print 'number of objects: ', len(data_dict['object'])#-len(no_match_obj)
 # calculate the standard deviation of two products
 total_phot = np.array(total_phot)
 delta_spec_phot = np.array(delta_spec_phot)
@@ -165,7 +173,7 @@ mean_phot = np.mean(total_phot)
 std_spec_phot = np.std(delta_spec_phot)/mean_phot
 std_archival_spec_phot = np.std(delta_archival_spec_phot)/mean_phot
 
-# print data_dict['phot'][:]
+print pprint(data_dict['object'])
 
 # plot!
 
@@ -211,8 +219,8 @@ equal, = ax.plot([min(phot), max(phot)], [min(phot), max(phot)], '-', color='k',
 
 ax.set_xscale('log')
 ax.set_yscale('log')
-ax.set_xlim([0.3,1000])
-ax.set_ylim([0.3,1000])
+# ax.set_xlim([0.3,1000])
+# ax.set_ylim([0.3,1000])
 
 ax.legend([cdf, archiv, fit, fit_arc], [r'$\rm{CDF\,(\sigma/<F_{phot.}>=%2.2f)}$' % std_spec_phot, \
 	r'$\rm{HSA\,(HIPE\,11)\,(\sigma/<F_{phot.}>=%2.2f)}$' % std_archival_spec_phot, r'$\rm{CDF\,fit}$', r'$\rm{HSA\,fit}$'],\
