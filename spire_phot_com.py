@@ -171,7 +171,7 @@ std_archival_spec_phot = np.std(delta_archival_spec_phot)/mean_phot
 mean_ratio = np.mean(ratio)
 std_ratio = np.std(ratio)
 mean_hsa_ratio = np.mean(hsa_ratio)
-std_rhsa_atio = np.std(hsa_ratio)
+std_hsa_ratio = np.std(hsa_ratio)
 
 print 'Mean ratio = %5f with a standard deviation of %5f' % (mean_ratio, std_ratio)
 print 'HSA: Mean ratio = %5f with a standard deviation of %5f' % (mean_hsa_ratio, std_hsa_ratio)

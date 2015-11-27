@@ -182,7 +182,7 @@ std_archival_spec_phot = np.std(delta_archival_spec_phot)/mean_phot
 mean_ratio = np.mean(ratio)
 std_ratio = np.std(ratio)
 mean_hsa_ratio = np.mean(hsa_ratio)
-std_rhsa_atio = np.std(hsa_ratio)
+std_hsa_ratio = np.std(hsa_ratio)
 
 print pprint(data_dict['object'])
 
