@@ -506,7 +506,7 @@ def unc_test(filepath,plotdir,png=True, module=False):
     # g,        RA(deg),        Dec(deg),       Blend,          Validity
     # ====================================================================================================
     header = data.colnames
-    data = data[(np.isnan(data['SNR'])!=True) & (data['Validity']==1)]  # Temperory procedure to exclude the missing segment in the spectrum resulting in the NaN in SNR
+    data = data[(np.isnan(data['SNR'])!=True) & (data['Validity']==1) & (data['SNR']>=3.)]  # Temperory procedure to exclude the missing segment in the spectrum resulting in the NaN in SNR
     snr = abs(data['SNR'][np.argsort(data['ObsWL(um)'])])
 
     snr_flux = (data['Str(W/cm2'+unit+')']/data['Sig_str(W/cm2'+unit+')'])[np.argsort(data['ObsWL(um)'])]
@@ -516,6 +516,13 @@ def unc_test(filepath,plotdir,png=True, module=False):
     noise = data['Noise(W/cm2/um'+unit+')'][np.argsort(data['ObsWL(um)'])]
     fwhm = data['FWHM(um)'][np.argsort(data['ObsWL(um)'])]
 
+    ##
+    if max(wl) < 200.:
+        noise_base = noise*fwhm
+        test = (sig_str <= 1e-21) & (sig_str >= 10**-21.5) & (noise_base >= 10**-22.5) & (noise_base <= 1e-22)
+        for i in range(len(data['Line'][test])):
+            print data['Object'][test][i], data['Line'][test][i], data['SNR'][test][i], data['Pixel_No.'][test][i], data['Blend'][test][i]
+    ##
 
     print 'Plotting scatter/histogram...'
     from matplotlib.ticker import NullFormatter
@@ -598,13 +605,16 @@ def unc_test(filepath,plotdir,png=True, module=False):
             b2a = axScatter.scatter(x2, y2, c='b', s=30, lw=0, alpha=0.5)
             r1s = axScatter.scatter(x3, y3, c='r', s=30, lw=0, alpha=0.5)
             r1l = axScatter.scatter(x4, y4, c='k', s=30, lw=0, alpha=0.5)
-            lg = plt.legend([b1a, b2a, r1s, r1l], [r'$\rm{B1A}$', r'$\rm{B2A}$', r'$\rm{R1-short}$', r'$\rm{R1-long}$'],\
-                            loc='best', bbox_to_anchor=[0.35,1],bbox_transform=axScatter.transAxes, numpoints=1, scatterpoints=1, fontsize=18)
+            lg = plt.legend([b1a, b2a, r1s, r1l], [r'$\rm{B2A\,(54.8\,\mu m - 72.3\,\mu m)}$',\
+                                                   r'$\rm{B2B\,(72.3\,\mu m - 95.05\,\mu m)}$',\
+                                                   r'$\rm{R1-short\,(101.4\,\mu m - 143\,\mu m)}$',\
+                                                   r'$\rm{R1-long\,(143\,\mu m - 190.31\,\mu m)}$'],\
+                            loc='best', bbox_to_anchor=[1,0.25],bbox_transform=axScatter.transAxes, numpoints=1, scatterpoints=1, fontsize=18)
         else:
             ssw = axScatter.scatter(x1, y1, c='g', s=30, lw=0, alpha=0.5)
             slw = axScatter.scatter(x2, y2, c='b', s=30, lw=0, alpha=0.5)
-            lg = plt.legend([ssw, slw], [r'$\rm{SSW}$', r'$\rm{SSW}$'],\
-                            loc='best', bbox_to_anchor=[0.35,1],bbox_transform=axScatter.transAxes, numpoints=1, scatterpoints=1, fontsize=18)
+            lg = plt.legend([ssw, slw], [r'$\rm{SSW\,(195\,\mu m - 310\,\mu m)}$', r'$\rm{SLW\,(310\,\mu m\,and\,longer)}$'],\
+                            loc='best', bbox_to_anchor=[0.5,1],bbox_transform=axScatter.transAxes, numpoints=1, scatterpoints=1, fontsize=18)
 
     # now determine nice limits by hand:
     binwidth = 0.05
@@ -673,10 +683,10 @@ def unc_test(filepath,plotdir,png=True, module=False):
 
     print 'Finished the uncertainty plots, check them!'
 
-unc_test('/data/CDF_archive/CDF_archive_pacs_1d_lines.txt', '/test/', module=True)
-unc_test('/data/CDF_archive/CDF_archive_spire_1d_lines.txt', '/test/', module=True)
+# unc_test('/data/CDF_archive/CDF_archive_pacs_1d_lines.txt', '/test/', module=True)
+# unc_test('/data/CDF_archive/CDF_archive_spire_1d_lines.txt', '/test/', module=True)
 unc_test('/data/CDF_archive/CDF_archive_pacs_cube_lines.txt', '/test/', module=True)
-unc_test('/data/CDF_archive/CDF_archive_spire_cube_lines.txt', '/test/', module=True)
+# unc_test('/data/CDF_archive/CDF_archive_spire_cube_lines.txt', '/test/', module=True)
 
 
 def fitting_check(indir,outdir):

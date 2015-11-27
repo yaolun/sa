@@ -225,7 +225,7 @@ ax.set_yscale('log')
 ax.legend([cdf, archiv, fit, fit_arc], [r'$\rm{CDF\,(\sigma/<F_{phot.}>=%2.2f)}$' % std_spec_phot, \
 	r'$\rm{HSA\,(HIPE\,11)\,(\sigma/<F_{phot.}>=%2.2f)}$' % std_archival_spec_phot, r'$\rm{CDF\,fit}$', r'$\rm{HSA\,fit}$'],\
 	numpoints=1, fontsize=14, loc='upper left', framealpha=0.5)
-ax.set_xlabel(r'$\rm{log(F_{photometry})\,[Jy]}$', fontsize=18)
+ax.set_xlabel(r'$\rm{log(F_{ground-based\,submm})\,[Jy]}$', fontsize=18)
 ax.set_ylabel(r'$\rm{log(F_{spec.\,phot})\,[Jy]}$', fontsize=18)
 [ax.spines[axis].set_linewidth(1.5) for axis in ['top','bottom','left','right']]
 ax.minorticks_on()
