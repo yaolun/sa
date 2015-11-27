@@ -87,6 +87,7 @@ no_match_obj = []
 total_phot = []
 delta_spec_phot = []
 delta_archival_spec_phot = []
+ratio = []
 # pdb.set_trace()
 for i in range(len(objlist)):
 	print 'Processing %s' % objlist[i]
@@ -152,6 +153,8 @@ for i in range(len(objlist)):
 			total_phot.append(float(submm[aper][(submm['wave'] == wl) & (submm['Object'] == objlist[i])]))
 			delta_spec_phot.append(float(spec_phot_flux[spec_phot_wl == wl])-float(submm[aper][(submm['wave'] == wl) & (submm['Object'] == objlist[i])]))
 			delta_archival_spec_phot.append(float(archival_phot_flux[archival_phot_wl == wl])-float(submm[aper][(submm['wave'] == wl) & (submm['Object'] == objlist[i])]))
+			ratio.append(float(submm[aper][(submm['wave'] == wl) & (submm['Object'] == objlist[i])]) / \
+						 float(archival_phot_flux[archival_phot_wl == wl]))
 	if len(mutual_wl) != 0:
 		data_dict['object'].append(np.array(objlist[i]))
 		data_dict['phot'].append(np.array(phot))
@@ -173,7 +176,12 @@ mean_phot = np.mean(total_phot)
 std_spec_phot = np.std(delta_spec_phot)/mean_phot
 std_archival_spec_phot = np.std(delta_archival_spec_phot)/mean_phot
 
+mean_ratio = np.mean(ratio)
+std_ratio = np.std(ratio)
+
 print pprint(data_dict['object'])
+
+print 'Mean ratio = %5f with a standard deviation of %5f' % (mean_ratio, std_ratio)
 
 # plot!
 
