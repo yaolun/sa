@@ -88,7 +88,7 @@ for i in range(len(objlist)):
 	# get the photometry data
 	phot_dum = phot_reader(photdir, objlist[i], spire=False)
 
-	# get the spectra photometry from continuum, our prodcuts
+	# get the spectra photometry from continuum, our product
 	if not os.path.exists(CDFdir+objlist[i]+'/pacs/advanced_products/'+objlist[i]+'_centralSpaxel_PointSourceCorrected_CorrectedYES_trim_continuum.txt'):
 		spec_CDF = ascii.read(CDFdir+objlist[i]+'/pacs/data/'+objlist[i]+'_centralSpaxel_PointSourceCorrected_CorrectedYES_trim.txt',\
 							header_start=None, data_start=1, names=['wave','flux','uncertainty'], fill_values=('NaN',np.nan))

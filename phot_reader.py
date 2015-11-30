@@ -20,7 +20,7 @@ def phot_reader(datadir, objname, pacs=True, spire=True):
 			print 'Duplicate Photometry found'
 			for i in range(len(wave)):
 				print wave[i], flux[i]
-	return {'wave': np.array(wave), 'flux': np.array(flux)}
+	return {'wave': np.array(wave, dtype='float'), 'flux': np.array(flux, dtype='float')}
 
 # from pprint import pprint
 # datadir = '/Users/yaolun/data/herschel_phot/'

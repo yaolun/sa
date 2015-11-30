@@ -72,14 +72,14 @@ def pop_dia_1d(objname,plotdir,pacs=None,spire=None,single=False):
         ax_rot_dia.fill_between(x, yfit-yerr, yfit+yerr, facecolor='DarkMagenta', edgecolor='None', alpha=0.5)
         # ax_rot_dia.plot(x,yfit+yerr,'--',color='Magenta')
         # ax_rot_dia.plot(x,yfit-yerr,'--',color='Magenta')
-        ax_rot_dia.set_xlabel(r'$\mathrm{E_{u}~(K)}$',fontsize=18)
-        ax_rot_dia.set_ylabel(r'$\mathrm{log(\mathcal{N}_{J}/g_{J})}$',fontsize=18)
+        ax_rot_dia.set_xlabel(r'$\rm{E_{u}\,(K)}$',fontsize=18)
+        ax_rot_dia.set_ylabel(r'$\rm{log(\mathcal{N}_{J}/g_{J})}$',fontsize=18)
         ax_rot_dia.tick_params('both',labelsize=16,width=1.5,which='major')
         ax_rot_dia.tick_params('both',labelsize=16,width=1.5,which='minor')
         [ax_rot_dia.spines[axis].set_linewidth(1.5) for axis in ['top','bottom','left','right']]
         ax_rot_dia.set_xlim([0,6000])
         ax_rot_dia.set_ylim([42,50])
-        ax_rot_dia.legend([fit],[r'$\mathrm{T_{rot}= %5.1f \pm %5.1f~K,~\mathcal{N}= %3.2f \times 10^{%d}}$' % (t_rot,sig_t_rot,N_fit/10**np.floor(np.log10(N_fit)),np.floor(np.log10(N_fit)))],\
+        ax_rot_dia.legend([fit],[r'$\rm{T_{rot}= %5.1f \pm %5.1f\,K,~\mathcal{N}= %3.2f \times 10^{%d}}$' % (t_rot,sig_t_rot,N_fit/10**np.floor(np.log10(N_fit)),np.floor(np.log10(N_fit)))],\
             numpoints=1,loc='upper right',fontsize=14,framealpha=0.3)
         fig_rot_dia.savefig(home+plotdir+objname+'_co_rot_single.pdf',format='pdf',dpi=300, bbox_inches='tight')
         ax_rot_dia.cla()
@@ -133,8 +133,8 @@ def pop_dia_1d(objname,plotdir,pacs=None,spire=None,single=False):
                 # ax_rot_dia.plot(x[x<turning_pt],yfit_cool+yerr_cool,'--',color='MediumBlue')
                 # ax_rot_dia.plot(x[x<turning_pt],yfit_cool-yerr_cool,'--',color='MediumBlue')
     
-                ax_rot_dia.set_xlabel(r'$\mathrm{E_{u}~(K)}$',fontsize=18)
-                ax_rot_dia.set_ylabel(r'$\mathrm{log(\mathcal{N}_{J}/g_{J})}$',fontsize=18)
+                ax_rot_dia.set_xlabel(r'$\rm{E_{u}\,(K)}$',fontsize=18)
+                ax_rot_dia.set_ylabel(r'$\rm{log(\mathcal{N}_{J}/g_{J})}$',fontsize=18)
                 ax_rot_dia.tick_params('both',labelsize=16,width=1.5,which='major')
                 ax_rot_dia.tick_params('both',labelsize=16,width=1.5,which='minor')
                 [ax_rot_dia.spines[axis].set_linewidth(1.5) for axis in ['top','bottom','left','right']]
@@ -142,8 +142,8 @@ def pop_dia_1d(objname,plotdir,pacs=None,spire=None,single=False):
                 ax_rot_dia.set_ylim([42,50])
     
                 ax_rot_dia.legend([fit_warm,fit_cool],\
-                    [r'$\mathrm{T_{rot,warm}= %5.1f \pm %5.1f~K,~\mathcal{N}= %3.2f \times 10^{%d}}$' % (t_rot_warm,sig_t_rot_warm,N_warm_fit/10**np.floor(np.log10(N_warm_fit)),np.floor(np.log10(N_warm_fit))),\
-                         r'$\mathrm{T_{rot,cool}~~= %5.1f \pm %5.1f~K,~\mathcal{N}= %3.2f \times 10^{%d}}$' % (t_rot_cool,sig_t_rot_cool,N_cool_fit/10**np.floor(np.log10(N_cool_fit)),np.floor(np.log10(N_cool_fit)))],\
+                    [r'$\rm{T_{rot,warm}= %5.1f \pm %5.1f\,K,\,\mathcal{N}= %3.2f \times 10^{%d}}$' % (t_rot_warm,sig_t_rot_warm,N_warm_fit/10**np.floor(np.log10(N_warm_fit)),np.floor(np.log10(N_warm_fit))),\
+                         r'$\rm{T_{rot,cool}\,\,= %5.1f \pm %5.1f\,K,\,\mathcal{N}= %3.2f \times 10^{%d}}$' % (t_rot_cool,sig_t_rot_cool,N_cool_fit/10**np.floor(np.log10(N_cool_fit)),np.floor(np.log10(N_cool_fit)))],\
                          numpoints=1,loc='upper right',fontsize=14,framealpha=0.3)
                 fig_rot_dia.savefig(home+plotdir+objname+'_co_rot_two.pdf',format='pdf',dpi=300, bbox_inches='tight')
                 ax_rot_dia.cla()
@@ -200,8 +200,8 @@ def pop_dia_1d(objname,plotdir,pacs=None,spire=None,single=False):
                     # ax_rot_dia.plot(x[x<turning_pt[0]],yfit_cool+yerr_cool,'--',color='MediumBlue')
                     # ax_rot_dia.plot(x[x<turning_pt[0]],yfit_cool-yerr_cool,'--',color='MediumBlue')
         
-                    ax_rot_dia.set_xlabel(r'$\mathrm{E_{u}~(K)}$',fontsize=18)
-                    ax_rot_dia.set_ylabel(r'$\mathrm{log(\mathcal{N}_{J}/g_{J})}$',fontsize=18)
+                    ax_rot_dia.set_xlabel(r'$\rm{E_{u}\,(K)}$',fontsize=18)
+                    ax_rot_dia.set_ylabel(r'$\rm{log(\mathcal{N}_{J}/g_{J})}$',fontsize=18)
                     ax_rot_dia.set_xlim([0,6000])
                     ax_rot_dia.set_ylim([42,50])
                     
@@ -211,9 +211,9 @@ def pop_dia_1d(objname,plotdir,pacs=None,spire=None,single=False):
                     # ax_rot_dia.minorticks_on()
 
                     ax_rot_dia.legend([fit_hot,fit_warm,fit_cool],\
-                        [r'$\mathrm{T_{rot,warm}= %5.1f \pm %5.1f~K,~\mathcal{N}= %3.2f \times 10^{%d}}$' % (t_rot_hot,sig_t_rot_hot,N_hot_fit/10**np.floor(np.log10(N_hot_fit)),np.floor(np.log10(N_hot_fit))),\
-                         r'$\mathrm{T_{rot,cool}~~= %5.1f \pm %5.1f~K,~\mathcal{N}= %3.2f \times 10^{%d}}$' % (t_rot_warm,sig_t_rot_warm,N_warm_fit/10**np.floor(np.log10(N_warm_fit)),np.floor(np.log10(N_warm_fit))),\
-                         r'$\mathrm{T_{rot,cold}~~=~~ %5.1f \pm %5.1f~K,~\mathcal{N}= %3.2f \times 10^{%d}}$' % (t_rot_cool,sig_t_rot_cool,N_cool_fit/10**np.floor(np.log10(N_cool_fit)),np.floor(np.log10(N_cool_fit)))],\
+                        [r'$\rm{T_{rot,warm}= %5.1f \pm %5.1f\,K,\,\mathcal{N}= %3.2f \times 10^{%d}}$' % (t_rot_hot,sig_t_rot_hot,N_hot_fit/10**np.floor(np.log10(N_hot_fit)),np.floor(np.log10(N_hot_fit))),\
+                         r'$\rm{T_{rot,cool}\,\,= %5.1f \pm %5.1f\,K,\,\mathcal{N}= %3.2f \times 10^{%d}}$' % (t_rot_warm,sig_t_rot_warm,N_warm_fit/10**np.floor(np.log10(N_warm_fit)),np.floor(np.log10(N_warm_fit))),\
+                         r'$\rm{T_{rot,cold}\,\,=\,\, %5.1f \pm %5.1f\,K,\,\mathcal{N}= %3.2f \times 10^{%d}}$' % (t_rot_cool,sig_t_rot_cool,N_cool_fit/10**np.floor(np.log10(N_cool_fit)),np.floor(np.log10(N_cool_fit)))],\
                          numpoints=1,loc='upper right',fontsize=14,framealpha=0.3)
                     fig_rot_dia.savefig(home+plotdir+objname+'_co_rot_three.pdf',format='pdf',dpi=300, bbox_inches='tight')
                     ax_rot_dia.cla()
@@ -244,6 +244,9 @@ def pop_dia_1d(objname,plotdir,pacs=None,spire=None,single=False):
                     [yfit_cool,yerr_cool,t_rot_cool,sig_t_rot_cool,s_min_cool,yoff_cool] = lin_leastsqfit(x[(x<turning_pt[1]) & (x>=turning_pt[0])], y[(x<turning_pt[1]) & (x>=turning_pt[0])], y_sig[(x<turning_pt[1]) & (x>=turning_pt[0])])
                     [yfit_cold,yerr_cold,t_rot_cold,sig_t_rot_cold,s_min_cold,yoff_cold] = lin_leastsqfit(x[x<turning_pt[0]], y[x<turning_pt[0]],y_sig[x<turning_pt[0]])
                     
+                    print turning_pt
+                    print x
+
                     if (s_min_cold+s_min_cool+s_min_warm+s_min_hot) < s_min_triple:
                         Q_hot  = float(k*t_rot_hot/h/c/B)
                         Q_warm = float(k*t_rot_warm/h/c/B)
@@ -278,8 +281,8 @@ def pop_dia_1d(objname,plotdir,pacs=None,spire=None,single=False):
                         # ax_rot_dia.plot(x[x<turning_pt[0]],yfit_cold+yerr_cold,'--',color='MediumBlue')
                         # ax_rot_dia.plot(x[x<turning_pt[0]],yfit_cold-yerr_cold,'--',color='MediumBlue')                        
             
-                        ax_rot_dia.set_xlabel(r'$\mathrm{E_{u}~(K)}$',fontsize=18)
-                        ax_rot_dia.set_ylabel(r'$\mathrm{log(\mathcal{N}_{J}/g_{J})}$',fontsize=18)
+                        ax_rot_dia.set_xlabel(r'$\rm{E_{u}\,(K)}$',fontsize=18)
+                        ax_rot_dia.set_ylabel(r'$\rm{log(\mathcal{N}_{J}/g_{J})}$',fontsize=18)
                         ax_rot_dia.set_xlim([0,6000])
                         ax_rot_dia.set_ylim([42,50])
                         
@@ -289,10 +292,10 @@ def pop_dia_1d(objname,plotdir,pacs=None,spire=None,single=False):
                         # ax_rot_dia.minorticks_on()
 
                         ax_rot_dia.legend([fit_hot,fit_warm,fit_cool,fit_cold],\
-                            [r'$\mathrm{T_{rot,hot}= %5.1f \pm %5.1f~K,~\mathcal{N}= %3.2f \times 10^{%d}}$' % (t_rot_hot,sig_t_rot_hot,N_hot_fit/10**np.floor(np.log10(N_hot_fit)),np.floor(np.log10(N_hot_fit))),\
-                             r'$\mathrm{T_{rot,warm}~~= %5.1f \pm %5.1f~K,~\mathcal{N}= %3.2f \times 10^{%d}}$' % (t_rot_warm,sig_t_rot_warm,N_warm_fit/10**np.floor(np.log10(N_warm_fit)),np.floor(np.log10(N_warm_fit))),\
-                             r'$\mathrm{T_{rot,cool}~~=~~ %5.1f \pm %5.1f~K,~\mathcal{N}= %3.2f \times 10^{%d}}$' % (t_rot_cool,sig_t_rot_cool,N_cool_fit/10**np.floor(np.log10(N_cool_fit)),np.floor(np.log10(N_cool_fit))),\
-                             r'$\mathrm{T_{rot,cold}~~=~~ %5.1f \pm %5.1f~K,~\mathcal{N}= %3.2f \times 10^{%d}}$' % (t_rot_cold,sig_t_rot_cold,N_cold_fit/10**np.floor(np.log10(N_cold_fit)),np.floor(np.log10(N_cold_fit)))],\
+                            [r'$\rm{T_{rot,hot}= %5.1f \pm %5.1f\,K,\,\mathcal{N}= %3.2f \times 10^{%d}}$' % (t_rot_hot,sig_t_rot_hot,N_hot_fit/10**np.floor(np.log10(N_hot_fit)),np.floor(np.log10(N_hot_fit))),\
+                             r'$\rm{T_{rot,warm}\,\,= %5.1f \pm %5.1f\,K,\,\mathcal{N}= %3.2f \times 10^{%d}}$' % (t_rot_warm,sig_t_rot_warm,N_warm_fit/10**np.floor(np.log10(N_warm_fit)),np.floor(np.log10(N_warm_fit))),\
+                             r'$\rm{T_{rot,cool}\,\,=\,\, %5.1f \pm %5.1f\,K,\,\mathcal{N}= %3.2f \times 10^{%d}}$' % (t_rot_cool,sig_t_rot_cool,N_cool_fit/10**np.floor(np.log10(N_cool_fit)),np.floor(np.log10(N_cool_fit))),\
+                             r'$\rm{T_{rot,cold}\,\,=\,\, %5.1f \pm %5.1f\,K,\,\mathcal{N}= %3.2f \times 10^{%d}}$' % (t_rot_cold,sig_t_rot_cold,N_cold_fit/10**np.floor(np.log10(N_cold_fit)),np.floor(np.log10(N_cold_fit)))],\
                              numpoints=1,loc='upper right',fontsize=14,framealpha=0.3)
                         fig_rot_dia.savefig(home+plotdir+objname+'_co_rot_four.pdf',format='pdf',dpi=300, bbox_inches='tight')
                         ax_rot_dia.cla()
@@ -418,11 +421,11 @@ def pop_dia_h2o_1d(objname,plotdir,pacs=None,spire=None):
         fit, = ax_rot_dia.plot(x,yfit,color='DarkMagenta')
         ax_rot_dia.plot(x,yfit+yerr,'--',color='Magenta')
         ax_rot_dia.plot(x,yfit-yerr,'--',color='Magenta')
-        ax_rot_dia.set_xlabel(r'$\mathrm{E_{u}~(K)}$',fontsize=14)
-        ax_rot_dia.set_ylabel(r'$\mathrm{log(\mathcal{N}_{J}/g_{J})}$',fontsize=14)
+        ax_rot_dia.set_xlabel(r'$\rm{E_{u}\,(K)}$',fontsize=14)
+        ax_rot_dia.set_ylabel(r'$\rm{log(\mathcal{N}_{J}/g_{J})}$',fontsize=14)
         ax_rot_dia.set_xlim([0,1600])
-        lg_fit = ax_rot_dia.legend([fit],[r'$\mathrm{T_{rot}= %8.4f \pm %8.6f~K,~\mathcal{N}= %.3e~g/cm^{2}}$' % (t_rot,sig_t_rot,N_fit)],numpoints=1,loc='lower left',fontsize=12)
-        lg_data = ax_rot_dia.legend([oh2o,ph2o],[r'$\mathrm{o-H_{2}O}$',r'$\mathrm{p-H_{2}O}$'],loc='lower right',fontsize=14,numpoints=1)
+        lg_fit = ax_rot_dia.legend([fit],[r'$\rm{T_{rot}= %8.4f \pm %8.6f\,K,\,\mathcal{N}= %.3e}$' % (t_rot,sig_t_rot,N_fit)],numpoints=1,loc='lower left',fontsize=12)
+        lg_data = ax_rot_dia.legend([oh2o,ph2o],[r'$\rm{o-H_{2}O}$',r'$\rm{p-H_{2}O}$'],loc='lower right',fontsize=14,numpoints=1)
         plt.gca().add_artist(lg_fit)
         fig_rot_dia.savefig(home+plotdir+objname+'_h2o_rot_single.eps',format='eps',dpi=300, bbox_inches='tight')
         ax_rot_dia.cla()
@@ -438,14 +441,13 @@ from read_fitting import read_fitting_co
 from leastsqfit import lin_leastsqfit
 home = os.path.expanduser('~')
 
-pacs = '/bhr71/fitting/latest/pacs/advanced_products/BHR71_centralSpaxel_PointSourceCorrected_CorrectedYES_trim_lines.txt'
-spire = '/bhr71/fitting/latest/spire/advanced_products/BHR71_spire_corrected_lines.txt'
+pacs = '/bhr71/fitting/BHR71/pacs/advanced_products/BHR71_centralSpaxel_PointSourceCorrected_CorrectedYES_trim_lines.txt'
+spire = '/bhr71/fitting/BHR71/spire/advanced_products/BHR71_spire_corrected_lines.txt'
 pop_dia_1d('BHR71','/bhr71/plots/',pacs=pacs,spire=spire)
-pacs_cube = '/bhr71/fitting/latest/pacs/advanced_products/cube/BHR71_pacs_pixel'
-# pacs_cube = [pacs_cube+str(i)+'_os8_sf7_lines.txt' for i in range(1,26)]
-for i in range(1,26):
-    print i
-    pop_dia_1d('BHR71_pacs_pixel'+str(i),'/bhr71/plots/',pacs=pacs_cube+str(i)+'_os8_sf7_lines.txt')
+pacs_cube = '/bhr71/fitting/BHR71/pacs/advanced_products/cube/BHR71_pacs_pixel'
+# for i in range(1,26):
+#     print i
+#     pop_dia_1d('BHR71_pacs_pixel'+str(i),'/bhr71/plots/',pacs=pacs_cube+str(i)+'_os8_sf7_lines.txt')
 
 # pop_dia_h2o_1d('BHR71','/bhr71/plots/',pacs=pacs,spire=spire)
 # <codecell>

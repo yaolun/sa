@@ -473,7 +473,7 @@ def strong_line(indir):
 
 # print strong_line('/test/BHR71/pacs/advanced_products/')
 
-def unc_test(filepath,plotdir,png=True):
+def unc_test(filepath,plotdir,png=True, module=False):
     """
     Show the uncertainty relation of the measurement from baseline flucuation and the measurement from the fitting routine.
     Usage:
@@ -506,7 +506,7 @@ def unc_test(filepath,plotdir,png=True):
     # g,        RA(deg),        Dec(deg),       Blend,          Validity
     # ====================================================================================================
     header = data.colnames
-    data = data[(np.isnan(data['SNR'])!=True) & (data['Validity']==1)]  # Temperory procedure to exclude the missing segment in the spectrum resulting in the NaN in SNR
+    data = data[(np.isnan(data['SNR'])!=True) & (data['Validity']==1) & (data['SNR']>=3.)]  # Temperory procedure to exclude the missing segment in the spectrum resulting in the NaN in SNR
     snr = abs(data['SNR'][np.argsort(data['ObsWL(um)'])])
 
     snr_flux = (data['Str(W/cm2'+unit+')']/data['Sig_str(W/cm2'+unit+')'])[np.argsort(data['ObsWL(um)'])]
@@ -516,6 +516,13 @@ def unc_test(filepath,plotdir,png=True):
     noise = data['Noise(W/cm2/um'+unit+')'][np.argsort(data['ObsWL(um)'])]
     fwhm = data['FWHM(um)'][np.argsort(data['ObsWL(um)'])]
 
+    ##
+    if max(wl) < 200.:
+        noise_base = noise*fwhm
+        test = (sig_str <= 1e-21) & (sig_str >= 10**-21.5) & (noise_base >= 10**-22.5) & (noise_base <= 1e-22)
+        for i in range(len(data['Line'][test])):
+            print data['Object'][test][i], data['Line'][test][i], data['SNR'][test][i], data['Pixel_No.'][test][i], data['Blend'][test][i]
+    ##
 
     print 'Plotting scatter/histogram...'
     from matplotlib.ticker import NullFormatter
@@ -532,6 +539,28 @@ def unc_test(filepath,plotdir,png=True):
 
     xx = np.log10( noise[(snr >= 10.0)] * fwhm[(snr >= 10.0)] )
     yy = np.log10( sig_str[(snr >= 10.0)] )
+
+    # PACS
+    if max(wl) < 200.:
+        # B1A
+        x1 = np.log10( noise[(wl >= 54.8) & (wl < 72.3)] * fwhm[(wl >= 54.8) & (wl < 72.3)] )
+        y1 = np.log10( sig_str[(wl >= 54.8) & (wl < 72.3)] )
+        # B2A
+        x2 = np.log10( noise[(wl >= 72.3) & (wl <= 95.05)] * fwhm[(wl >= 72.3) & (wl <= 95.05)] )
+        y2 = np.log10( sig_str[(wl >= 72.3) & (wl <= 95.05)] )
+        # R1S
+        x3 = np.log10( noise[(wl >= 101.4) & (wl < 143.0)] * fwhm[(wl >= 101.4) & (wl < 143.0)] )
+        y3 = np.log10( sig_str[(wl >= 101.4) & (wl < 143.0)] )
+        # R1L
+        x4 = np.log10( noise[(wl >= 143.0) & (wl <= 190.31)] * fwhm[(wl >= 143.0) & (wl <= 190.31)] )
+        y4 = np.log10( sig_str[(wl >= 143.0) & (wl <= 190.31)] )
+    else:
+        # SSW
+        x1 = np.log10( noise[(wl >= 195.0) & (wl < 310.0)] * fwhm[(wl >= 195.0) & (wl < 310.0)] )
+        y1 = np.log10( sig_str[(wl >= 195.0) & (wl < 310.0)] )
+        # SLW
+        x2 = np.log10( noise[(wl >= 310.0)] * fwhm[(wl >= 310.0)] )
+        y2 = np.log10( sig_str[(wl >= 310.0)] )
 
     line = np.hstack((np.log10(sig_str[snr >= 3.0]), np.log10(noise[snr >= 3.0]*fwhm[snr >= 3.0])))
 
@@ -564,12 +593,29 @@ def unc_test(filepath,plotdir,png=True):
     axHisty.xaxis.set_ticks([])
 
     # the scatter plot:
-    low = axScatter.scatter(x, y, c='g', s=27, lw=0.5)
-    high = axScatter.scatter(xx, yy, c='r', s=27, lw=0.5)
     slope, = axScatter.plot(line, line, 'b-', linewidth=1.5)
-    lg = plt.legend([low, high, slope],[r'$\rm{3<SNR<10}$',r'$\rm{10<SNR}$',r'$\rm{Equality}$'],\
-                    loc='best', bbox_to_anchor=[0.35,1],bbox_transform=axScatter.transAxes, numpoints=1, scatterpoints=1, fontsize=18)
-    
+    if not module:
+        low = axScatter.scatter(x, y, c='g', s=30, lw=0, alpha=0.5)
+        high = axScatter.scatter(xx, yy, c='r', s=30, lw=0, alpha=0.5)
+        lg = plt.legend([low, high, slope],[r'$\rm{3<SNR<10}$',r'$\rm{10<SNR}$',r'$\rm{Equality}$'],\
+                        loc='best', bbox_to_anchor=[0.35,1],bbox_transform=axScatter.transAxes, numpoints=1, scatterpoints=1, fontsize=18)
+    else:
+        if max(wl) < 200.:
+            b1a = axScatter.scatter(x1, y1, c='g', s=30, lw=0, alpha=0.5)
+            b2a = axScatter.scatter(x2, y2, c='b', s=30, lw=0, alpha=0.5)
+            r1s = axScatter.scatter(x3, y3, c='r', s=30, lw=0, alpha=0.5)
+            r1l = axScatter.scatter(x4, y4, c='k', s=30, lw=0, alpha=0.5)
+            lg = plt.legend([b1a, b2a, r1s, r1l], [r'$\rm{B2A\,(54.8\,\mu m - 72.3\,\mu m)}$',\
+                                                   r'$\rm{B2B\,(72.3\,\mu m - 95.05\,\mu m)}$',\
+                                                   r'$\rm{R1-short\,(101.4\,\mu m - 143\,\mu m)}$',\
+                                                   r'$\rm{R1-long\,(143\,\mu m - 190.31\,\mu m)}$'],\
+                            loc='best', bbox_to_anchor=[1,0.25],bbox_transform=axScatter.transAxes, numpoints=1, scatterpoints=1, fontsize=18)
+        else:
+            ssw = axScatter.scatter(x1, y1, c='g', s=30, lw=0, alpha=0.5)
+            slw = axScatter.scatter(x2, y2, c='b', s=30, lw=0, alpha=0.5)
+            lg = plt.legend([ssw, slw], [r'$\rm{SSW\,(195\,\mu m - 310\,\mu m)}$', r'$\rm{SLW\,(310\,\mu m\,and\,longer)}$'],\
+                            loc='best', bbox_to_anchor=[0.5,1],bbox_transform=axScatter.transAxes, numpoints=1, scatterpoints=1, fontsize=18)
+
     # now determine nice limits by hand:
     binwidth = 0.05
     xymax = np.nanmax( [np.max(x), np.max(y)] )
@@ -581,11 +627,31 @@ def unc_test(filepath,plotdir,png=True):
     axScatter.set_ylim( (llim, ulim) )
 
     bins = np.arange(llim, ulim + binwidth , binwidth)
-    axHistx.hist(x, bins=bins, histtype='step', edgecolor='Green',hatch='////')
-    axHisty.hist(y, bins=bins, histtype='step', edgecolor='Green',hatch='////', orientation='horizontal')
+    if not module:
+        axHistx.hist(x, bins=bins, histtype='step', edgecolor='Green',hatch='////')
+        axHisty.hist(y, bins=bins, histtype='step', edgecolor='Green',hatch='////', orientation='horizontal')
 
-    axHistx.hist(xx, bins=bins, histtype='step', edgecolor='Red', hatch='\\\\\\\\',)
-    axHisty.hist(yy, bins=bins, histtype='step', edgecolor='Red', hatch='\\\\\\\\', orientation='horizontal')
+        axHistx.hist(xx, bins=bins, histtype='step', edgecolor='Red', hatch='\\\\\\\\',)
+        axHisty.hist(yy, bins=bins, histtype='step', edgecolor='Red', hatch='\\\\\\\\', orientation='horizontal')
+    else:
+        if max(wl) < 200.:
+            axHistx.hist(x1, bins=bins, histtype='step', edgecolor='Green',hatch='////')
+            axHisty.hist(y1, bins=bins, histtype='step', edgecolor='Green',hatch='////', orientation='horizontal')
+
+            axHistx.hist(x2, bins=bins, histtype='step', edgecolor='Blue',hatch='\\\\\\\\')
+            axHisty.hist(y2, bins=bins, histtype='step', edgecolor='Blue',hatch='\\\\\\\\', orientation='horizontal')
+
+            axHistx.hist(x3, bins=bins, histtype='step', edgecolor='Red',hatch='////')
+            axHisty.hist(y3, bins=bins, histtype='step', edgecolor='Red',hatch='////', orientation='horizontal')
+
+            axHistx.hist(x4, bins=bins, histtype='step', edgecolor='Black',hatch='\\\\\\\\')
+            axHisty.hist(y4, bins=bins, histtype='step', edgecolor='Black',hatch='\\\\\\\\', orientation='horizontal')
+        else:
+            axHistx.hist(x1, bins=bins, histtype='step', edgecolor='Green',hatch='////')
+            axHisty.hist(y1, bins=bins, histtype='step', edgecolor='Green',hatch='////', orientation='horizontal')
+
+            axHistx.hist(x2, bins=bins, histtype='step', edgecolor='Blue',hatch='\\\\\\\\')
+            axHisty.hist(y2, bins=bins, histtype='step', edgecolor='Blue',hatch='\\\\\\\\', orientation='horizontal')
 
     axHistx.set_xlim( axScatter.get_xlim() )
     axHisty.set_ylim( axScatter.get_ylim() )
@@ -617,7 +683,11 @@ def unc_test(filepath,plotdir,png=True):
 
     print 'Finished the uncertainty plots, check them!'
 
-# unc_test('/test/fixedwidth/CDF_archive_pacs_1d_lines.txt', '/test/')
+# unc_test('/data/CDF_archive/CDF_archive_pacs_1d_lines.txt', '/test/', module=True)
+# unc_test('/data/CDF_archive/CDF_archive_spire_1d_lines.txt', '/test/', module=True)
+unc_test('/data/CDF_archive/CDF_archive_pacs_cube_lines.txt', '/test/', module=True)
+# unc_test('/data/CDF_archive/CDF_archive_spire_cube_lines.txt', '/test/', module=True)
+
 
 def fitting_check(indir,outdir):
     """
