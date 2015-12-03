@@ -507,6 +507,7 @@ def unc_test(filepath,plotdir,png=True, module=False):
     # ====================================================================================================
     header = data.colnames
     data = data[(np.isnan(data['SNR'])!=True) & (data['Validity']==1) & (data['SNR']>=3.)]  # Temperory procedure to exclude the missing segment in the spectrum resulting in the NaN in SNR
+    data = data[data['Object'] == 'GSS30-IRS1']
     snr = abs(data['SNR'][np.argsort(data['ObsWL(um)'])])
 
     snr_flux = (data['Str(W/cm2'+unit+')']/data['Sig_str(W/cm2'+unit+')'])[np.argsort(data['ObsWL(um)'])]
@@ -683,10 +684,10 @@ def unc_test(filepath,plotdir,png=True, module=False):
 
     print 'Finished the uncertainty plots, check them!'
 
-# unc_test('/data/CDF_archive/CDF_archive_pacs_1d_lines.txt', '/test/', module=True)
-# unc_test('/data/CDF_archive/CDF_archive_spire_1d_lines.txt', '/test/', module=True)
+# unc_test('/FWD_archive/CDF_archive/CDF_archive_pacs_1d_lines.txt', '/test/', module=True)
+# unc_test('/FWD_archive/CDF_archive/CDF_archive_spire_1d_lines.txt', '/test/', module=True)
 unc_test('/FWD_archive/CDF_archive/CDF_archive_pacs_cube_lines.txt', '/test/', module=True)
-unc_test('/FWD_archive/CDF_archive/CDF_archive_spire_cube_lines.txt', '/test/', module=True)
+# unc_test('/FWD_archive/CDF_archive/CDF_archive_spire_cube_lines.txt', '/test/', module=True)
 
 
 def fitting_check(indir,outdir):
