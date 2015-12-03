@@ -685,8 +685,8 @@ def unc_test(filepath,plotdir,png=True, module=False):
 
 # unc_test('/data/CDF_archive/CDF_archive_pacs_1d_lines.txt', '/test/', module=True)
 # unc_test('/data/CDF_archive/CDF_archive_spire_1d_lines.txt', '/test/', module=True)
-unc_test('/data/CDF_archive/CDF_archive_pacs_cube_lines.txt', '/test/', module=True)
-# unc_test('/data/CDF_archive/CDF_archive_spire_cube_lines.txt', '/test/', module=True)
+unc_test('/FWD_archive/CDF_archive/CDF_archive_pacs_cube_lines.txt', '/test/', module=True)
+unc_test('/FWD_archive/CDF_archive/CDF_archive_spire_cube_lines.txt', '/test/', module=True)
 
 
 def fitting_check(indir,outdir):
