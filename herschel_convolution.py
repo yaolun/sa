@@ -2,7 +2,8 @@ def herschel_convolution(image, outdir, wave=None, plot=False, scale=1., dist=1.
     """
     image: 2d array contains the image at certain wavelength.
     scale: The conversion factor that converts from an element to physical size in cm.
-           The easiest way to calculate this is size of the object divides the total number of pixels across the image.
+           The easiest way to calculate this is size of the object divides the total number 
+           of pixels across the image.
     dist:  The distance to the object in parsec.  If not given, the default value is 1 pc.
     noise: The detection limit of the observation in unit of erg/s/cm2/Hz/sr
     """
@@ -18,6 +19,7 @@ def herschel_convolution(image, outdir, wave=None, plot=False, scale=1., dist=1.
     pc = const.pc.cgs.value
 
     beam_size = 9.4   # in arcsec
+    beam_size = 1.0
     # calculate the image angular size
     w = len(image[0,:]) * scale / (dist*pc) / 2. * 180/np.pi*3600.
 
@@ -130,4 +132,5 @@ fig.savefig(outdir+'image_'+str(wave)+'.pdf', format='pdf', dpi=300, bbox_inches
 fig.clf()
 
 
-herschel_convolution(val, outdir, wave=wave, plot=True, scale=2*rmax/len(val[0,:]), dist=dist, noise=1e-19)
+syn_im = herschel_convolution(val, outdir, wave=wave, plot=True, scale=2*rmax/len(val[0,:]), dist=dist, noise=1e-19)
+print np.shape(syn_im)
