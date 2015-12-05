@@ -179,6 +179,9 @@ cdf_fit = fit_para[0]*np.log10(phot) + fit_para[1]
 arc_fit = fit_para_arc[0]*np.log10(phot) + fit_para_arc[1]
 print fit_para
 print fit_para_arc
+residual = np.log10(spec_phot) - cdf_fit
+residual_arc = np.log10(archival_spec_phot) - arc_fit
+print 'The stadnard deviation in the residual of CDF and HSA are %4f & %4f' % (np.std(residual), np.std(residual_arc))
 
 # cdf, = ax.plot(phot, spec_phot, 'o', color='Blue', mec='None', alpha=0.7)
 fit, = ax.plot(phot, 10**cdf_fit, color='Blue', alpha=0.7, linewidth=1.5)
@@ -190,8 +193,8 @@ ax.set_yscale('log')
 ax.set_xlim([0.3,1000])
 ax.set_ylim([0.3,1000])
 
-ax.legend([cdf, archiv, fit, fit_arc], [r'$\rm{CDF\,(\sigma/<F_{phot.}>=%2.2f)}$' % std_spec_phot, \
-	r'$\rm{HSA\,(HIPE\,11)\,(\sigma/<F_{phot.}>=%2.2f)}$' % std_archival_spec_phot, r'$\rm{CDF\,fit}$', r'$\rm{HSA\,fit}$'],\
+ax.legend([cdf, archiv, fit, fit_arc], [r'$\rm{CDF\,(\sigma_{residual}=%2.2f)}$' % np.std(residual), \
+	r'$\rm{HSA\,(HIPE\,11)\,(\sigma_{residual}=%2.2f)}$' % np.std(residual_arc), r'$\rm{CDF\,fit}$', r'$\rm{HSA\,fit}$'],\
 	numpoints=1, fontsize=14, loc='upper left', framealpha=0.5)
 ax.set_xlabel(r'$\rm{log(F_{photometry})\,[Jy]}$', fontsize=18)
 ax.set_ylabel(r'$\rm{log(F_{spec.\,phot})\,[Jy]}$', fontsize=18)
