@@ -228,7 +228,7 @@ print fit_para
 print fit_para_arc
 residual = np.log10(spec_phot) - cdf_fit
 residual_arc = np.log10(archival_spec_phot) - arc_fit
-print 'The stadnard deviation in the residual of CDF and HSA are %4f & %4f' % (std(residual), std(residual_arc))
+print 'The stadnard deviation in the residual of CDF and HSA are %4f & %4f' % (np.std(residual), np.std(residual_arc))
 
 # cdf, = ax.plot(phot, spec_phot, 'o', color='Blue', mec='None', alpha=0.7)
 fit, = ax.plot(phot, 10**cdf_fit, color='Blue', alpha=0.7, linewidth=1.5)
