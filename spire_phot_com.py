@@ -228,7 +228,7 @@ spec_phot = np.array(spec_phot)
 archival_spec_phot = np.array(archival_spec_phot)
 
 fit_para = np.polyfit(np.log10(phot), np.log10(spec_phot), 1)
-fit_para_arc = np.polyfit(np.log10(phot), np.log10(archival_spec_phot)+0.57, 1)
+fit_para_arc = np.polyfit(np.log10(phot), np.log10(archival_spec_phot), 1)
 cdf_fit = fit_para[0]*np.log10(phot) + fit_para[1]
 arc_fit = fit_para_arc[0]*np.log10(phot) + fit_para_arc[1]
 print fit_para
