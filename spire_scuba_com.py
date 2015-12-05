@@ -120,7 +120,7 @@ for i in range(len(objlist)):
 
 	archival_phot_wl, archival_phot_flux = herschel_spec_phot(spec_archival['wave'], spec_archival['flux'], filter_func=True)
 
-	# get the spectra photometry from the CDF archive 
+	# get the spectra photometry from the CDF archive
 	if not os.path.exists(CDFdir+objlist[i]+'/spire/advanced_products/'+objlist[i]+'_spire_corrected_continuum.txt'):
 		spec_CDF = ascii.read(CDFdir+objlist[i]+'/spire/data/'+objlist[i]+'_spire_corrected.txt',\
 							  header_start=None, data_start=1, names=['wave','flux'])
@@ -226,6 +226,9 @@ cdf_fit = fit_para[0]*np.log10(phot) + fit_para[1]
 arc_fit = fit_para_arc[0]*np.log10(phot) + fit_para_arc[1]
 print fit_para
 print fit_para_arc
+residual = np.log10(spec_phot) - cdf_fit
+residual_arc = np.log10(archival_spec_phot) - arc_fit
+print 'The stadnard deviation in the residual of CDF and HSA are %4f & %4f' % (std(residual), std(residual_arc))
 
 # cdf, = ax.plot(phot, spec_phot, 'o', color='Blue', mec='None', alpha=0.7)
 fit, = ax.plot(phot, 10**cdf_fit, color='Blue', alpha=0.7, linewidth=1.5)
