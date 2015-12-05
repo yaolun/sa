@@ -507,6 +507,8 @@ def unc_test(filepath,plotdir,png=True, module=False):
     # ====================================================================================================
     header = data.colnames
     data = data[(np.isnan(data['SNR'])!=True) & (data['Validity']==1) & (data['SNR']>=3.)]  # Temperory procedure to exclude the missing segment in the spectrum resulting in the NaN in SNR
+    # data = data[(data['Line'] == 'OH14-12') + (data['Line'] == 'o-H2O5_14-5_05')]
+
     snr = abs(data['SNR'][np.argsort(data['ObsWL(um)'])])
 
     snr_flux = (data['Str(W/cm2'+unit+')']/data['Sig_str(W/cm2'+unit+')'])[np.argsort(data['ObsWL(um)'])]
@@ -515,13 +517,17 @@ def unc_test(filepath,plotdir,png=True, module=False):
     sig_str = data['Sig_str(W/cm2'+unit+')'][np.argsort(data['ObsWL(um)'])]
     noise = data['Noise(W/cm2/um'+unit+')'][np.argsort(data['ObsWL(um)'])]
     fwhm = data['FWHM(um)'][np.argsort(data['ObsWL(um)'])]
+    data = data[np.argsort(data['ObsWL(um)'])]
 
     ##
-    if max(wl) < 200.:
-        noise_base = noise*fwhm
-        test = (sig_str <= 1e-21) & (sig_str >= 10**-21.5) & (noise_base >= 10**-22.5) & (noise_base <= 1e-22)
-        for i in range(len(data['Line'][test])):
-            print data['Object'][test][i], data['Line'][test][i], data['SNR'][test][i], data['Pixel_No.'][test][i], data['Blend'][test][i]
+    # if max(wl) < 200.:
+    #     noise_base = noise*fwhm
+    #     test = (sig_str <= 1e-21) & (sig_str >= 10**-21.5) & (noise_base >= 10**-22.5) & (noise_base <= 1e-22)
+    #     print sig_str[test]
+    #     print noise_base[test]
+    #     print len(data['Line'][test])
+    #     for i in range(len(data['Line'][test])):
+    #         print data['Object'][test][i], data['Line'][test][i], data['SNR'][test][i], data['Pixel_No.'][test][i], data['Noise(W/cm2/um)'][test][i]*data['FWHM(um)'][test][i]
     ##
 
     print 'Plotting scatter/histogram...'
@@ -683,10 +689,11 @@ def unc_test(filepath,plotdir,png=True, module=False):
 
     print 'Finished the uncertainty plots, check them!'
 
-# unc_test('/data/CDF_archive/CDF_archive_pacs_1d_lines.txt', '/test/', module=True)
-# unc_test('/data/CDF_archive/CDF_archive_spire_1d_lines.txt', '/test/', module=True)
-unc_test('/data/CDF_archive/CDF_archive_pacs_cube_lines.txt', '/test/', module=True)
-# unc_test('/data/CDF_archive/CDF_archive_spire_cube_lines.txt', '/test/', module=True)
+# unc_test('/FWD_archive/CDF_archive/CDF_archive_pacs_1d_lines.txt', '/test/', module=True)
+# unc_test('/FWD_archive/CDF_archive/CDF_archive_spire_1d_lines.txt', '/test/', module=True)
+# unc_test('/data/CDF_archive/CDF_archive_pacs_cube_lines.txt', '/test/', module=True)
+unc_test('/test/HD141569/HD141569_pacs_cube_lines.txt', '/test/', module=True)
+# unc_test('/FWD_archive/CDF_archive/CDF_archive_spire_cube_lines.txt', '/test/', module=True)
 
 
 def fitting_check(indir,outdir):

@@ -116,7 +116,7 @@ for i in range(len(objlist)):
 
 	archival_phot_wl, archival_phot_flux = herschel_spec_phot(spec_archival['wave'], spec_archival['flux'], filter_func=True)
 
-	# get the spectra photometry from the CDF archive 
+	# get the spectra photometry from the CDF archive
 	if not os.path.exists(CDFdir+objlist[i]+'/spire/advanced_products/'+objlist[i]+'_spire_corrected_continuum.txt'):
 		spec_CDF = ascii.read(CDFdir+objlist[i]+'/spire/data/'+objlist[i]+'_spire_corrected.txt',\
 							  header_start=None, data_start=1, names=['wave','flux'])
@@ -163,17 +163,18 @@ print 'number of objects: ', len(data_dict['object'])-len(no_match_obj)
 # calculate the standard deviation of two products
 total_phot = np.array(total_phot)
 delta_spec_phot = np.array(delta_spec_phot)
+ratio = np.array(ratio)
+hsa_ratio = np.array(hsa_ratio)
 delta_archival_spec_phot = np.array(delta_archival_spec_phot)
 mean_phot = np.mean(total_phot)
 std_spec_phot = np.std(delta_spec_phot)/mean_phot
 std_archival_spec_phot = np.std(delta_archival_spec_phot)/mean_phot
 
-mean_ratio = np.mean(ratio)
-std_ratio = np.std(ratio)
-mean_hsa_ratio = np.mean(hsa_ratio)
-std_hsa_ratio = np.std(hsa_ratio)
+mean_ratio = np.mean(ratio[total_phot < 10])
+std_ratio = np.std(ratio[total_phot < 10])
+mean_hsa_ratio = np.mean(hsa_ratio[total_phot < 10])
+std_hsa_ratio = np.std(hsa_ratio[total_phot < 10])
 
-# print np.mean(abs(delta_spec_phot)), np.mean(abs(delta_archival_spec_phot))
 print 'Mean ratio = %5f with a standard deviation of %5f' % (mean_ratio, std_ratio)
 print 'HSA: Mean ratio = %5f with a standard deviation of %5f' % (mean_hsa_ratio, std_hsa_ratio)
 
@@ -227,7 +228,7 @@ spec_phot = np.array(spec_phot)
 archival_spec_phot = np.array(archival_spec_phot)
 
 fit_para = np.polyfit(np.log10(phot), np.log10(spec_phot), 1)
-fit_para_arc = np.polyfit(np.log10(phot), np.log10(archival_spec_phot), 1)
+fit_para_arc = np.polyfit(np.log10(phot), np.log10(archival_spec_phot)+0.57, 1)
 cdf_fit = fit_para[0]*np.log10(phot) + fit_para[1]
 arc_fit = fit_para_arc[0]*np.log10(phot) + fit_para_arc[1]
 print fit_para
