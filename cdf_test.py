@@ -691,8 +691,8 @@ def unc_test(filepath,plotdir,png=True, module=False):
 
 # unc_test('/FWD_archive/CDF_archive/CDF_archive_pacs_1d_lines.txt', '/test/', module=True)
 # unc_test('/FWD_archive/CDF_archive/CDF_archive_spire_1d_lines.txt', '/test/', module=True)
-# unc_test('/data/CDF_archive/CDF_archive_pacs_cube_lines.txt', '/test/', module=True)
-unc_test('/test/HD141569/HD141569_pacs_cube_lines.txt', '/test/', module=True)
+# unc_test('/FWD_archive/CDF_archive/CDF_archive_pacs_cube_lines.txt', '/test/', module=True)
+# unc_test('/test/HD141569/HD141569_pacs_cube_lines.txt', '/test/', module=True)
 # unc_test('/FWD_archive/CDF_archive/CDF_archive_spire_cube_lines.txt', '/test/', module=True)
 
 
@@ -952,10 +952,10 @@ def cdf_test(indir,outdir):
             print o, 'SPIRE: ', strong_line(home+indir+'/'+o+'/spire/advanced_products/')
 
     # Uncertainty relation plots
-    unc_test(indir+'/CDF_archive_pacs_1d_lines.txt', outdir)
-    unc_test(indir+'/CDF_archive_pacs_cube_lines.txt', outdir)
-    unc_test(indir+'/CDF_archive_spire_1d_lines.txt', outdir)
-    unc_test(indir+'/CDF_archive_spire_cube_lines.txt', outdir)
+    unc_test(indir+'/CDF_archive_pacs_1d_lines.txt', outdir, module=True)
+    unc_test(indir+'/CDF_archive_pacs_cube_lines.txt', outdir, module=True)
+    unc_test(indir+'/CDF_archive_spire_1d_lines.txt', outdir, module=True)
+    unc_test(indir+'/CDF_archive_spire_cube_lines.txt', outdir, module=True)
 
     # Stats of the fitting results
     fitting_check(indir, outdir)
