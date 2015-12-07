@@ -456,7 +456,7 @@ def strong_line(indir):
     # Header of the all cube fitting results
     # ====================================================================================================
     # Object,   Line,           LabWL(um),      ObsWL(um),      Sig_Cen(um),    Str(W/cm2),     Sig_str(W/cm2)
-    # FWHM(um), Sig_FWHM(um),   Base(W/cm2/um), Noise(W/cm2/um),SNR,            E_u(K),         A(s-1)        
+    # FWHM(um), Sig_FWHM(um),   Base(W/cm2/um), Noise(W/cm2/um),SNR,            E_u(K),         A(s-1)
     # g,        RA(deg),        Dec(deg),       Blend,          Validity
     # ====================================================================================================
     num_strong = 0
@@ -473,7 +473,7 @@ def strong_line(indir):
 
 # print strong_line('/test/BHR71/pacs/advanced_products/')
 
-def unc_test(filepath,plotdir,png=True, module=False):
+def unc_test(filepath,plotdir,png=True, module=False, snr=3.):
     """
     Show the uncertainty relation of the measurement from baseline flucuation and the measurement from the fitting routine.
     Usage:
@@ -502,11 +502,11 @@ def unc_test(filepath,plotdir,png=True, module=False):
     # Header of the all cube fitting results
     # ====================================================================================================
     # Object,   Line,           LabWL(um),      ObsWL(um),      Sig_Cen(um),    Str(W/cm2),     Sig_str(W/cm2)
-    # FWHM(um), Sig_FWHM(um),   Base(W/cm2/um), Noise(W/cm2/um),SNR,            E_u(K),         A(s-1)        
+    # FWHM(um), Sig_FWHM(um),   Base(W/cm2/um), Noise(W/cm2/um),SNR,            E_u(K),         A(s-1)
     # g,        RA(deg),        Dec(deg),       Blend,          Validity
     # ====================================================================================================
     header = data.colnames
-    data = data[(np.isnan(data['SNR'])!=True) & (data['Validity']==1) & (data['SNR']>=3.)]  # Temperory procedure to exclude the missing segment in the spectrum resulting in the NaN in SNR
+    data = data[(np.isnan(data['SNR'])!=True) & (data['Validity']==1) & (data['SNR']>=snr)]  # Temperory procedure to exclude the missing segment in the spectrum resulting in the NaN in SNR
     # data = data[(data['Line'] == 'OH14-12') + (data['Line'] == 'o-H2O5_14-5_05')]
 
     snr = abs(data['SNR'][np.argsort(data['ObsWL(um)'])])
@@ -765,7 +765,7 @@ def fitting_check(indir,outdir):
         # Header of the 1-D fitting results
         # =========================================================================================
         # Line,     LabWL(um),      ObsWL(um),      Sig_Cen(um),    Str(W/cm2),     Sig_str(W/cm2)
-        # FWHM(um), Sig_FWHM(um),   Base(W/cm2/um), SNR,            E_u(K),         A(s-1)        
+        # FWHM(um), Sig_FWHM(um),   Base(W/cm2/um), SNR,            E_u(K),         A(s-1)
         # g,        RA(deg),        Dec(deg),       Blend,          Validity
         # =========================================================================================
         header = data.colnames
@@ -847,7 +847,7 @@ def fitting_check(indir,outdir):
         # Header of the 1-D fitting results
         # =========================================================================================
         # Line,     LabWL(um),      ObsWL(um),      Sig_Cen(um),    Str(W/cm2),     Sig_str(W/cm2)
-        # FWHM(um), Sig_FWHM(um),   Base(W/cm2/um), SNR,            E_u(K),         A(s-1)        
+        # FWHM(um), Sig_FWHM(um),   Base(W/cm2/um), SNR,            E_u(K),         A(s-1)
         # g,        RA(deg),        Dec(deg),       Blend,          Validity
         # =========================================================================================
         header = data.colnames
@@ -952,13 +952,10 @@ def cdf_test(indir,outdir):
             print o, 'SPIRE: ', strong_line(home+indir+'/'+o+'/spire/advanced_products/')
 
     # Uncertainty relation plots
-    unc_test(indir+'/CDF_archive_pacs_1d_lines.txt', outdir)
-    unc_test(indir+'/CDF_archive_pacs_cube_lines.txt', outdir)
-    unc_test(indir+'/CDF_archive_spire_1d_lines.txt', outdir)
-    unc_test(indir+'/CDF_archive_spire_cube_lines.txt', outdir)
+    unc_test(indir+'/CDF_archive_pacs_1d_lines.txt', outdir, snr=0.)
+    unc_test(indir+'/CDF_archive_pacs_cube_lines.txt', outdir, snr=0.)
+    unc_test(indir+'/CDF_archive_spire_1d_lines.txt', outdir, snr=0.)
+    unc_test(indir+'/CDF_archive_spire_cube_lines.txt', outdir, snr=0.)
 
     # Stats of the fitting results
     fitting_check(indir, outdir)
-
-
-
