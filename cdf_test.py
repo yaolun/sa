@@ -952,10 +952,10 @@ def cdf_test(indir,outdir):
             print o, 'SPIRE: ', strong_line(home+indir+'/'+o+'/spire/advanced_products/')
 
     # Uncertainty relation plots
-    unc_test(indir+'/CDF_archive_pacs_1d_lines.txt', outdir, module=True, snr=0.)
-    unc_test(indir+'/CDF_archive_pacs_cube_lines.txt', outdir, module=True, snr=0.)
-    unc_test(indir+'/CDF_archive_spire_1d_lines.txt', outdir, module=True, snr=0.)
-    unc_test(indir+'/CDF_archive_spire_cube_lines.txt', outdir, module=True, snr=0.)
+    unc_test(indir+'/CDF_archive_pacs_1d_lines.txt', outdir, module=True, png=False)
+    unc_test(indir+'/CDF_archive_pacs_cube_lines.txt', outdir, module=True, png=False)
+    unc_test(indir+'/CDF_archive_spire_1d_lines.txt', outdir, module=True, png=False)
+    unc_test(indir+'/CDF_archive_spire_cube_lines.txt', outdir, module=True, png=False)
 
 
     # Stats of the fitting results

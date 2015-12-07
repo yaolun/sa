@@ -124,10 +124,10 @@ for i in range(len(objlist)):
 			delta_spec_phot.append(float(spec_phot_flux[spec_phot_wl == wl])-float(phot_dum['flux'][phot_dum['wave'] == wl]))
 			delta_archival_spec_phot.append(float(archival_phot_flux[archival_phot_wl == wl])-float(phot_dum['flux'][phot_dum['wave'] == wl]))
 	if len(mutual_wl) != 0:
-		data_dict['object'].append(objlist[i])
-		data_dict['phot'].append(phot)
-		data_dict['spec_phot'].append(spec_phot)
-		data_dict['archival_spec_phot'].append(archival_spec_phot)
+		data_dict['object'].append(np.array(objlist[i]))
+		data_dict['phot'].append(np.array(phot))
+		data_dict['spec_phot'].append(np.array(spec_phot))
+		data_dict['archival_spec_phot'].append(np.array(archival_spec_phot))
 	else:
 		print '--- No matched photometry data.  Object not included!'
 		no_match_obj.append(objlist[i])
@@ -157,8 +157,8 @@ spec_phot = []
 archival_spec_phot = []
 
 for i in range(len(data_dict['object'])):
-	cdf, = ax.plot(data_dict['phot'][i], data_dict['spec_phot'][i], 'o', color='Blue', mec='None', alpha=0.7)
-	archiv, = ax.plot(data_dict['phot'][i], data_dict['archival_spec_phot'][i], 'o', color='Red', mec='None', alpha=0.7)
+	cdf, = ax.plot(data_dict['phot'][i], data_dict['spec_phot'][i]/data_dict['phot'][i], 'o', color='Blue', mec='None', alpha=0.7)
+	archiv, = ax.plot(data_dict['phot'][i], data_dict['archival_spec_phot'][i]/data_dict['phot'][i], 'o', color='Red', mec='None', alpha=0.7)
 	# print data_dict['phot'][i], data_dict['spec_phot'][i], data_dict['archival_spec_phot'][i]
 	if (np.mean(np.array(data_dict['phot'][i])/np.array(data_dict['spec_phot'][i])) > 10.) or (np.mean(np.array(data_dict['phot'][i])/np.array(data_dict['spec_phot'][i])) < 0.1):
 		continue
@@ -184,14 +184,15 @@ residual_arc = np.log10(archival_spec_phot) - arc_fit
 print 'The stadnard deviation in the residual of CDF and HSA are %4f & %4f' % (np.std(residual), np.std(residual_arc))
 
 # cdf, = ax.plot(phot, spec_phot, 'o', color='Blue', mec='None', alpha=0.7)
-fit, = ax.plot(phot, 10**cdf_fit, color='Blue', alpha=0.7, linewidth=1.5)
-fit_arc, = ax.plot(phot, 10**arc_fit, color='Red', alpha=0.7, linewidth=1.5)
-equal, = ax.plot([min(phot), max(phot)], [min(phot), max(phot)], '-', color='k', linewidth=1.5)
+fit, = ax.plot(phot, 10**cdf_fit/phot, color='Blue', alpha=0.7, linewidth=1.5)
+fit_arc, = ax.plot(phot, 10**arc_fit/phot, color='Red', alpha=0.7, linewidth=1.5)
+equal = ax.axhline(y=1., linestyle='-', color='k', linewidth=1.5)
+# equal, = ax.plot([min(phot), max(phot)], [min(phot), max(phot)], '-', color='k', linewidth=1.5)
 
 ax.set_xscale('log')
 ax.set_yscale('log')
 ax.set_xlim([0.3,1000])
-ax.set_ylim([0.3,1000])
+ax.set_ylim([0.01,100])
 
 ax.legend([cdf, archiv, fit, fit_arc], [r'$\rm{CDF\,(\sigma_{residual}=%2.2f)}$' % np.std(residual), \
 	r'$\rm{HSA\,(HIPE\,11)\,(\sigma_{residual}=%2.2f)}$' % np.std(residual_arc), r'$\rm{CDF\,fit}$', r'$\rm{HSA\,fit}$'],\
