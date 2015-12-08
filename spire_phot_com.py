@@ -248,8 +248,8 @@ ax.set_yscale('log')
 ax.set_xlim([0.3,1000])
 ax.set_ylim([0.01,100])
 
-ax.legend([cdf, archiv, fit, fit_arc], [r'$\rm{CDF\,(\sigma/<F_{phot.}>=%2.2f)}$' % std_spec_phot, \
-	r'$\rm{HSA\,(HIPE\,11)\,(\sigma/<F_{phot.}>=%2.2f)}$' % std_archival_spec_phot, r'$\rm{CDF\,fit}$', r'$\rm{HSA\,fit}$'],\
+ax.legend([cdf, archiv, fit, fit_arc], [r'$\rm{CDF\,(\sigma_{residual}=%2.2f)}$' % np.std(residual), \
+	r'$\rm{HSA\,(HIPE\,11)\,(\sigma_{residual}=%2.2f)}$' % np.std(residual_arc), r'$\rm{CDF\,fit}$', r'$\rm{HSA\,fit}$'],\
 	numpoints=1, fontsize=14, loc='upper left', framealpha=0.5)
 ax.set_xlabel(r'$\rm{log(F_{photometry})\,[Jy]}$', fontsize=18)
 ax.set_ylabel(r'$\rm{log(F_{spec.\,phot}/F_{photometry})\,[Jy]}$', fontsize=18)
