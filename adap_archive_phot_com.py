@@ -186,7 +186,7 @@ print 'The stadnard deviation in the residual of CDF and HSA are %4f & %4f' % (n
 # cdf, = ax.plot(phot, spec_phot, 'o', color='Blue', mec='None', alpha=0.7)
 fit, = ax.plot(phot, 10**cdf_fit/phot, color='Blue', alpha=0.7, linewidth=1.5)
 fit_arc, = ax.plot(phot, 10**arc_fit/phot, color='Red', alpha=0.7, linewidth=1.5)
-equal = ax.axhline(y=1., linestyle='-', color='k', linewidth=1.5)
+equal = ax.axhline(y=1., linestyle='--', color='k', linewidth=1.5)
 # equal, = ax.plot([min(phot), max(phot)], [min(phot), max(phot)], '-', color='k', linewidth=1.5)
 
 ax.set_xscale('log')
@@ -196,9 +196,9 @@ ax.set_ylim([0.01,100])
 
 ax.legend([cdf, archiv, fit, fit_arc], [r'$\rm{CDF\,(\sigma_{residual}=%2.2f)}$' % np.std(residual), \
 	r'$\rm{HSA\,(HIPE\,11)\,(\sigma_{residual}=%2.2f)}$' % np.std(residual_arc), r'$\rm{CDF\,fit}$', r'$\rm{HSA\,fit}$'],\
-	numpoints=1, fontsize=14, loc='upper left', framealpha=0.5)
+	numpoints=1, fontsize=14, loc='best', framealpha=0.5)
 ax.set_xlabel(r'$\rm{log(F_{photometry})\,[Jy]}$', fontsize=18)
-ax.set_ylabel(r'$\rm{log(F_{spec.\,phot})\,[Jy]}$', fontsize=18)
+ax.set_ylabel(r'$\rm{log(F_{spec.\,phot}/F_{photmetry})\,[Jy]}$', fontsize=18)
 [ax.spines[axis].set_linewidth(1.5) for axis in ['top','bottom','left','right']]
 ax.minorticks_on()
 ax.tick_params('both',labelsize=18,width=1.5,which='major',pad=10,length=5)

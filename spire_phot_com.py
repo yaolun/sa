@@ -210,9 +210,9 @@ for i in range(len(data_dict['object'])):
 						  data_dict['archival_spec_phot'][i][data_dict['wave'][i] == 500.], '^', color='Red', mec='None', alpha=0.7)
 	else:
 		cdf, = ax.plot(data_dict['phot'][i], \
-					   data_dict['spec_phot'][i], 'o', color='Blue', mec='None', alpha=0.7)
+					   data_dict['spec_phot'][i]/data_dict['phot'][i], 'o', color='Blue', mec='None', alpha=0.7)
 		archiv, = ax.plot(data_dict['phot'][i], \
-						  data_dict['archival_spec_phot'][i], 'o', color='Red', mec='None', alpha=0.7)
+						  data_dict['archival_spec_phot'][i]/data_dict['phot'][i], 'o', color='Red', mec='None', alpha=0.7)
 	# print data_dict['phot'][i], data_dict['spec_phot'][i], data_dict['archival_spec_phot'][i]
 	if (np.mean(np.array(data_dict['phot'][i])/np.array(data_dict['spec_phot'][i])) > 10.) or (np.mean(np.array(data_dict['phot'][i])/np.array(data_dict['spec_phot'][i])) < 0.1):
 		continue
@@ -238,20 +238,21 @@ residual_arc = np.log10(archival_spec_phot) - arc_fit
 print 'The stadnard deviation in the residual of CDF and HSA are %4f & %4f' % (np.std(residual), np.std(residual_arc))
 
 # cdf, = ax.plot(phot, spec_phot, 'o', color='Blue', mec='None', alpha=0.7)
-fit, = ax.plot(phot, 10**cdf_fit, color='Blue', alpha=0.7, linewidth=1.5)
-fit_arc, = ax.plot(phot, 10**arc_fit, color='Red', alpha=0.7, linewidth=1.5)
-equal, = ax.plot([min(phot), max(phot)], [min(phot), max(phot)], '-', color='k', linewidth=1.5)
+fit, = ax.plot(phot, 10**cdf_fit/phot, color='Blue', alpha=0.7, linewidth=1.5)
+fit_arc, = ax.plot(phot, 10**arc_fit/phot, color='Red', alpha=0.7, linewidth=1.5)
+equal = ax.axhline(y= 1., linestyle='--', color='k', linewidth=1.5)
+# equal, = ax.plot([min(phot), max(phot)], [min(phot), max(phot)], '-', color='k', linewidth=1.5)
 
 ax.set_xscale('log')
 ax.set_yscale('log')
 ax.set_xlim([0.3,1000])
-ax.set_ylim([0.3,1000])
+ax.set_ylim([0.01,100])
 
 ax.legend([cdf, archiv, fit, fit_arc], [r'$\rm{CDF\,(\sigma/<F_{phot.}>=%2.2f)}$' % std_spec_phot, \
 	r'$\rm{HSA\,(HIPE\,11)\,(\sigma/<F_{phot.}>=%2.2f)}$' % std_archival_spec_phot, r'$\rm{CDF\,fit}$', r'$\rm{HSA\,fit}$'],\
 	numpoints=1, fontsize=14, loc='upper left', framealpha=0.5)
 ax.set_xlabel(r'$\rm{log(F_{photometry})\,[Jy]}$', fontsize=18)
-ax.set_ylabel(r'$\rm{log(F_{spec.\,phot})\,[Jy]}$', fontsize=18)
+ax.set_ylabel(r'$\rm{log(F_{spec.\,phot}/F_{photometry})\,[Jy]}$', fontsize=18)
 [ax.spines[axis].set_linewidth(1.5) for axis in ['top','bottom','left','right']]
 ax.minorticks_on()
 ax.tick_params('both',labelsize=18,width=1.5,which='major',pad=10,length=5)
