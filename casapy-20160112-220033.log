@@ -1,0 +1,6 @@
+2016-01-12 22:01:30	INFO	casa::::	---
+2016-01-12 22:01:30	INFO	casa::::	CASA Version 4.4.0-REL (r33623)
+2016-01-12 22:01:30	INFO	casa::::	  Tagged on: 2015-06-12 13:24:28 -0400 (Fri, 12 Jun 2015)
+2016-01-12 22:01:30	INFO	casa::::	Managing Sakura lifecycle
+2016-01-12 22:01:30	INFO	sakura::initialize_sakura 	initialize_sakura is called. sakura was initialized successfully. 
+2016-01-12 22:02:41	INFO	sakura::cleanup_sakura 	cleanup_sakura is called 
