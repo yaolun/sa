@@ -452,7 +452,7 @@ def strong_line(indir, co=False):
         return result
 
     if co:
-        line_id = 'CO'
+        line_id = 'OI'
     else:
         line_id = ''
 
@@ -477,6 +477,7 @@ def strong_line(indir, co=False):
         mask = np.array([line_id in (data['Line'][data['SNR'] >= 3.0])[i] for i in range(len(data['Line'][data['SNR'] >= 3.0]))])
         if len(mask) > 0:
             line_id_num = line_id_num + len(data['Line'][data['SNR'] >= 3.0][mask])
+        # this has confusion with HCO+ lines.
         snr_sum = snr_sum + np.sum(data['SNR'][data['SNR'] >= 10.0])
 
     return num_strong, snr_sum, line_id_num
