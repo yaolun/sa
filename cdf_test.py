@@ -955,10 +955,10 @@ def cdf_test(indir,outdir):
     for o in objdir:
         # test pacs fitting
         if os.path.exists(home+indir+'/'+o+'/pacs/advanced_products') == True:
-            print o, 'PACS:  ', strong_line(home+indir+'/'+o+'/pacs/advanced_products/')
+            print o, 'PACS:  ', strong_line(home+indir+'/'+o+'/pacs/advanced_products/', co=True)
         # test spire fitting
         if os.path.exists(home+indir+'/'+o+'/spire/advanced_products') == True:
-            print o, 'SPIRE: ', strong_line(home+indir+'/'+o+'/spire/advanced_products/')
+            print o, 'SPIRE: ', strong_line(home+indir+'/'+o+'/spire/advanced_products/', co=True)
 
     # Uncertainty relation plots
     unc_test(indir+'/CDF_archive_pacs_1d_lines.txt', outdir, module=True, png=False)
