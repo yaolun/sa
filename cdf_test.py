@@ -475,6 +475,7 @@ def strong_line(indir, co=False):
         data = data[(np.isnan(data['SNR'])!=True) & (data['Validity']==1)]  # Temperory procedure to exclude the missing segment in the spectrum resulting in the NaN in SNR
         num_strong = num_strong + len(data[data['SNR'] >= 10.0])
         mask = np.array([line_id in (data['Line'][data['SNR'] >= 3.0])[i] for i in range(len(data['Line'][data['SNR'] >= 3.0]))])
+        print mask
         line_id_num = line_id_num + len(data['Line'][data['SNR'] >= 3.0][mask])
         snr_sum = snr_sum + np.sum(data['SNR'][data['SNR'] >= 10.0])
 
