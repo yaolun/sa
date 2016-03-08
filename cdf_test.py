@@ -428,7 +428,7 @@ def fits_com(indir):
         print 'passed the FITS test!'
         return True
 
-def strong_line(indir, co=False):
+def strong_line(indir, co=False, h2o=False):
     """
     Return the number of strong lines (SNR >= 10) for A given source. (Return the total number of strong lines found
     in 1d and all spaxels)
@@ -452,7 +452,9 @@ def strong_line(indir, co=False):
         return result
 
     if co:
-        line_id = 'HCO'
+        line_id = 'CO'
+    elif h2o:
+        line_id = 'H2O'
     else:
         line_id = ''
 
@@ -957,10 +959,10 @@ def cdf_test(indir,outdir):
     for o in objdir:
         # test pacs fitting
         if os.path.exists(home+indir+'/'+o+'/pacs/advanced_products') == True:
-            print o, 'PACS:  ', strong_line(home+indir+'/'+o+'/pacs/advanced_products/', co=True)
+            print o, 'PACS:  ', strong_line(home+indir+'/'+o+'/pacs/advanced_products/', h2o=True)
         # test spire fitting
         if os.path.exists(home+indir+'/'+o+'/spire/advanced_products') == True:
-            print o, 'SPIRE: ', strong_line(home+indir+'/'+o+'/spire/advanced_products/', co=True)
+            print o, 'SPIRE: ', strong_line(home+indir+'/'+o+'/spire/advanced_products/', h2o=True)
 
     # Uncertainty relation plots
     unc_test(indir+'/CDF_archive_pacs_1d_lines.txt', outdir, module=True, png=False)
