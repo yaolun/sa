@@ -452,7 +452,7 @@ def strong_line(indir, co=False):
         return result
 
     if co:
-        line_id = 'CO'
+        line_id = 'HCO'
     else:
         line_id = ''
 
