@@ -428,10 +428,11 @@ def fits_com(indir):
         print 'passed the FITS test!'
         return True
 
-def strong_line(indir):
+def strong_line(indir, co=False, h2o=False):
     """
     Return the number of strong lines (SNR >= 10) for A given source. (Return the total number of strong lines found
     in 1d and all spaxels)
+    Add a feature of showing the number of detected CO lines for each given source.
     Usage:
         strong_line('/FWD_archive/CDF_archive/BHR71/')
     """
@@ -450,6 +451,13 @@ def strong_line(indir):
                     result.append(os.path.join(root, name))
         return result
 
+    if co:
+        line_id = 'CO'
+    elif h2o:
+        line_id = 'H2O'
+    else:
+        line_id = ''
+
     # Search for the fitting results tables under the primary directory
     # only search in the the object directory
     path2fit = find('*_lines.txt', indir)
@@ -461,15 +469,20 @@ def strong_line(indir):
     # ====================================================================================================
     num_strong = 0
     snr_sum = 0
+    line_id_num = 0
     # Read the data
     for path in path2fit:
         data = ascii.read(path)
         header = data.colnames
         data = data[(np.isnan(data['SNR'])!=True) & (data['Validity']==1)]  # Temperory procedure to exclude the missing segment in the spectrum resulting in the NaN in SNR
         num_strong = num_strong + len(data[data['SNR'] >= 10.0])
+        mask = np.array([line_id in (data['Line'][data['SNR'] >= 3.0])[i] for i in range(len(data['Line'][data['SNR'] >= 3.0]))])
+        if len(mask) > 0:
+            line_id_num = line_id_num + len(data['Line'][data['SNR'] >= 3.0][mask])
+        # this has confusion with HCO+ lines.
         snr_sum = snr_sum + np.sum(data['SNR'][data['SNR'] >= 10.0])
 
-    return num_strong, snr_sum
+    return num_strong, snr_sum, line_id_num
 
 # print strong_line('/test/BHR71/pacs/advanced_products/')
 
@@ -946,10 +959,10 @@ def cdf_test(indir,outdir):
     for o in objdir:
         # test pacs fitting
         if os.path.exists(home+indir+'/'+o+'/pacs/advanced_products') == True:
-            print o, 'PACS:  ', strong_line(home+indir+'/'+o+'/pacs/advanced_products/')
+            print o, 'PACS:  ', strong_line(home+indir+'/'+o+'/pacs/advanced_products/', h2o=True)
         # test spire fitting
         if os.path.exists(home+indir+'/'+o+'/spire/advanced_products') == True:
-            print o, 'SPIRE: ', strong_line(home+indir+'/'+o+'/spire/advanced_products/')
+            print o, 'SPIRE: ', strong_line(home+indir+'/'+o+'/spire/advanced_products/', h2o=True)
 
     # Uncertainty relation plots
     unc_test(indir+'/CDF_archive_pacs_1d_lines.txt', outdir, module=True, png=False)
