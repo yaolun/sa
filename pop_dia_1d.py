@@ -3,21 +3,23 @@
 
 # <codecell>
 
-def pop_dia_1d(objname,plotdir,pacs=None,spire=None,single=False):
+def pop_dia_1d(objname,plotdir,dstar,pacs=None,spire=None,single=False):
     import numpy as np
     import matplotlib.pyplot as plt
     import os
     from read_fitting import read_fitting_co
     from leastsqfit import lin_leastsqfit
     import astropy.table as astal
+    import astropy.constants as const
+    import pprint
     home = os.path.expanduser('~')
 
     # Constants Setup
-    c = 2.99792458e10
-    h = 6.6260755e-27
-    k = 1.380658e-16
+    c = const.c.cgs.value
+    h = const.h.cgs.value
+    k = const.k_B.cgs.value
     B = 1.9225#192.25 m-1
-    pc = 3.086e18
+    pc = const.pc.cgs.value
 
     if (pacs != None) & (spire == None):
         [co_pacs,co_name_pacs] = read_fitting_co(pacs,3)
@@ -39,8 +41,8 @@ def pop_dia_1d(objname,plotdir,pacs=None,spire=None,single=False):
 
     # Calculate the N/g and Eu from the data
     v = c/(co_data['ObsWL(um)']*1e-4)
-    N = 4*np.pi*co_data['Str(W/cm2)']*1e7*(178*pc)**2/(co_data['A(s-1)']*h*v)
-    N_sigma = 4*np.pi*co_data['Sig_str(W/cm2)']*1e7*(178*pc)**2/(co_data['A(s-1)']*h*v)
+    N = 4*np.pi*co_data['Str(W/cm2)']*1e7*(dstar*pc)**2/(co_data['A(s-1)']*h*v)
+    N_sigma = 4*np.pi*(1.064*co_data['FWHM(um)']*co_data['Noise(W/cm2/um)'])*1e7*(dstar*pc)**2/(co_data['A(s-1)']*h*v)
     x = co_data['E_u(K)']
     y = np.log10(N/co_data['g'])
     yerr_hi = np.log10((N+N_sigma)/co_data['g'])-np.log10(N/co_data['g'])
@@ -52,6 +54,22 @@ def pop_dia_1d(objname,plotdir,pacs=None,spire=None,single=False):
     x = x[ind]
     y = y[ind]
     y_sig = y_sig[ind]
+
+    pprint.pprint(yerr_hi)
+    pprint.pprint(yerr_low)
+
+    # fig_rot_dia = plt.figure()
+    # ax_rot_dia = fig_rot_dia.add_subplot(111)
+    # data, = ax_rot_dia.plot(x,y,'o',color='DarkGreen',markersize=6)
+    # ax_rot_dia.errorbar(x,y,yerr=y_sig,linestyle='None',color='DarkGreen')
+    # ax_rot_dia.set_xlabel(r'$\rm{E_{u}\,(K)}$',fontsize=18)
+    # ax_rot_dia.set_ylabel(r'$\rm{log(\mathcal{N}_{J}/g_{J})}$',fontsize=18)
+    # ax_rot_dia.tick_params('both',labelsize=16,width=1.5,which='major')
+    # ax_rot_dia.tick_params('both',labelsize=16,width=1.5,which='minor')
+    # [ax_rot_dia.spines[axis].set_linewidth(1.5) for axis in ['top','bottom','left','right']]
+    # ax_rot_dia.set_xlim([0,6000])
+    # ax_rot_dia.set_ylim([42,50])
+    # fig_rot_dia.savefig(home+plotdir+objname+'_co_rot.pdf',format='pdf',dpi=300, bbox_inches='tight')
 
     # Single temperature fitting
     #
@@ -303,7 +321,7 @@ def pop_dia_1d(objname,plotdir,pacs=None,spire=None,single=False):
                         print 'T_rot(hot): %8.6f K, T_rot(warm): %8.6f K, T_rot(cool): %8.6f K, T_rot(cold): %8.6f K' % (t_rot_hot,t_rot_warm,t_rot_cool,t_rot_cold)
 
 
-def pop_dia_h2o_1d(objname,plotdir,pacs=None,spire=None):
+def pop_dia_h2o_1d(objname,plotdir,dstar,pacs=None,spire=None):
     import numpy as np
     import matplotlib.pyplot as plt
     import os
@@ -356,8 +374,8 @@ def pop_dia_h2o_1d(objname,plotdir,pacs=None,spire=None):
 
         # Calculate the N/g and Eu from the data
         v = c/(water[:,0]*1e-4)
-        N = 4*np.pi*water[:,2]*1e7*(178*pc)**2/(water[:,5]*h*v)
-        N_sigma = 4*np.pi*water[:,3]*1e7*(178*pc)**2/(water[:,5]*h*v)
+        N = 4*np.pi*water[:,2]*1e7*(dstar*pc)**2/(water[:,5]*h*v)
+        N_sigma = 4*np.pi*water[:,3]*1e7*(dstar*pc)**2/(water[:,5]*h*v)
         x = water[:,4]
         y = np.log10(N/water[:,6])
         yerr_hi = np.log10((N+N_sigma)/water[:,6])-np.log10(N/water[:,6])
@@ -384,8 +402,8 @@ def pop_dia_h2o_1d(objname,plotdir,pacs=None,spire=None):
 
     # Calculate the N/g and Eu from the data
     v = c/(water_data[:,0]*1e-4)
-    N = 4*np.pi*water_data[:,2]*1e7*(178*pc)**2/(water_data[:,5]*h*v)
-    N_sigma = 4*np.pi*water_data[:,3]*1e7*(178*pc)**2/(water_data[:,5]*h*v)
+    N = 4*np.pi*water_data[:,2]*1e7*(dstar*pc)**2/(water_data[:,5]*h*v)
+    N_sigma = 4*np.pi*water_data[:,3]*1e7*(dstar*pc)**2/(water_data[:,5]*h*v)
 
     x = water_data[:,4]
     y = np.log10(N/water_data[:,6])
@@ -441,12 +459,11 @@ from read_fitting import read_fitting_co
 from leastsqfit import lin_leastsqfit
 home = os.path.expanduser('~')
 
-pacs = '/bhr71/fitting/BHR71/pacs/advanced_products/BHR71_centralSpaxel_PointSourceCorrected_CorrectedYES_trim_lines.txt'
-spire = '/bhr71/fitting/BHR71/spire/advanced_products/BHR71_spire_corrected_lines.txt'
-# using spure ult-corrected version
-spire = '/bhr71/bhr71_SECT/BHR71_ult/BHR71/spire/advanced_products/BHR71_spire_corrected_lines.txt'
-pop_dia_1d('BHR71','/test/',pacs=pacs,spire=spire)
-pacs_cube = '/bhr71/fitting/BHR71/pacs/advanced_products/cube/BHR71_pacs_pixel'
+pacs = '/bhr71/best_calibrated/fitting/pacs/advanced_products/BHR71_pacs_weighted_lines.txt'
+spire = '/bhr71/best_calibrated/fitting/spire/advanced_products/BHR71_spire_corrected_lines.txt'
+
+pop_dia_1d('BHR71','/test/',200.,pacs=pacs,spire=spire)
+pacs_cube = '/bhr71/data/HSA/cube/BHR71_pacs_pixel'
 # for i in range(1,26):
 #     print i
 #     pop_dia_1d('BHR71_pacs_pixel'+str(i),'/bhr71/plots/',pacs=pacs_cube+str(i)+'_os8_sf7_lines.txt')

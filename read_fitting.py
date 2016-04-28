@@ -5,7 +5,7 @@ home = os.path.expanduser('~')
 # Header of the 1-D fitting results
 # =========================================================================================
 # Line,     LabWL(um),      ObsWL(um),      Sig_Cen(um),    Str(W/cm2),     Sig_str(W/cm2)
-# FWHM(um), Sig_FWHM(um),   Base(W/cm2/um), SNR,            E_u(K),         A(s-1)        
+# FWHM(um), Sig_FWHM(um),   Base(W/cm2/um), SNR,            E_u(K),         A(s-1)
 # g,        RA(deg),        Dec(deg),       Blend,          Validity
 # =========================================================================================
 
