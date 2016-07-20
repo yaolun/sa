@@ -1,5 +1,5 @@
 def pacs_weight(cubedir, obj, aper_size, outdir, fits_for_header,
-                suffix='', plot=None):
+                suffix='', plot=None, wavelimit=None):
     """
     cubedir: The directory contains the flux and coordinates of each spaxel in ASCII files
     plot: If a path is given, then it will make a plot of an overview of aperture_masked
@@ -107,14 +107,20 @@ def pacs_weight(cubedir, obj, aper_size, outdir, fits_for_header,
 
     # get the flux of each spaxel and apply the weighting
     foo_cen = ascii.read(cubedir+obj+'_pacs_pixel13_'+suffix+'.txt')
-    wl = foo_cen['Wavelength(um)']
-    flux = np.zeros_like(foo_cen['Flux_Density(Jy)'])
+    if wavelimit == None:
+        trimmer = np.ones_like(foo_cen['Wavelength(um)'], dtype=bool)
+    else:
+        trimmer = (foo_cen['Wavelength(um)'] > wavelimit[0]) & (foo_cen['Wavelength(um)'] < wavelimit[1])
+
+    wl = foo_cen['Wavelength(um)'][trimmer]
+    flux = np.zeros_like(foo_cen['Flux_Density(Jy)'][trimmer])
 
     for i in range(1,26):
         foo = ascii.read(cubedir+obj+'_pacs_pixel'+str(i)+'_'+suffix+'.txt')
         # set NaN values to zero
         foo['Flux_Density(Jy)'][np.isnan(foo['Flux_Density(Jy)'])] = 0
-        flux = flux + foo['Flux_Density(Jy)']*weight[i-1]
+
+        flux = flux + foo['Flux_Density(Jy)'][trimmer]*weight[i-1]
 
     # # dervie the scaling factor based on the photometry fluxes
     # phot = ascii.read(photpath,comment='%')
@@ -139,12 +145,12 @@ def pacs_weight(cubedir, obj, aper_size, outdir, fits_for_header,
     # print 'Scaling: %f +/- %f' % (scaling, scaling_unc)
 
     # write the weighted spectrum into a file
-    foo = open(outdir+obj+'_pacs_weighted.txt','w')
-    foo.write('{} \t {}\n'.format('Wavelength(um)', 'Flux(Jy)'))
+    foo = open(outdir+obj+'_pacs_weighted_'+suffix+'.txt','w')
+    foo.write('{} \t {}\n'.format('Wavelength(um)', 'Flux_Density(Jy)'))
     for i in range(len(wl)):
-        foo.write('{} \t {}\n'.format(wl[i], flux[i]*scaling))
+        foo.write('{} \t {}\n'.format(wl[i], flux[i]))
     foo.close()
 
-    print 'Weighted spectrum saved at ', outdir+obj+'pacs_weighted.txt'
+    print 'Weighted spectrum saved at ', outdir+obj+'_pacs_weighted_'+suffix+'.txt'
 
     return wl, flux
