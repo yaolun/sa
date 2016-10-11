@@ -1,4 +1,4 @@
-def azimuthal_simulation(rtout, beam_size, wave, dist=178., group=22):
+def azimuthal_simulation(rtout, beam_size, wave, dist=200., group=22):
 	"""
 	rtout: the filepath to the output file of Hyperion
 	beam_size: the beam size used for the width of annulus

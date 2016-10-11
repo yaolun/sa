@@ -1,10 +1,9 @@
-def pacs_weight(cubedir, obj, aper_size, photpath, outdir, fits_for_header,
-                suffix='', plot=None, scale=False, phot=True):
+def pacs_weight(cubedir, obj, aper_size, outdir, fits_for_header,
+                suffix='', plot=None, wavelimit=None):
     """
     cubedir: The directory contains the flux and coordinates of each spaxel in ASCII files
     plot: If a path is given, then it will make a plot of an overview of aperture_masked
           spaxel configuration.
-    photpath: The photometry table for calibrating the absolute flux
     fits_for_header: The FITS file contains the required keywords -
                      CROTA2, CDELT1 or CDELT2
     """
@@ -108,54 +107,29 @@ def pacs_weight(cubedir, obj, aper_size, photpath, outdir, fits_for_header,
 
     # get the flux of each spaxel and apply the weighting
     foo_cen = ascii.read(cubedir+obj+'_pacs_pixel13_'+suffix+'.txt')
-    wl = foo_cen['Wavelength(um)']
-    flux = np.zeros_like(foo_cen['Flux_Density(Jy)'])
+    if wavelimit == None:
+        trimmer = np.ones_like(foo_cen['Wavelength(um)'], dtype=bool)
+    else:
+        trimmer = (foo_cen['Wavelength(um)'] > wavelimit[0]) & (foo_cen['Wavelength(um)'] < wavelimit[1])
+
+    wl = foo_cen['Wavelength(um)'][trimmer]
+    flux = np.zeros_like(foo_cen['Flux_Density(Jy)'][trimmer])
 
     for i in range(1,26):
         foo = ascii.read(cubedir+obj+'_pacs_pixel'+str(i)+'_'+suffix+'.txt')
         # set NaN values to zero
         foo['Flux_Density(Jy)'][np.isnan(foo['Flux_Density(Jy)'])] = 0
-        flux = flux + foo['Flux_Density(Jy)']*weight[i-1]
 
-    if phot:
-        # dervie the scaling factor based on the photometry fluxes
-        phot = ascii.read(photpath,comment='%')
-        pacs_phot = np.array([phot['flux(Jy)'][phot['wavelength'] == 70].data,
-                              phot['flux(Jy)'][phot['wavelength'] == 100].data,
-                              phot['flux(Jy)'][phot['wavelength'] == 160].data])
-        pacs_phot_unc = np.array([phot['error(Jy)'][phot['wavelength'] == 70].data,
-                                  phot['error(Jy)'][phot['wavelength'] == 100].data,
-                                  phot['error(Jy)'][phot['wavelength'] == 160].data])
-        phot = {'flux': pacs_phot, 'uncertainty': pacs_phot_unc}
-
-    else:
-        phot = None
-
-    if scale:
-        from scipy.interpolate import interp1d
-        f = interp1d(wl, flux)
-        s1, s1_unc = pacs_phot[0]/f(70), pacs_phot_unc[0]/f(70)
-        s2, s2_unc = pacs_phot[1]/f(100), pacs_phot_unc[1]/f(100)
-        s3, s3_unc = pacs_phot[2]/f(160), pacs_phot_unc[2]/f(160)
-        s = np.array([s1,s2,s3])
-        s_unc = np.array([s1_unc, s2_unc, s3_unc])
-
-        # take a weighted mean and unbiased variance
-        scaling = np.sum(1/s_unc**2*s)/np.sum(1/s_unc**2)
-        scaling_unc = ( 1./(len(s)-1) * np.sum(1/s_unc**2*(s - scaling)**2)/np.sum(1/s_unc**2) )**0.5
-        print 'Scaling: %f +/- %f' % (scaling, scaling_unc)
-
-    else:
-        scaling = 1
-        scaling_unc = 0
+        flux = flux + foo['Flux_Density(Jy)'][trimmer]*weight[i-1]
 
     # write the weighted spectrum into a file
-    foo = open(outdir+obj+'_pacs_weighted.txt','w')
-    foo.write('{} \t {}\n'.format('Wavelength(um)', 'Flux(Jy)'))
+    foo = open(outdir+obj+'_pacs_weighted_'+suffix+'.txt','w')
+    foo.write('{} \t {}\n'.format('Wavelength(um)', 'Flux_Density(Jy)'))
     for i in range(len(wl)):
-        foo.write('{} \t {}\n'.format(wl[i], flux[i]*scaling))
+        if flux[i] != 0:
+            foo.write('{} \t {}\n'.format(wl[i], flux[i]))
     foo.close()
 
-    print 'Weighted spectrum saved at', outdir+obj+'_pacs_weighted.txt'
+    print 'Weighted spectrum saved at ', outdir+obj+'_pacs_weighted_'+suffix+'.txt'
 
-    return wl, flux*scaling, phot, (scaling, scaling_unc)
+    return wl, flux
