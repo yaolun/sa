@@ -1,6 +1,7 @@
 def spire_spectral_index(outdir, obsid):
 
     # Note that the spectral index works in frequency
+    import matplotlib.pyplot as plt
     from astropy.modeling import models, fitting, powerlaws
     from scipy.interpolate import interp1d
     import astropy.constants as const
