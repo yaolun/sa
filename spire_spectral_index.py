@@ -72,4 +72,4 @@ Obsid=[1342242620,1342242621,1342245084,1342245094,1342245857,
 outdir = '/home/bettyjo/yaolun/CDF_SPIRE_reduction/'
 
 for o in Obsid:
-    spire_spectral_index(outdir, o)
+    spire_spectral_index(outdir, str(o))
