@@ -1,5 +1,9 @@
 def spire_spectral_index(outdir, obsid):
-
+    
+    # to avoid X server error
+    import matplotlib as mpl
+    mpl.use('Agg')
+    #
     # Note that the spectral index works in frequency
     import matplotlib.pyplot as plt
     from astropy.modeling import models, fitting, powerlaws
