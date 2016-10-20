@@ -49,7 +49,7 @@ def spire_spectral_index(outdir, obsid):
         fitted_alpha.append(-fit.alpha.value)
         print -fit.alpha
 
-    ax.text(0.6, 0.1, r'$\{\alpha_{250,350,500} = %3.2f, %3.2f, %3.2f}$' % (fitted_alpha[0], fitted_alpha[1], fitted_alpha[2]), t
+    ax.text(0.6, 0.1, r'$\{\alpha_{250,350,500} = %3.2f, %3.2f, %3.2f}$' % (fitted_alpha[0], fitted_alpha[1], fitted_alpha[2]), 
             transform=ax.transAxes, fontsize=18)
     [ax.spines[axis].set_linewidth(1.5) for axis in ['top','bottom','left','right']]
     ax.minorticks_on()
