@@ -62,7 +62,7 @@ def spire_spectral_index(outdir, obsid):
     fig.clf()
 
     # write out the alpha index
-    foo = open(outdir+obsid+'_alpha.txt','r')
+    foo = open(outdir+obsid+'_alpha.txt','w')
     foo.write('250um \t 350um \t 500um \n')
     foo.write('%8.6f \t %8.6f \t %8.6f \n' % (fitted_alpha[0], fitted_alpha[1], fitted_alpha[2]))
     foo.close()
