@@ -1,13 +1,9 @@
 def spire_postprocess1(indir,outdir,obsid,obj):
     from astropy.io import ascii
     import numpy as np
-    import os
 
     # read in the spectrum
     spire_spec = ascii.read(indir+obsid+'spire_sect.txt', data_start=4)
-    # this is one time thing
-    os.remove(indir+obsid+'_spire_sect.txt')
-    os.rename(indir+obsid+'spire_sect.txt', indir+obsid+'_spire_sect.txt')
     # convert it to the usual format
     spire_wl = np.hstack((spire_spec['wave_segm1_0'][spire_spec['wave_segm1_0'] >= 310].data,
                 spire_spec['wave_segm2_0'][(spire_spec['wave_segm2_0'] < 310) & (spire_spec['wave_segm2_0'] > 195)].data))
