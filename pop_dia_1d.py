@@ -459,8 +459,8 @@ from read_fitting import read_fitting_co
 from leastsqfit import lin_leastsqfit
 home = os.path.expanduser('~')
 
-pacs = '/bhr71/best_calibrated/fitting/pacs/advanced_products/BHR71_pacs_weighted_lines.txt'
-spire = '/bhr71/best_calibrated/fitting/spire/advanced_products/BHR71_spire_corrected_lines.txt'
+pacs = '/bhr71/best_calibrated/fitting/pacs/BHR71_pacs_weighted_lines.txt'
+spire = '/bhr71/best_calibrated/fitting/spire/BHR71_spire_corrected_lines.txt'
 
 pop_dia_1d('BHR71','/test/',200.,pacs=pacs,spire=spire)
 pacs_cube = '/bhr71/data/HSA/cube/BHR71_pacs_pixel'
