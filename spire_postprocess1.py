@@ -41,4 +41,4 @@ obj_list = ['RCrA-IRS7B','RCrA-IRS7C','HH46','L723-MM','L1014',
 indir = '/home/bettyjo/yaolun/CDF_SPIRE_reduction/'
 outdir = '/home/bettyjo/yaolun/CDF_SPIRE_reduction/'
 for obsid in Obsid:
-    spire_postprocess1(indir, outdir, obsid, obj_list[Obsid.index(obsid)])
+    spire_postprocess1(indir, outdir, str(obsid), obj_list[Obsid.index(obsid)])
