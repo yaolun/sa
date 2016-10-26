@@ -1,4 +1,7 @@
 def spire_postprocess1(indir,outdir,obsid,obj):
+    """
+    convert the ASCII format of the spectra to a better format for reading, and perform spectrum trimming.
+    """
     from astropy.io import ascii
     import numpy as np
 
@@ -34,6 +37,7 @@ obj_list = ['RCrA-IRS7B','RCrA-IRS7C','HH46','L723-MM','L1014',
             'TMR1','TMC1A','TMC1','IRAS15398','RNO91',
             'GSS30-IRS1','VLA1623','WL12','RCrA-IRS5A','L483',
             'B335','DKCha']
+
 indir = '/home/bettyjo/yaolun/CDF_SPIRE_reduction/'
 outdir = '/home/bettyjo/yaolun/CDF_SPIRE_reduction/'
 for obsid in Obsid:

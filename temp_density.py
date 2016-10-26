@@ -1,4 +1,4 @@
-def envmass_fit(dustpath, obsdir, obj, aperture_file, plotdir):
+def envmass_fit(dustpath, obsdir, obj, plotdir):
 
     import numpy as np
     import matplotlib.pyplot as plt
@@ -27,7 +27,7 @@ def envmass_fit(dustpath, obsdir, obj, aperture_file, plotdir):
     import sys
     sys.path.append('/Users/yaolun/programs/misc/hyperion/')
     from get_obs import get_obs
-    obs = get_obs(obsdir, obj=obj)  # flux in Jy
+    obs = get_obs(obsdir, obj=obj, spec=False)  # flux in Jy
 
     def bbfunc(omegab, kappa):
         def bbfunc_dum(nu, *p):
@@ -78,7 +78,7 @@ def envmass_fit(dustpath, obsdir, obj, aperture_file, plotdir):
     md = 1/(1.0395087779657002e14)
 
     # take down to 160 um
-    trimmer = (obs['phot'][0] >= 160) & (obs['phot'][0] < 1400)
+    trimmer = (obs['phot'][0] >= 60) & (obs['phot'][0] < 1400)
     #
     nu = c/obs['phot'][0][trimmer]/1e-4
     f_phot = obs['phot'][1][trimmer]*1e-23
@@ -91,11 +91,11 @@ def envmass_fit(dustpath, obsdir, obj, aperture_file, plotdir):
     f_phot_err = f_phot_err[sorter]
 
     # load aperture
-    aperture = ascii.read(aperture_file)
+    aperture = ascii.read(obsdir+obj.lower()+'.txt')
     aper = []
     for wl in obs['phot'][0][trimmer]:
-        if wl in aperture['wavelength(um)']:
-            aper.append(aperture['aperture(arcsec)'][aperture['wavelength(um)'] == wl][0])
+        if wl in aperture['wavelength']:
+            aper.append(aperture['aperture(arcsec)'][aperture['wavelength'] == wl][0])
         else:
             print 'No aperture found for %f um' % wl
             aper_dum = raw_input('What is the aperture size?')
@@ -133,8 +133,8 @@ def envmass_fit(dustpath, obsdir, obj, aperture_file, plotdir):
     # re-get the aperture for observational data
     aper_obs = []
     for wl in obs['phot'][0][obs_trimmer]:
-        if wl in aperture['wavelength(um)']:
-            aper_obs.append(aperture['aperture(arcsec)'][aperture['wavelength(um)'] == wl][0])
+        if wl in aperture['wavelength']:
+            aper_obs.append(aperture['aperture(arcsec)'][aperture['wavelength'] == wl][0])
         else:
             print 'No aperture found for %f um' % wl
             aper_dum = raw_input('What is the aperture size?')
@@ -179,13 +179,18 @@ def envmass_fit(dustpath, obsdir, obj, aperture_file, plotdir):
     ax.set_xlabel(r'$\rm{log(Wavelength)\,[\mu m]}$', fontsize=18)
     ax.set_ylabel(r'$\rm{log(\nu S_{\nu})\,[erg\,s^{-1}\,cm^{-2}]}$', fontsize=18)
 
-    fig.savefig(plotdir+'greybb_fit.pdf', format='pdf', dpi=300, bbox_inches='tight')
+    fig.savefig(plotdir+obj+'_greybb_fit.pdf', format='pdf', dpi=300, bbox_inches='tight')
 
     return p, perr
 
 dustpath = '/Users/yaolun/Google Drive/dust_model/Dust_OH5_Evans_Shirley/sigma.oh5.ref'
-obsdir = '/Users/yaolun/bhr71/best_calibrated/'
-obj = 'BHR71'
-aperture_file = '/Users/yaolun/bhr71/best_calibrated/aperture.txt'
-plotdir = '/Users/yaolun/bhr71/'
-envmass_fit(dustpath, obsdir, obj, aperture_file, plotdir)
+obsdir = '/Volumes/SD-Mac/CDF_archive/'
+plotdir = '/Users/yaolun/test/'
+obj_list = ['RCrA-IRS7B','RCrA-IRS7C','L723-MM','L1014',
+            'L1157','Ced110','BHR71','IRAS03245','L1551-IRS5',
+            'L1455-IRS3','B1-a','B1-c','IRAS03301',
+            'TMR1','TMC1A','TMC1','IRAS15398','RNO91',
+            'GSS30-IRS1','VLA1623','WL12','RCrA-IRS5A','L483',
+            'B335','DKCha']
+for o in obj_list:
+    envmass_fit(dustpath, obsdir, o, plotdir)
