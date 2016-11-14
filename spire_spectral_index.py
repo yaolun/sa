@@ -1,4 +1,4 @@
-def spire_spectral_index(outdir, obsid):
+def spire_spectral_index(outdir, obsid, obj):
 
     # to avoid X server error
     import matplotlib as mpl
@@ -49,7 +49,7 @@ def spire_spectral_index(outdir, obsid):
         fitted_alpha.append(-fit.alpha.value)
         print -fit.alpha
 
-    ax.text(0.5, 0.1, r'$\alpha_{250,350,500} = %3.2f, %3.2f, %3.2f$' % (fitted_alpha[0], fitted_alpha[1], fitted_alpha[2]), 
+    ax.text(0.5, 0.1, r'$\alpha_{250,350,500} = %3.2f, %3.2f, %3.2f$' % (fitted_alpha[0], fitted_alpha[1], fitted_alpha[2]),
             transform=ax.transAxes, fontsize=18)
     [ax.spines[axis].set_linewidth(1.5) for axis in ['top','bottom','left','right']]
     ax.minorticks_on()
@@ -59,23 +59,23 @@ def spire_spectral_index(outdir, obsid):
     ax.set_ylabel('Flux Density [Jy]', fontsize=18)
     ax.set_xlim([400,2000])
 
-    fig.savefig(outdir+obsid+'_spire_alpha.pdf', format='pdf', dpi=300, bbox_inches='tight')
+    fig.savefig(outdir+obj+'_spire_alpha.pdf', format='pdf', dpi=300, bbox_inches='tight')
     fig.clf()
 
     # write out the alpha index
-    foo = open(outdir+obsid+'_alpha.txt','w')
+    foo = open(outdir+obj+'_alpha.txt','w')
     foo.write('250um \t 350um \t 500um \n')
     foo.write('%8.6f \t %8.6f \t %8.6f \n' % (fitted_alpha[0], fitted_alpha[1], fitted_alpha[2]))
     foo.close()
 
-# COPS-SPIRE objects selected from successfully SECT reduction
-Obsid=[1342242620,1342242621,1342245084,1342245094,1342245857,
-       1342247625,1342248246,1342248249,1342249053,1342249470,
-       1342249474,1342249475,1342249476,1342249477,1342250509,
-       1342250510,1342250512,1342250515,1342251285,1342251286,
-       1342251287,1342251290,1342253646,1342253649,1342253652,
-       1342254037]
-outdir = '/home/bettyjo/yaolun/CDF_SPIRE_reduction/'
-
-for o in Obsid:
-    spire_spectral_index(outdir, str(o))
+# # COPS-SPIRE objects selected from successfully SECT reduction
+# Obsid=[1342242620,1342242621,1342245084,1342245094,1342245857,
+#        1342247625,1342248246,1342248249,1342249053,1342249470,
+#        1342249474,1342249475,1342249476,1342249477,1342250509,
+#        1342250510,1342250512,1342250515,1342251285,1342251286,
+#        1342251287,1342251290,1342253646,1342253649,1342253652,
+#        1342254037]
+# outdir = '/home/bettyjo/yaolun/CDF_SPIRE_reduction/'
+#
+# for o in Obsid:
+#     spire_spectral_index(outdir, str(o))

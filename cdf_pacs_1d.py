@@ -122,6 +122,11 @@ obsid_list = [['AB_Aur','1342217842','1342217843','0'],\
               ['VLA1623','0','0','1342251287'],\
               ['WL12','1342228187','1342228188','1342251290']]
 
+line_fitting_dir = '/home/bettyjo/yaolun/programs/line_fitting/'
+outdir =
+
 for obsid in obsid_list:
     if (obsid[1] == '0') or (obsid[2] == '0'):
         continue
+    fits_for_header = '/scratch/CDF_PACS_HSA/'+obsid[1]+'/herschel.pacs.signal.PacsRebinnedCube/hpacs'+obsid[1]+'_20hps3drbs_00fits'
+    cdf_pacs_1d(osbid[1:3], obsid[0], outdir, fits_for_header, line_fitting_dir)
