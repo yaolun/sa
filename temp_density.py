@@ -78,7 +78,7 @@ def envmass_fit(dustpath, obsdir, obj, plotdir):
     md = 1/(1.0395087779657002e14)
 
     # take down to 160 um
-    trimmer = (obs['phot'][0] >= 60) & (obs['phot'][0] < 1400)
+    trimmer = (obs['phot'][0] >= 100) & (obs['phot'][0] < 1400)
     #
     nu = c/obs['phot'][0][trimmer]/1e-4
     f_phot = obs['phot'][1][trimmer]*1e-23
@@ -109,7 +109,7 @@ def envmass_fit(dustpath, obsdir, obj, plotdir):
     kappa_int = f(nu)
 
     from scipy.optimize import curve_fit
-    p = curve_fit(bbfunc(omegab, kappa_int), nu, f_phot, sigma=f_phot_err, p0=[50, 1e22])
+    p = curve_fit(bbfunc(omegab, kappa_int), nu, f_phot, sigma=f_phot_err, p0=[20, 1e22])
     print p[0]
     perr = np.sqrt(np.diag(p[1]))
     print perr
@@ -140,6 +140,7 @@ def envmass_fit(dustpath, obsdir, obj, plotdir):
             aper_dum = raw_input('What is the aperture size?')
             aper_obs.append(aper_dum)
     aper_obs = np.array(aper_obs)
+    print aper_obs
 
     omegab_obs = np.pi*(aper_obs/2)**2/4.25e10
 
@@ -180,12 +181,13 @@ def envmass_fit(dustpath, obsdir, obj, plotdir):
     ax.set_ylabel(r'$\rm{log(\nu S_{\nu})\,[erg\,s^{-1}\,cm^{-2}]}$', fontsize=18)
 
     fig.savefig(plotdir+obj+'_greybb_fit.pdf', format='pdf', dpi=300, bbox_inches='tight')
+    fig.clf()
 
     return p, perr
 
 dustpath = '/Users/yaolun/Google Drive/dust_model/Dust_OH5_Evans_Shirley/sigma.oh5.ref'
 obsdir = '/Volumes/SD-Mac/CDF_archive/'
-plotdir = '/Users/yaolun/test/'
+plotdir = '/Users/yaolun/test/greybb_fit/'
 obj_list = ['RCrA-IRS7B','RCrA-IRS7C','L723-MM','L1014',
             'L1157','Ced110','BHR71','IRAS03245','L1551-IRS5',
             'L1455-IRS3','B1-a','B1-c','IRAS03301',
