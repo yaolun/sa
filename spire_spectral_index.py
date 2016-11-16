@@ -13,7 +13,7 @@ def spire_spectral_index(outdir, obsid, obj):
     c = const.c.cgs.value
 
     # Read in spectra
-    spire_sect = ascii.read(outdir+obsid+'spire_sect.txt', data_start=4)
+    spire_sect = ascii.read(outdir+obsid+'_spire_sect.txt', data_start=4)
 
     fig = plt.figure(figsize=(10,6))
     ax = fig.add_subplot(111)
