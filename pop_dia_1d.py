@@ -1,4 +1,5 @@
-def pop_dia_1d(objname,plotdir,dstar,pacs=None,spire=None,single=False):
+def pop_dia_1d(objname,plotdir,dstar,fitting_table,
+               pacs=None,spire=None,single=False):
     import numpy as np
     import matplotlib.pyplot as plt
     import os
@@ -32,20 +33,22 @@ def pop_dia_1d(objname,plotdir,dstar,pacs=None,spire=None,single=False):
         [co_spire,co_name_spire] = read_fitting_co(spire,3)
         co_data = astal.vstack([co_pacs, co_spire])
         co_data_name = np.concatenate((co_name_pacs,co_name_spire))
-    if 'co_data_name' not in locals():
-        return None
-    if len(co_data_name) <= 2:
-        return None
+
 
     # Re-write the input
     data = ascii.read(fitting_table)
-    data = data[(data['Object'] == objname) & (data['Pixel_No.'] == 'c') & (data['Validity'] = 1) & (data['SNR'] >= 3)]
+    data = data[(data['Object'] == objname) & (data['Pixel_No.'] == 'c') & (data['Validity'] == 1) & (data['SNR'] >= 3)]
     ind_co = []
     for i in range(len(data)):
         if len(data['Line'][i].split('CO')[0]) == 0:
             ind_co.append(i)
     co_data = data[ind_co]
     co_data_name = data['Line'][ind_co]
+
+    if 'co_data_name' not in locals():
+        return None
+    if len(co_data_name) <= 2:
+        return None
 
     # Calculate the N/g and Eu from the data
     v = c/(co_data['ObsWL(um)']*1e-4)
@@ -66,6 +69,9 @@ def pop_dia_1d(objname,plotdir,dstar,pacs=None,spire=None,single=False):
     pprint.pprint(yerr_hi)
     pprint.pprint(yerr_low)
 
+    # collect the min-chisq for different kinds of temperature fitting
+    s_min_total = []
+
     # Single temperature fitting
     #
     if len(x)>2:
@@ -75,6 +81,7 @@ def pop_dia_1d(objname,plotdir,dstar,pacs=None,spire=None,single=False):
         x = x.reshape(len(x))
         y = y.reshape(len(y))
         y_sig = y_sig.reshape(len(y_sig))
+        s_min_total.append(s_min)
 
         fig_rot_dia = plt.figure()
         ax_rot_dia = fig_rot_dia.add_subplot(111)
@@ -115,12 +122,13 @@ def pop_dia_1d(objname,plotdir,dstar,pacs=None,spire=None,single=False):
             turning_pt = np.mean(best_fit[s_min == min(s_min)])
             [yfit_warm,yerr_warm,t_rot_warm,sig_t_rot_warm,s_min_warm,yoff_warm] = lin_leastsqfit(x[x>=turning_pt], y[x>=turning_pt], y_sig[x>=turning_pt])
             [yfit_cool,yerr_cool,t_rot_cool,sig_t_rot_cool,s_min_cool,yoff_cool] = lin_leastsqfit(x[x<turning_pt], y[x<turning_pt], y_sig[x<turning_pt])
+            s_min_double = s_min_cool+s_min_warm
+            s_min_total.append(s_min_double)
             if (s_min_cool+s_min_warm)<s_min_single:
                 Q_warm = float(k*t_rot_warm/h/c/B)
                 Q_cool = float(k*t_rot_cool/h/c/B)
                 N_warm_fit = Q_warm*10**(float(yoff_warm))
                 N_cool_fit = Q_cool*10**(float(yoff_cool))
-                s_min_double = s_min_cool+s_min_warm
                 fig_rot_dia = plt.figure()
                 ax_rot_dia = fig_rot_dia.add_subplot(111)
                 data, = ax_rot_dia.plot(x,y,'o',color='DarkGreen',markersize=6)
@@ -172,6 +180,7 @@ def pop_dia_1d(objname,plotdir,dstar,pacs=None,spire=None,single=False):
                 [yfit_warm,yerr_warm,t_rot_warm,sig_t_rot_warm,s_min_warm,yoff_warm] = lin_leastsqfit(x[(x<turning_pt[1]) & (x>=turning_pt[0])], y[(x<turning_pt[1]) & (x>=turning_pt[0])], y_sig[(x<turning_pt[1]) & (x>=turning_pt[0])])
                 [yfit_cool,yerr_cool,t_rot_cool,sig_t_rot_cool,s_min_cool,yoff_cool] = lin_leastsqfit(x[x<turning_pt[0]], y[x<turning_pt[0]],y_sig[x<turning_pt[0]])
                 s_min_triple = s_min_cool+s_min_warm+s_min_hot
+                s_min_total.append(s_min_triple)
 
                 if (s_min_cool+s_min_warm+s_min_hot) < s_min_double:
                     Q_hot  = float(k*t_rot_hot/h/c/B)
@@ -237,6 +246,7 @@ def pop_dia_1d(objname,plotdir,dstar,pacs=None,spire=None,single=False):
                     [yfit_warm,yerr_warm,t_rot_warm,sig_t_rot_warm,s_min_warm,yoff_warm] = lin_leastsqfit(x[(x<turning_pt[2]) & (x>=turning_pt[1])], y[(x<turning_pt[2]) & (x>=turning_pt[1])], y_sig[(x<turning_pt[2]) & (x>=turning_pt[1])])
                     [yfit_cool,yerr_cool,t_rot_cool,sig_t_rot_cool,s_min_cool,yoff_cool] = lin_leastsqfit(x[(x<turning_pt[1]) & (x>=turning_pt[0])], y[(x<turning_pt[1]) & (x>=turning_pt[0])], y_sig[(x<turning_pt[1]) & (x>=turning_pt[0])])
                     [yfit_cold,yerr_cold,t_rot_cold,sig_t_rot_cold,s_min_cold,yoff_cold] = lin_leastsqfit(x[x<turning_pt[0]], y[x<turning_pt[0]],y_sig[x<turning_pt[0]])
+                    s_min_total.append(s_min_hot+s_min_warm+s_min_cool+s_min_cold)
 
                     print turning_pt
                     print x
@@ -286,7 +296,7 @@ def pop_dia_1d(objname,plotdir,dstar,pacs=None,spire=None,single=False):
                         ax_rot_dia.cla()
                         fig_rot_dia.clf()
                         print 'T_rot(hot): %8.6f K, T_rot(warm): %8.6f K, T_rot(cool): %8.6f K, T_rot(cold): %8.6f K' % (t_rot_hot,t_rot_warm,t_rot_cool,t_rot_cold)
-
+        print s_min_total
 
 def pop_dia_h2o_1d(objname,plotdir,dstar,pacs=None,spire=None):
     import numpy as np
@@ -427,9 +437,11 @@ home = os.path.expanduser('~')
 
 pacs = '/bhr71/best_calibrated/fitting/pacs/BHR71_pacs_weighted_lines.txt'
 spire = '/bhr71/best_calibrated/fitting/spire/BHR71_spire_corrected_lines.txt'
+fitting_table = '/Users/yaolun/data/CDF_archive_v2/CDF_archive_v2_lines.txt'
 
-pop_dia_1d('BHR71','/test/',200.,pacs=pacs,spire=spire)
-pacs_cube = '/bhr71/data/HSA/cube/BHR71_pacs_pixel'
+# pop_dia_1d('BHR71','/test/',200.,pacs=pacs,spire=spire)
+pop_dia_1d('BHR71', '/test/', 200., fitting_table)
+# pacs_cube = '/bhr71/data/HSA/cube/BHR71_pacs_pixel'
 # for i in range(1,26):
 #     print i
 #     pop_dia_1d('BHR71_pacs_pixel'+str(i),'/bhr71/plots/',pacs=pacs_cube+str(i)+'_os8_sf7_lines.txt')
