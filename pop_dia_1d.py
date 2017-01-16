@@ -37,8 +37,11 @@ def pop_dia_1d(objname,plotdir,dstar,fitting_table,
 
     # Re-write the input
     data = ascii.read(fitting_table)
-    data = data[(data['Object'] == objname) & (data['Pixel_No.'] == 'c') & (data['Validity'] == 1) & (data['SNR'] >= 3)]
+    # print data['SNR']
+    data = data[(data['Object'] == objname) & (data['Pixel_No.'] == 'c') & \
+                (data['Validity'] == 1) & (data['SNR'] >= 3)]
     ind_co = []
+
     for i in range(len(data)):
         if len(data['Line'][i].split('CO')[0]) == 0:
             ind_co.append(i)
@@ -66,8 +69,8 @@ def pop_dia_1d(objname,plotdir,dstar,fitting_table,
     y = y[ind]
     y_sig = y_sig[ind]
 
-    pprint.pprint(yerr_hi)
-    pprint.pprint(yerr_low)
+    # pprint.pprint(yerr_hi)
+    # pprint.pprint(yerr_low)
 
     # collect the min-chisq for different kinds of temperature fitting
     s_min_total = []
@@ -159,7 +162,7 @@ def pop_dia_1d(objname,plotdir,dstar,fitting_table,
 
             # Three temperature fitting
             #
-            if spire != None and len(x) > 12:
+            if x.min() < 500 and len(x) > 12:
                 best_fit = []
                 s_min = []
                 for i in range(3, len(x)-4):
@@ -223,7 +226,7 @@ def pop_dia_1d(objname,plotdir,dstar,fitting_table,
                     print 'T_rot(hot): %5.1f K, T_rot(warm): %5.1f K, T_rot(cool): %5.1f K' % (t_rot_hot,t_rot_warm,t_rot_cool)
 
                 # four temperature fitting
-                if (spire != None) and (len(x) > 16):
+                if (x.min() < 500) and (len(x) > 16):
                     best_fit = []
                     s_min = []
                     for i in range(3, len(x)-4):
@@ -248,8 +251,8 @@ def pop_dia_1d(objname,plotdir,dstar,fitting_table,
                     [yfit_cold,yerr_cold,t_rot_cold,sig_t_rot_cold,s_min_cold,yoff_cold] = lin_leastsqfit(x[x<turning_pt[0]], y[x<turning_pt[0]],y_sig[x<turning_pt[0]])
                     s_min_total.append(s_min_hot+s_min_warm+s_min_cool+s_min_cold)
 
-                    print turning_pt
-                    print x
+                    # print turning_pt
+                    # print x
 
                     if (s_min_cold+s_min_cool+s_min_warm+s_min_hot) < s_min_triple:
                         Q_hot  = float(k*t_rot_hot/h/c/B)
@@ -437,7 +440,18 @@ home = os.path.expanduser('~')
 
 pacs = '/bhr71/best_calibrated/fitting/pacs/BHR71_pacs_weighted_lines.txt'
 spire = '/bhr71/best_calibrated/fitting/spire/BHR71_spire_corrected_lines.txt'
-fitting_table = '/Users/yaolun/data/CDF_archive_v2/CDF_archive_v2_lines.txt'
+# fitting_table = '/Users/yaolun/data/CDF_archive_v2/CDF_archive_v2_lines.txt'
+fitting_table = '/Volumes/SD-Mac/CDF_archive_v2_lines.txt'
+
+# get the entire object list
+from astropy.io import ascii
+data = ascii.read(fitting_table)
+obj_list = list(set(data['Object'].data))
+
+# loop through all objects
+for o in obj_list:
+    pop_dia_1d(o, '/cops-spire/')
+
 
 # pop_dia_1d('BHR71','/test/',200.,pacs=pacs,spire=spire)
 pop_dia_1d('BHR71', '/test/', 200., fitting_table)
