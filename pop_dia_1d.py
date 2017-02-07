@@ -34,10 +34,9 @@ def pop_dia_1d(objname,plotdir,dstar,fitting_table,
         co_data = astal.vstack([co_pacs, co_spire])
         co_data_name = np.concatenate((co_name_pacs,co_name_spire))
 
-
     # Re-write the input
     data = ascii.read(fitting_table)
-    # print data['SNR']
+
     data = data[(data['Object'] == objname) & (data['Pixel_No.'] == 'c') & \
                 (data['Validity'] == 1) & (data['SNR'] >= 3)]
     ind_co = []
@@ -98,7 +97,7 @@ def pop_dia_1d(objname,plotdir,dstar,fitting_table,
         ax_rot_dia.tick_params('both',labelsize=16,width=1.5,which='major')
         ax_rot_dia.tick_params('both',labelsize=16,width=1.5,which='minor')
         [ax_rot_dia.spines[axis].set_linewidth(1.5) for axis in ['top','bottom','left','right']]
-        ax_rot_dia.set_xlim([0,6000])
+        ax_rot_dia.set_xlim([0,x.max()+200])
         ax_rot_dia.set_ylim([42,50])
         ax_rot_dia.legend([fit],[r'$\rm{T_{rot}= %5.1f \pm %5.1f\,K,~\mathcal{N}= %3.2f \times 10^{%d}}$' % (t_rot,sig_t_rot,N_fit/10**np.floor(np.log10(N_fit)),np.floor(np.log10(N_fit)))],\
             numpoints=1,loc='upper right',fontsize=14,framealpha=0.3)
@@ -148,7 +147,7 @@ def pop_dia_1d(objname,plotdir,dstar,fitting_table,
                 ax_rot_dia.tick_params('both',labelsize=16,width=1.5,which='major')
                 ax_rot_dia.tick_params('both',labelsize=16,width=1.5,which='minor')
                 [ax_rot_dia.spines[axis].set_linewidth(1.5) for axis in ['top','bottom','left','right']]
-                ax_rot_dia.set_xlim([0,6000])
+                ax_rot_dia.set_xlim([0,x.max()+200])
                 ax_rot_dia.set_ylim([42,50])
 
                 ax_rot_dia.legend([fit_warm,fit_cool],\
@@ -208,7 +207,7 @@ def pop_dia_1d(objname,plotdir,dstar,fitting_table,
 
                     ax_rot_dia.set_xlabel(r'$\rm{E_{u}\,(K)}$',fontsize=18)
                     ax_rot_dia.set_ylabel(r'$\rm{log(\mathcal{N}_{J}/g_{J})}$',fontsize=18)
-                    ax_rot_dia.set_xlim([0,6000])
+                    ax_rot_dia.set_xlim([0,x.max()+200])
                     ax_rot_dia.set_ylim([42,50])
 
                     ax_rot_dia.tick_params('both',labelsize=16,width=1.5,which='major')
@@ -254,6 +253,10 @@ def pop_dia_1d(objname,plotdir,dstar,fitting_table,
                     # print turning_pt
                     # print x
 
+                    if (t_rot_hot < 0) or (t_rot_warm < 0) or (t_rot_cool < 0) or (t_rot_cold < 0):
+                        print 'negative temperature found'
+                        return None
+
                     if (s_min_cold+s_min_cool+s_min_warm+s_min_hot) < s_min_triple:
                         Q_hot  = float(k*t_rot_hot/h/c/B)
                         Q_warm = float(k*t_rot_warm/h/c/B)
@@ -282,12 +285,14 @@ def pop_dia_1d(objname,plotdir,dstar,fitting_table,
 
                         ax_rot_dia.set_xlabel(r'$\rm{E_{u}\,(K)}$',fontsize=18)
                         ax_rot_dia.set_ylabel(r'$\rm{log(\mathcal{N}_{J}/g_{J})}$',fontsize=18)
-                        ax_rot_dia.set_xlim([0,6000])
+                        ax_rot_dia.set_xlim([0,x.max()+200])
                         ax_rot_dia.set_ylim([42,50])
 
                         ax_rot_dia.tick_params('both',labelsize=16,width=1.5,which='major')
                         ax_rot_dia.tick_params('both',labelsize=16,width=1.5,which='minor')
                         [ax_rot_dia.spines[axis].set_linewidth(1.5) for axis in ['top','bottom','left','right']]
+
+                        print t_rot_hot, N_hot_fit
 
                         ax_rot_dia.legend([fit_hot,fit_warm,fit_cool,fit_cold],\
                             [r'$\rm{T_{rot,hot}= %5.1f \pm %5.1f\,K,\,\mathcal{N}= %3.2f \times 10^{%d}}$' % (t_rot_hot,sig_t_rot_hot,N_hot_fit/10**np.floor(np.log10(N_hot_fit)),np.floor(np.log10(N_hot_fit))),\
@@ -440,17 +445,20 @@ home = os.path.expanduser('~')
 
 pacs = '/bhr71/best_calibrated/fitting/pacs/BHR71_pacs_weighted_lines.txt'
 spire = '/bhr71/best_calibrated/fitting/spire/BHR71_spire_corrected_lines.txt'
-# fitting_table = '/Users/yaolun/data/CDF_archive_v2/CDF_archive_v2_lines.txt'
-fitting_table = '/Volumes/SD-Mac/CDF_archive_v2_lines.txt'
+fitting_table = '/Users/yaolun/data/CDF_archive_v2/CDF_archive_v2_lines.txt'
+# fitting_table = '/Volumes/SD-Mac/CDF_archive_v2_lines.txt'
 
 # get the entire object list
 from astropy.io import ascii
 data = ascii.read(fitting_table)
 obj_list = list(set(data['Object'].data))
 
+dist = ascii.read('/Users/yaolun/data/cops-spire_distance.txt')
+
 # loop through all objects
 for o in obj_list:
-    pop_dia_1d(o, '/cops-spire/')
+    print o
+    pop_dia_1d(o, '/cops-spire/', dist['distance'][dist['object'] == o], fitting_table)
 
 
 # pop_dia_1d('BHR71','/test/',200.,pacs=pacs,spire=spire)
