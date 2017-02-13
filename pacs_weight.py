@@ -16,7 +16,7 @@ def pacs_weight(cubedir, obj, aper_size, outdir, fits_for_header,
         grid_x = grid_x - (pix-1)/2.
         grid_y = grid_y - (pix-1)/2.
         grid_dist = ((grid_x-x)**2+(grid_y-y)**2)**0.5
-        aperture = np.where(grid_dist <= r, np.full((pix, pix), 1, dtype=int), 0)
+        aperture = np.where(grid_dist <= r, np.full((int(pix), int(pix)), 1, dtype=int), 0)
 
         return aperture
 
@@ -66,7 +66,6 @@ def pacs_weight(cubedir, obj, aper_size, outdir, fits_for_header,
     pix_size = abs(fits.open(fits_for_header)[1].header['CDELT1']*3600)
     ideal = (pix_size*factor)**2
 
-    # rot_angle = -337.59912046069104
     rot_angle = fits.open(fits_for_header)[1].header['CROTA2']
 
     a = np.full((pix, pix), 0)
