@@ -29,7 +29,7 @@ def pacs_weight(cubedir, obj, aper_size, outdir, fits_for_header,
     def Mask(x, y, edge, rot, pix=10000.):
         from scipy.ndimage.interpolation import rotate
 
-        init_arr = np.full((pix, pix), 1, dtype=int)
+        init_arr = np.full((int(pix), int(pix)), 1, dtype=int)
         grid_x, grid_y = np.meshgrid(np.linspace(0,pix-1,pix), np.linspace(0,pix-1,pix))
 
         # RA offset (x) and Dec offset (y) need to be rotated, because the spaxels are rotated.
