@@ -68,7 +68,7 @@ def pacs_weight(cubedir, obj, aper_size, outdir, fits_for_header,
 
     rot_angle = fits.open(fits_for_header)[1].header['CROTA2']
 
-    a = np.full((pix, pix), 0)
+    a = np.full((int(pix), int(pix)), 0)
     for i in range(0,25):
         ra = coord['RA'][i]
         dec = coord['Dec'][i]
