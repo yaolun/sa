@@ -117,7 +117,7 @@ def pacs_weight(cubedir, obj, aper_size, outdir, fits_for_header,
     for i in range(1,26):
         foo = ascii.read(cubedir+obj+'_pacs_pixel'+str(i)+'_'+suffix+'.txt')
         # set NaN values to zero
-        foo['Flux_Density(Jy)'][np.isnan(foo['Flux_Density(Jy)'])] = 0
+        # foo['Flux_Density(Jy)'][np.isnan(foo['Flux_Density(Jy)'])] = 0
 
         flux = flux + foo['Flux_Density(Jy)'][trimmer]*weight[i-1]
 
