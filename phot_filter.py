@@ -1,9 +1,11 @@
-def phot_filter(fil_name):
+def phot_filter(fil_name, filter_dir):
     import numpy as np
     from astropy.io import ascii
     from pprint import pprint
     import os
-    filename = os.path.expanduser('~')+'/programs/spectra_analysis/allfilters.dat'
+
+    filename = filter_dir+'allfilters.dat'
+
     foo = open(filename, 'r')
     index = []
     filter_name = []
@@ -18,7 +20,7 @@ def phot_filter(fil_name):
 
     while len(ind) == 0:
         if fil_name != 'ls':
-            print 'requested filter not found in database!'
+            print('requested filter not found in database!')
         fil_name = raw_input('Please enter the filter name (or ls for listing the filters in database): ')
         if fil_name == 'ls':
             pprint(filter_name)
