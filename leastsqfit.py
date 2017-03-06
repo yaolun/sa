@@ -4,17 +4,17 @@ def lin_leastsqfit(xdata,ydata,sig_y,nofit=False):#,xlabel,ylabel,outdir,plotnam
     import matplotlib.pyplot as plt
     import os
     from numpy.linalg import inv
-    #home = os.path.expanduser('~')
-    #Read the data
-    #data = np.loadtxt(home+'/bhr71/data/'+filename+'.txt')
-    #data = [x,y,sig_y]
-    #Construct the matrix
+
+    # works like y_fit = a_hat[0] + a_hat[1]*x + a_hat[2]*x^2 +...
+
+    # Read the data
+    # Construct the matrix
     n = len(xdata)#len(data[:,0])
     m = 1
     x = np.zeros((n,2))
     x = np.matrix(x)
-    for i in range(0,n):#(len(data[:,0])):
-        x[i,1] = xdata[i]#data[i,0]
+    for i in range(0,n): # (len(data[:,0])):
+        x[i,1] = xdata[i] # data[i,0]
         x[i,0] = 1
     w = np.zeros((n,n))
     w = np.matrix(w)
@@ -22,7 +22,7 @@ def lin_leastsqfit(xdata,ydata,sig_y,nofit=False):#,xlabel,ylabel,outdir,plotnam
         w[i,i] = 1/sig_y[i]**2
     y = np.zeros((n,1))
     for i in range(0,n):
-        y[i,0] = ydata[i]#data[i,1]
+        y[i,0] = ydata[i] # data[i,1]
     y = np.matrix(y)
     #Least square fitting part
     N = x.transpose()*w*x
@@ -33,8 +33,7 @@ def lin_leastsqfit(xdata,ydata,sig_y,nofit=False):#,xlabel,ylabel,outdir,plotnam
     t_rot = -1/a_hat[1]*np.log10(np.e)
     sig_t_rot = -t_rot*cov_hat[1,1]**0.5/a_hat[1]*np.log10(np.e)
 
-    #print str(t_rot)+'+/-'+str(sig_t_rot)+'K'
-    #ploting
+    # ploting
     if nofit == True:
         #only data
         plt.plot(xdata,ydata+36,'go',linestyle='None')
@@ -68,7 +67,8 @@ def lin_leastsqfit(xdata,ydata,sig_y,nofit=False):#,xlabel,ylabel,outdir,plotnam
         #plt.savefig(outdir+plotname+'.eps',format='eps',dpi=300)
         #plt.cla()
         #plt.clf()
-        return np.squeeze(np.array(yfit)),np.squeeze(np.array(yerr)),t_rot,sig_t_rot,float(s_min)/(n-m-1),a_hat[0]
+        return np.squeeze(np.array(yfit)),np.squeeze(np.array(yerr)), a_hat, cov_hat, float(s_min)/(n-m-1)
+        # return np.squeeze(np.array(yfit)),np.squeeze(np.array(yerr)),t_rot,sig_t_rot,float(s_min)/(n-m-1),a_hat[0]
 # pix_name = [3,4,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22]
 # for pix in pix_name:
 #     import numpy as np
