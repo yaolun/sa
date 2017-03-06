@@ -46,6 +46,8 @@ def spire_spectral_index(outdir, obsid, obj):
         fitter = fitting.LevMarLSQFitter()
         fit = fitter(pow_model, freq_dum, flux_dum)
 
+        print fitter.fit_info
+
         ax.plot(freq_dum, fit(freq_dum), '-', color='k')
         # take negative sign because the frequency array is reversed
         fitted_alpha.append(-fit.alpha.value)
