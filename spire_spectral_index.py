@@ -31,15 +31,15 @@ def spire_spectral_index(outdir, obsid, obj):
         if band != 250:
             amp = f_slw(x_ref)
             freq_dum = (c/1e5/spire_sect['wave_segm1_0'])\
-                       [(c/1e5/spire_sect['wave_segm1_0'] >= x_ref-200) & (c/1e5/spire_sect['wave_segm1_0'] <= x_ref+200)]
+                       [(c/1e5/spire_sect['wave_segm1_0'] >= x_ref-150) & (c/1e5/spire_sect['wave_segm1_0'] <= x_ref+150)]
             flux_dum = spire_sect['flux_segm1_0']\
-                       [(c/1e5/spire_sect['wave_segm1_0'] >= x_ref-200) & (c/1e5/spire_sect['wave_segm1_0'] <= x_ref+200)]
+                       [(c/1e5/spire_sect['wave_segm1_0'] >= x_ref-150) & (c/1e5/spire_sect['wave_segm1_0'] <= x_ref+150)]
         else:
             amp = f_ssw(x_ref)
             freq_dum = (c/1e5/spire_sect['wave_segm2_0'])\
-                       [(c/1e5/spire_sect['wave_segm2_0'] >= x_ref-200) & (c/1e5/spire_sect['wave_segm2_0'] <= x_ref+200)]
+                       [(c/1e5/spire_sect['wave_segm2_0'] >= x_ref-150) & (c/1e5/spire_sect['wave_segm2_0'] <= x_ref+150)]
             flux_dum = spire_sect['flux_segm2_0']\
-                       [(c/1e5/spire_sect['wave_segm2_0'] >= x_ref-200) & (c/1e5/spire_sect['wave_segm2_0'] <= x_ref+200)]
+                       [(c/1e5/spire_sect['wave_segm2_0'] >= x_ref-150) & (c/1e5/spire_sect['wave_segm2_0'] <= x_ref+150)]
         alpha = 0
 
         pow_model = powerlaws.PowerLaw1D(amp, x_ref, alpha)
