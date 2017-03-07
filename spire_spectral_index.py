@@ -54,10 +54,10 @@ def spire_spectral_index(outdir, obsid, obj):
         # probably something wrong with the python config
         if 'bettyjo' not in archive_dir:
             fitted_alpha_err.append(fitter.fit_info['param_cov'][2,2]**0.5)
-            print(fit.alpha.value, '+/-', fitter.fit_info['param_cov'][2,2]**0.5)
+            print -fit.alpha.value, '+/-', fitter.fit_info['param_cov'][2,2]**0.5
         else:
             fitted_alpha_err.append(0)
-            print(fit.alpha.value)
+            print -fit.alpha.value
 
     ax.text(0.35, 0.15, r'$\alpha_{250,350,500} = %3.2f, %3.2f, %3.2f$' % (fitted_alpha[0], fitted_alpha[1], fitted_alpha[2]),
             transform=ax.transAxes, fontsize=18)
@@ -111,3 +111,4 @@ for o in obsid_spire:
     #     continue
     print(obj)
     spire_spectral_index(archive_dir+obj+'/spire/data/', str(o), obj)
+
