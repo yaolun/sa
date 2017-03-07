@@ -42,13 +42,11 @@ def spire_spectral_index(outdir, obsid, obj):
                        [(c/1e5/spire_sect['wave_segm2_0'] >= x_ref-200) & (c/1e5/spire_sect['wave_segm2_0'] <= x_ref+200)]
         alpha = 0
 
-        print freq_dum
-        print flux_dum
-
         pow_model = powerlaws.PowerLaw1D(amp, x_ref, alpha)
         fitter = fitting.LevMarLSQFitter()
         fit = fitter(pow_model, freq_dum, flux_dum)
 
+        print fit.alpha
         print fitter.fit_info
 
         ax.plot(freq_dum, fit(freq_dum), '-', color='k')
