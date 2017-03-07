@@ -53,10 +53,10 @@ def spire_spectral_index(outdir, obsid, obj):
         # probably something wrong with the python config
         if 'bettyjo' not in archive_dir:
             fitted_alpha_err.append(fitter.fit_info['param_cov'][2,2]**0.5)
-            print fit.alpha.value, '+/-', fitter.fit_info['param_cov'][2,2]**0.5
+            print -fit.alpha.value, '+/-', fitter.fit_info['param_cov'][2,2]**0.5
         else:
             fitted_alpha_err.append(0)
-            print fit.alpha.value
+            print -fit.alpha.value
 
     ax.text(0.35, 0.15, r'$\alpha_{250,350,500} = %3.2f, %3.2f, %3.2f$' % (fitted_alpha[0], fitted_alpha[1], fitted_alpha[2]),
             transform=ax.transAxes, fontsize=18)
@@ -80,32 +80,32 @@ def spire_spectral_index(outdir, obsid, obj):
     foo.write('%8.6f \t %8.6f \t %8.6f \n' % (fitted_alpha_err[0], fitted_alpha_err[1], fitted_alpha_err[2]))
     foo.close()
 # #
-# # COPS-SPIRE objects selected from successfully SECT reduction
-# # COPS-SPIRE source list
-# obsid_spire = [1342242620,1342242621,1342245084,1342245094,1342245857,
-#                1342247625,1342248246,1342248249,1342249053,1342249470,
-#                1342249474,1342249475,1342249476,1342249477,1342250509,
-#                1342250510,1342250512,1342250515,1342251285,1342251286,
-#                1342251287,1342251290,1342253646,1342253649,1342253652,
-#                1342254037,1342252897]
+# COPS-SPIRE objects selected from successfully SECT reduction
+# COPS-SPIRE source list
+obsid_spire = [1342242620,1342242621,1342245084,1342245094,1342245857,
+               1342247625,1342248246,1342248249,1342249053,1342249470,
+               1342249474,1342249475,1342249476,1342249477,1342250509,
+               1342250510,1342250512,1342250515,1342251285,1342251286,
+               1342251287,1342251290,1342253646,1342253649,1342253652,
+               1342254037,1342252897]
+
+# SECT cannot converage at L1489 1342249473, L1527 1342250511, HH100 1342252897
+# mapping observation IRS44/46 1342251289
+
+obj_list_spire = ['RCrA-IRS7B','RCrA-IRS7C','HH46','L723-MM','L1014',
+                  'L1157','Ced110','BHR71','IRAS03245','L1551-IRS5',
+                  'L1455-IRS3','B1-a','B1-c','IRAS03301','TMR1',
+                  'TMC1A','TMC1','IRAS15398','RNO91','GSS30-IRS1',
+                  'VLA1623','WL12','RCrA-IRS5A','L483','B335',
+                  'DKCha','HH100']
+
+# archive_dir = '/home/bettyjo/yaolun/CDF_archive_v2/'
+archive_dir = '/Volumes/Backup/SD-Mac/CDF_archive_v2/'
+
 #
-# # SECT cannot converage at L1489 1342249473, L1527 1342250511, HH100 1342252897
-# # mapping observation IRS44/46 1342251289
-#
-# obj_list_spire = ['RCrA-IRS7B','RCrA-IRS7C','HH46','L723-MM','L1014',
-#                   'L1157','Ced110','BHR71','IRAS03245','L1551-IRS5',
-#                   'L1455-IRS3','B1-a','B1-c','IRAS03301','TMR1',
-#                   'TMC1A','TMC1','IRAS15398','RNO91','GSS30-IRS1',
-#                   'VLA1623','WL12','RCrA-IRS5A','L483','B335',
-#                   'DKCha','HH100']
-#
-# # archive_dir = '/home/bettyjo/yaolun/CDF_archive_v2/'
-# archive_dir = '/Volumes/Backup/SD-Mac/CDF_archive_v2/'
-#
-# #
-# for o in obsid_spire:
-#     obj = obj_list_spire[obsid_spire.index(o)]
-#     # if obj != 'HH46':
-#     #     continue
-#     print obj
-#     spire_spectral_index(archive_dir+obj+'/spire/data/', str(o), obj)
+for o in obsid_spire:
+    obj = obj_list_spire[obsid_spire.index(o)]
+    # if obj != 'HH46':
+    #     continue
+    print obj
+    spire_spectral_index(archive_dir+obj+'/spire/data/', str(o), obj)
