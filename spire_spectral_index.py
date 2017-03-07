@@ -31,20 +31,22 @@ def spire_spectral_index(outdir, obsid, obj):
         if band != 250:
             amp = f_slw(x_ref)
             freq_dum = (c/1e5/spire_sect['wave_segm1_0'])\
-                       [(c/1e5/spire_sect['wave_segm1_0'] >= x_ref-150) & (c/1e5/spire_sect['wave_segm1_0'] <= x_ref+150)]
+                       [(c/1e5/spire_sect['wave_segm1_0'] >= x_ref-200) & (c/1e5/spire_sect['wave_segm1_0'] <= x_ref+200)]
             flux_dum = spire_sect['flux_segm1_0']\
-                       [(c/1e5/spire_sect['wave_segm1_0'] >= x_ref-150) & (c/1e5/spire_sect['wave_segm1_0'] <= x_ref+150)]
+                       [(c/1e5/spire_sect['wave_segm1_0'] >= x_ref-200) & (c/1e5/spire_sect['wave_segm1_0'] <= x_ref+200)]
         else:
             amp = f_ssw(x_ref)
             freq_dum = (c/1e5/spire_sect['wave_segm2_0'])\
-                       [(c/1e5/spire_sect['wave_segm2_0'] >= x_ref-150) & (c/1e5/spire_sect['wave_segm2_0'] <= x_ref+150)]
+                       [(c/1e5/spire_sect['wave_segm2_0'] >= x_ref-200) & (c/1e5/spire_sect['wave_segm2_0'] <= x_ref+200)]
             flux_dum = spire_sect['flux_segm2_0']\
-                       [(c/1e5/spire_sect['wave_segm2_0'] >= x_ref-150) & (c/1e5/spire_sect['wave_segm2_0'] <= x_ref+150)]
+                       [(c/1e5/spire_sect['wave_segm2_0'] >= x_ref-200) & (c/1e5/spire_sect['wave_segm2_0'] <= x_ref+200)]
         alpha = 0
 
         pow_model = powerlaws.PowerLaw1D(amp, x_ref, alpha)
         fitter = fitting.LevMarLSQFitter()
         fit = fitter(pow_model, freq_dum, flux_dum)
+
+        print fitter.fit_info['message']
 
         ax.plot(freq_dum, fit(freq_dum), '-', color='k')
         # take negative sign because the frequency array is reversed
@@ -93,13 +95,13 @@ def spire_spectral_index(outdir, obsid, obj):
 #                   'VLA1623','WL12','RCrA-IRS5A','L483','B335',
 #                   'DKCha','HH100']
 #
-# archive_dir = '/home/bettyjo/yaolun/CDF_archive_v2/'
-# # archive_dir = '/Volumes/Backup/SD-Mac/CDF_archive_v2/'
+# # archive_dir = '/home/bettyjo/yaolun/CDF_archive_v2/'
+# archive_dir = '/Volumes/Backup/SD-Mac/CDF_archive_v2/'
 #
 # #
 # for o in obsid_spire:
 #     obj = obj_list_spire[obsid_spire.index(o)]
-#     if obj != 'L1157':
+#     if obj != 'HH46':
 #         continue
 #     print obj
 #     spire_spectral_index(archive_dir+obj+'/spire/data/', str(o), obj)
