@@ -46,13 +46,17 @@ def spire_spectral_index(outdir, obsid, obj):
         fitter = fitting.LevMarLSQFitter()
         fit = fitter(pow_model, freq_dum, flux_dum)
 
-        print fitter.fit_info['message']
-
         ax.plot(freq_dum, fit(freq_dum), '-', color='k')
         # take negative sign because the frequency array is reversed
         fitted_alpha.append(-fit.alpha.value)
-        fitted_alpha_err.append(fitter.fit_info['param_cov'][2,2]**0.5)
-        print fit.alpha.value, '+/-', fitter.fit_info['param_cov'][2,2]**0.5
+        # the uncertainty part somehow does work on bettyjo.
+        # probably something wrong with the python config
+        if 'bettyjo' not in archive_dir:
+            fitted_alpha_err.append(fitter.fit_info['param_cov'][2,2]**0.5)
+            print fit.alpha.value, '+/-', fitter.fit_info['param_cov'][2,2]**0.5
+        else:
+            fitted_alpha_err.append(0)
+            print fit.alpha.value
 
     ax.text(0.35, 0.15, r'$\alpha_{250,350,500} = %3.2f, %3.2f, %3.2f$' % (fitted_alpha[0], fitted_alpha[1], fitted_alpha[2]),
             transform=ax.transAxes, fontsize=18)
@@ -101,7 +105,7 @@ def spire_spectral_index(outdir, obsid, obj):
 # #
 # for o in obsid_spire:
 #     obj = obj_list_spire[obsid_spire.index(o)]
-#     if obj != 'HH46':
-#         continue
+#     # if obj != 'HH46':
+#     #     continue
 #     print obj
 #     spire_spectral_index(archive_dir+obj+'/spire/data/', str(o), obj)
