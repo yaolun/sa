@@ -1,5 +1,7 @@
 def AlphaHyperion(rtout, aperfile, dstar, wave_center, lbollsmm=False):
-    # import matplotlib.pyplot as plt
+    import matplotlib as mpl
+    mpl.use('Agg')
+    import matplotlib.pyplot as plt
     import numpy as np
     import os
     from hyperion.model import ModelOutput, Model
