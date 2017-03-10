@@ -8,7 +8,7 @@ def AlphaHyperion(rtout, aperfile, dstar, wave_center, lbollsmm=False):
     from hyperion.util.constants import pc, c, lsun, au
     from astropy.io import ascii
 
-    def getAlpha(spec, wave_center, plot=False):
+    def getAlpha(spec, wave_center, plot=False, plotname=None):
         """
         spec = {'Wavelength(um)': wave,
                 'Flux_Density(Jy)': flux,
@@ -64,7 +64,7 @@ def AlphaHyperion(rtout, aperfile, dstar, wave_center, lbollsmm=False):
             ax.set_ylabel('Flux Density [Jy]', fontsize=18)
             ax.set_xlim([400,2000])
 
-            fig.savefig('Alpha500Hyperion.pdf', format='pdf', dpi=300, bbox_inches='tight')
+            fig.savefig(plotname+'Alpha500Hyperion.pdf', format='pdf', dpi=300, bbox_inches='tight')
             fig.clf()
 
         return (alpha, alpha_err)
@@ -133,7 +133,7 @@ def AlphaHyperion(rtout, aperfile, dstar, wave_center, lbollsmm=False):
             lsmm.append(lsubmm(350.0, spec, dstar))
 
         # get alpha
-        alpha_dum, alpha_err_dum = getAlpha(spec, wave_center, plot=False)
+        alpha_dum, alpha_err_dum = getAlpha(spec, wave_center, plot=True, plotname='/home/bettyjo/yaolun/test/'+aperture_list[-1]+'_q')
         alpha.append(alpha_dum)
         alpha_err.append(alpha_err_dum)
 
