@@ -135,17 +135,18 @@ obj_list = ['RCrA-IRS7B','RCrA-IRS7C','HH46','L723-MM','L1014',
 spec = 1
 phot_dir = '/Users/yaolun/data/herschel_phot/cops-spire_alpha/'
 spec_dir = '/Volumes/SD-Mac/Dropbox/cops-spire/IRS_spec/reformatted/'
-plotdir = '/Volumes/SD-Mac/Dropbox/cops-spire/AlphaClassification/'
+# plotdir = '/Volumes/SD-Mac/Dropbox/cops-spire/AlphaClassification/'
+plotdir = '/Users/yaolun/research/cops-spire/AlphaClassification/'
 from astropy.io import ascii
 import os
 
 for obj in obj_list:
-    if obj != 'L1551-IRS5':
+    if obj != 'VLA1623':
         continue
     print(obj)
     if os.path.exists(spec_dir+obj.lower()+'.txt'):
         spec = ascii.read(spec_dir+obj.lower()+'.txt', comment='%')
     else:
         spec = None
-    alpha = AlphaClassification(obj, phot_dir, usephot=False, plotdir=plotdir, spec=spec)
+    alpha = AlphaClassification(obj, phot_dir, usephot=True, plotdir=plotdir, spec=None)
     print(alpha)
