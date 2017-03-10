@@ -129,7 +129,7 @@ def AlphaHyperion(rtout, aperfile, dstar, wave_center, lbollsmm=False):
             # lsmm.append(lsubmm(350.0, specphot, dstar))
 
             lbol.append(lsubmm(spec['Wavelength(um)'].min(), spec, dstar))
-            lsmm.append(lsubmm(60.0, spec, dstar))
+            lsmm.append(lsubmm(350.0, spec, dstar))
 
         # get alpha
         plotname = '/home/bettyjo/yaolun/test/'+str(aperture_list[-1])+'_'
