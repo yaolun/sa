@@ -133,6 +133,7 @@ def AlphaHyperion(rtout, aperfile, dstar, wave_center, lbollsmm=False):
             lsmm.append(lsubmm(350.0, spec, dstar))
 
         # get alpha
+        print(aperture_list[-1])
         plotname = '/home/bettyjo/yaolun/test/'+aperture_list[-1]+'_'
         print(plotname)
         alpha_dum, alpha_err_dum = getAlpha(spec, wave_center, plot=True, plotname=plotname)
