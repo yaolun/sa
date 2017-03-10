@@ -51,10 +51,9 @@ def AlphaHyperion(rtout, aperfile, dstar, wave_center, lbollsmm=False):
 
             fig = plt.figure(figsize=(10,6))
             ax = fig.add_subplot(111)
+            ax.plot(freq_dum, flux_dum, 'o')
             ax.plot(freq_dum, fit(freq_dum), '-', color='k')
-            ax.text(0.35, 0.15, r'$\alpha_{250,350,500} = %3.2f, %3.2f, %3.2f$' % (fitted_alpha[0], fitted_alpha[1], fitted_alpha[2]),
-                    transform=ax.transAxes, fontsize=18)
-            ax.text(0.35, 0.05, r'$\sigma_{\alpha}\,(250,350,500) = %5.3f, %5.3f, %5.3f$' % (fitted_alpha_err[0], fitted_alpha_err[1], fitted_alpha_err[2]),
+            ax.text(0.6, 0.05, r'$\alpha_{500} = %3.2f \pm %3.2f$' % (alpha, alpha_err),
                     transform=ax.transAxes, fontsize=18)
             [ax.spines[axis].set_linewidth(1.5) for axis in ['top','bottom','left','right']]
             ax.minorticks_on()
