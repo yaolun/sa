@@ -1,4 +1,4 @@
-def AlphaHyperion(rtout, aperfile, dstar, wave_center, lbollsmm=None):
+def AlphaHyperion(rtout, aperfile, dstar, wave_center, lbollsmm=False):
     import matplotlib.pyplot as plt
     import numpy as np
     import os
@@ -119,7 +119,7 @@ def AlphaHyperion(rtout, aperfile, dstar, wave_center, lbollsmm=None):
                 'Uncertainty(Jy)': (sed_dum.unc/(c/sed_dum.wav*1e4)*1e23)[sorter]}
 
         # option for calculating Lbol/Lsumm at the same time
-        if lbollsmm is not None:
+        if lbollsmm:
             # model_name = os.path.basename(rtout).split('.')[0]
             # data = ascii.read(lbollsmm+model_name+'_sed_w_aperture.txt')
             # specphot = {'Wavelength(um)': data['wave'],
