@@ -1,5 +1,5 @@
 def pop_dia_1d(objname,plotdir,dstar,fitting_table,
-               pacs=None,spire=None,single=False):
+               pacs=None,spire=None,single=False, opt_correction=None):
     import numpy as np
     import matplotlib.pyplot as plt
     import os
@@ -48,14 +48,20 @@ def pop_dia_1d(objname,plotdir,dstar,fitting_table,
     data = ascii.read(fitting_table)
 
     data = data[(data['Object'] == objname) & (data['Pixel_No.'] == 'c') & \
-                (data['Validity'] == 1) & (data['SNR'] >= 3)]
+                (data['Validity'] == 1) & (data['SNR'] >= 5)]
     ind_co = []
+    ind_13co = []
 
     for i in range(len(data)):
         if len(data['Line'][i].split('CO')[0]) == 0:
             ind_co.append(i)
+        elif data['Line'][i].split('CO')[0] == '13':
+            ind_13co.append(i)
+
     co_data = data[ind_co]
     co_data_name = data['Line'][ind_co]
+    co13_data = data[ind_13co]
+    co13_data_name = data['Line'][ind_13co]
 
     if 'co_data_name' not in locals():
         return None
@@ -66,6 +72,10 @@ def pop_dia_1d(objname,plotdir,dstar,fitting_table,
     v = c/(co_data['ObsWL(um)']*1e-4)
     N = 4*np.pi*co_data['Str(W/cm2)']*1e7*(dstar*pc)**2/(co_data['A(s-1)']*h*v)
     N_sigma = 4*np.pi*(1.064*co_data['FWHM(um)']*co_data['Noise(W/cm2/um)'])*1e7*(dstar*pc)**2/(co_data['A(s-1)']*h*v)
+    # option for correcting optical depth if opt_correction is given with a J_up level
+    # levels below (including the given one) will be performed correction
+    cor_factor =
+
     x = co_data['E_u(K)']
     y = np.log10(N/co_data['g'])
     yerr_hi = np.log10((N+N_sigma)/co_data['g'])-np.log10(N/co_data['g'])
