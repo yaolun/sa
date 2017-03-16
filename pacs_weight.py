@@ -129,6 +129,6 @@ def pacs_weight(cubedir, obj, aper_size, outdir, fits_for_header,
             foo.write('{} \t {}\n'.format(wl[i], flux[i]))
     foo.close()
 
-    print 'Weighted spectrum saved at ', outdir+obj+'_pacs_weighted_'+suffix+'.txt'
+    print('Weighted spectrum saved at ', outdir+obj+'_pacs_weighted_'+suffix+'.txt')
 
     return wl, flux

@@ -99,7 +99,7 @@ def AlphaClassification(obj, phot_dir, spec=None, usephot=True, waverange=None, 
     # use my own fitting code
     from leastsqfit import lin_leastsqfit
     [y_fit, y_fit_err, p, cov, s_min] = lin_leastsqfit(x, y, y_err_low)
-    # y_fit = p[0]*x + p[1]
+    # y_fit = p[0] + p[1]*x
     print(phots)
     print(p)
     print(cov)
