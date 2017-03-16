@@ -1,5 +1,8 @@
 def pop_dia_1d(objname,plotdir,dstar,fitting_table,
                pacs=None,spire=None,single=False, opt_correction=None):
+    """
+    opt_correction is the largest J-level that need to be corrected from optical depth
+    """
     import numpy as np
     import matplotlib.pyplot as plt
     import os
@@ -72,9 +75,22 @@ def pop_dia_1d(objname,plotdir,dstar,fitting_table,
     v = c/(co_data['ObsWL(um)']*1e-4)
     N = 4*np.pi*co_data['Str(W/cm2)']*1e7*(dstar*pc)**2/(co_data['A(s-1)']*h*v)
     N_sigma = 4*np.pi*(1.064*co_data['FWHM(um)']*co_data['Noise(W/cm2/um)'])*1e7*(dstar*pc)**2/(co_data['A(s-1)']*h*v)
-    # option for correcting optical depth if opt_correction is given with a J_up level
-    # levels below (including the given one) will be performed correction
-    cor_factor =
+
+    if opt_correction is not None:
+        # option for correcting optical depth if opt_correction is given with a J_up level
+        # levels below (including the given one) will be performed correction
+
+        # correct the 12CO line strength by applying optical depth derived from the 12CO/13CO analysis
+        def tau_12co(E_u):
+            p = [1.41694317,-0.00224761]
+            return p[1]*E_u+p[0]
+
+        cor_select = (co_data['g'] <= 2*opt_correction+1)
+        str_corrected = co['Str(W/cm2)'][cor_select]*tau_12co(co_data['E_u(K)'][selected])/(1-np.exp(-tau_12co(co_data['E_u(K)'][select])))
+        str_unc_corrected = co['Noise(W/cm2/um)'][cor_select]*tau_12co(co_data['E_u(K)'][selected])/(1-np.exp(-tau_12co(co_data['E_u(K)'][select])))
+
+        N[cor_select] = 4*np.pi*str_corrected*1e7*(dstar*pc)**2/(co_data['A(s-1)'][cor_select]*h*v)
+        N_sigma[cor_select] = 4*np.pi*(1.064*co_data['FWHM(um)']*str_unc_corrected)*1e7*(dstar*pc)**2/(co_data['A(s-1)']*h*v)
 
     x = co_data['E_u(K)']
     y = np.log10(N/co_data['g'])
@@ -500,7 +516,7 @@ dist = ascii.read('/Users/yaolun/data/cops-spire_distance.txt')
 
 
 # pop_dia_1d('BHR71','/test/',200.,pacs=pacs,spire=spire)
-pop_dia_1d('BHR71', '/test/', 200., fitting_table)
+# pop_dia_1d('BHR71', '/test/', 200., fitting_table)
 # pacs_cube = '/bhr71/data/HSA/cube/BHR71_pacs_pixel'
 # for i in range(1,26):
 #     print i
