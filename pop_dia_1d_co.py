@@ -83,7 +83,7 @@ def pop_dia_1d(objname,plotdir,dstar,fitting_table,
         # correct the 12CO line strength by applying optical depth derived from the 12CO/13CO analysis
         def tau_12co(E_u):
             p = [1.41694317,-0.00224761]
-            return p[1]*E_u+p[0]
+            return 10**(p[1]*E_u+p[0])
 
         cor_select = (co_data['g'] <= 2*opt_correction+1)
         str_corrected = co_data['Str(W/cm2)'][cor_select]*tau_12co(co_data['E_u(K)'][cor_select])/(1-np.exp(-tau_12co(co_data['E_u(K)'][cor_select])))
@@ -139,8 +139,8 @@ def pop_dia_1d(objname,plotdir,dstar,fitting_table,
         ax_rot_dia.tick_params('both',labelsize=16,width=1.5,which='minor')
         [ax_rot_dia.spines[axis].set_linewidth(1.5) for axis in ['top','bottom','left','right']]
         ax_rot_dia.set_xlim([0,x.max()+200])
-        ax_rot_dia.set_ylim([42,50])
-        ax_rot_dia.legend([fit],[r'$\rm{T_{rot}= %5.1f \pm %5.1f\,K,~\mathcal{N}= %3.2f \times 10^{%d}}$' % (t_rot,sig_t_rot,N_fit/10**np.floor(np.log10(N_fit)),np.floor(np.log10(N_fit)))],\
+        ax_rot_dia.set_ylim([42,52])
+        ax_rot_dia.legend([fit],[r'$\rm{T_{rot}= %5.1f \pm %5.1f\,K,\,\mathcal{N}= %3.2f \times 10^{%d}}$' % (t_rot,sig_t_rot,N_fit/10**np.floor(np.log10(N_fit)),np.floor(np.log10(N_fit)))],\
             numpoints=1,loc='upper right',fontsize=10,framealpha=0.3)
         fig_rot_dia.savefig(home+plotdir+objname+'_co_rot_single.pdf',format='pdf',dpi=300, bbox_inches='tight')
         ax_rot_dia.cla()
@@ -207,7 +207,7 @@ def pop_dia_1d(objname,plotdir,dstar,fitting_table,
                 ax_rot_dia.tick_params('both',labelsize=16,width=1.5,which='minor')
                 [ax_rot_dia.spines[axis].set_linewidth(1.5) for axis in ['top','bottom','left','right']]
                 ax_rot_dia.set_xlim([0,x.max()+200])
-                ax_rot_dia.set_ylim([42,50])
+                ax_rot_dia.set_ylim([42,52])
 
                 ax_rot_dia.legend([fit_warm,fit_cool],\
                     [r'$\rm{T_{rot,warm}= %5.1f \pm %5.1f\,K,\,\mathcal{N}= %3.2f \times 10^{%d}}$' % (t_rot_warm,sig_t_rot_warm,N_warm_fit/10**np.floor(np.log10(N_warm_fit)),np.floor(np.log10(N_warm_fit))),\
@@ -268,7 +268,7 @@ def pop_dia_1d(objname,plotdir,dstar,fitting_table,
                     ax_rot_dia.set_xlabel(r'$\rm{E_{u}\,(K)}$',fontsize=18)
                     ax_rot_dia.set_ylabel(r'$\rm{log(\mathcal{N}_{J}/g_{J})}$',fontsize=18)
                     ax_rot_dia.set_xlim([0,x.max()+200])
-                    ax_rot_dia.set_ylim([42,50])
+                    ax_rot_dia.set_ylim([42,52])
 
                     ax_rot_dia.tick_params('both',labelsize=16,width=1.5,which='major')
                     ax_rot_dia.tick_params('both',labelsize=16,width=1.5,which='minor')
@@ -346,7 +346,7 @@ def pop_dia_1d(objname,plotdir,dstar,fitting_table,
                         ax_rot_dia.set_xlabel(r'$\rm{E_{u}\,(K)}$',fontsize=18)
                         ax_rot_dia.set_ylabel(r'$\rm{log(\mathcal{N}_{J}/g_{J})}$',fontsize=18)
                         ax_rot_dia.set_xlim([0,x.max()+200])
-                        ax_rot_dia.set_ylim([42,50])
+                        ax_rot_dia.set_ylim([42,52])
 
                         ax_rot_dia.tick_params('both',labelsize=16,width=1.5,which='major')
                         ax_rot_dia.tick_params('both',labelsize=16,width=1.5,which='minor')
@@ -516,6 +516,13 @@ obj_list = list(set(data['Object'].data))
 dist = ascii.read('/Users/yaolun/data/cops-spire_distance.txt')
 
 # loop through all objects
+# with optical depth correction
+for o in obj_list:
+    print o
+    pop_dia_1d(o, '/research/cops-spire/rotational_diagrams/corrected/',
+               dist['distance'][dist['object'] == o],
+               fitting_table, opt_correction=14)
+# without optical depth correction
 for o in obj_list:
     print o
     pop_dia_1d(o, '/research/cops-spire/rotational_diagrams/',
