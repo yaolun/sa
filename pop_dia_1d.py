@@ -313,31 +313,31 @@ dist = ascii.read('/Users/yaolun/data/cops-spire_distance.txt')
 
 # species info
 # # HCO+
-# B_hco = 44.594262e9 # Hz
-# species_info = {'name': 'HCO+', 'B': B_hco}
+B_hco = 44.594262e9 # Hz
+species_info = {'name': 'HCO+', 'B': B_hco}
 #
 # # 13CO
 # B_13co = 55.1010138e9 # Hz
 # species_info = {'name': '13CO', 'B': B_13co}
 
 # 12CO
-B_12co = 57.63596828e9 # Hz
-species_info = {'name': 'CO', 'B': B_12co}
+# B_12co = 57.63596828e9 # Hz
+# species_info = {'name': 'CO', 'B': B_12co}
 
 # line data
 fitting = ascii.read(fitting_table)
 
-# focus on GSS30-IRS1
-obj_list = ['GSS30-IRS1']
-# additional slicer for choosing the same J-lines as 13CO
-slicer = (fitting['ObsWL(um)'] >= 350) & (fitting['ObsWL(um)'] <= 600)
+# # focus on GSS30-IRS1
+# obj_list = ['GSS30-IRS1']
+# # additional slicer for choosing the same J-lines as 13CO
+# slicer = (fitting['ObsWL(um)'] >= 350) & (fitting['ObsWL(um)'] <= 600)
 
 # loop through all objects
 for o in obj_list:
     print o
     # select line data
     data_dum = fitting[(fitting['Object'] == o) & (fitting['Pixel_No.'] == 'c') & \
-                       (fitting['Validity'] == 1) & (fitting['SNR'] >= 5) & slicer]
+                       (fitting['Validity'] == 1) & (fitting['SNR'] >= 4)]
     ind = []
     for i in range(len(data_dum)):
         if len(data_dum['Line'][i].split(species_info['name'])[0]) == 0:

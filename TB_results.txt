@@ -1,0 +1,139 @@
+WL12
+The brightness temperature is 7.4624090866679564
+The optical depth is 22.1606467105
+T_rot = 34.0, J_up = 5
+f - opt. thick, 0.03162031
+f - full, 0.03162031
+
+The brightness temperature is 7.9849337967893401
+The optical depth is 18.192324479
+T_rot = 34.0, J_up = 6
+f - opt. thick, 0.0263287
+f - full, 0.0263287
+
+GSS30-IRS1
+The brightness temperature is 13.402437527708342
+The optical depth is 19.061055174500002
+T_rot = 45.9, J_up = 5
+f - opt. thick, 0.12025669
+f - full, 0.12025669
+
+The brightness temperature is 15.12125158457695
+The optical depth is 14.0571648307
+T_rot = 45.9, J_up = 6
+f - opt. thick, 0.13296223
+f - full, 0.13296233
+
+The brightness temperature is 13.829704390908834
+The optical depth is 7.3717771791000004
+T_rot = 45.9, J_up = 7
+f - opt. thick, 0.08581496
+f - full, 0.08586895
+
+Ced110
+The brightness temperature is 6.2385091537448529
+The optical depth is 29.719758719200001
+T_rot = 52.6, J_up = 5
+f - opt. thick, 0.00830938
+f - full, 0.00830938
+
+The brightness temperature is 7.8464579964905772
+The optical depth is 10.2822263292
+T_rot = 52.6, J_up = 6
+f - opt. thick, 0.01299255
+f - full, 0.01299299
+
+RCrA-IRS5A
+The brightness temperature is 12.075216590596892
+The optical depth is 14.541107892299999
+T_rot = 40.2, J_up = 5
+f - opt. thick, 0.11145217
+f - full, 0.11145222
+
+The brightness temperature is 13.390825598429078
+The optical depth is 11.3652358394
+T_rot = 40.2, J_up = 6
+f - opt. thick, 0.11749593
+f - full, 0.11749729
+
+VLA1623
+The brightness temperature is 10.913823245511178
+The optical depth is 26.032269461199999
+T_rot = 41.0, J_up = 5
+f - opt. thick, 0.08298165
+f - full, 0.08298165
+
+The brightness temperature is 12.226571223457805
+The optical depth is 20.5403751815
+T_rot = 41.0, J_up = 6
+f - opt. thick, 0.08845541
+f - full, 0.08845541
+
+RCrA-IRS7B
+The brightness temperature is 18.072362096124127
+The optical depth is 12.7843608853
+T_rot = 59.2, J_up = 5
+f - opt. thick, 0.16449161
+f - full, 0.16449208
+
+The brightness temperature is 20.248535391315801
+The optical depth is 10.9899806281
+T_rot = 59.2, J_up = 6
+f - opt. thick, 0.18114148
+f - full, 0.18114454
+
+The brightness temperature is 18.440680318633003
+The optical depth is 5.8761507394099999
+T_rot = 59.2, J_up = 7
+f - opt. thick, 0.12891455
+f - full, 0.12927725
+
+The brightness temperature is 17.486360418952042
+The optical depth is 9.6068941774300001
+T_rot = 59.2, J_up = 8
+f - opt. thick, 0.09619037
+f - full, 0.09619684
+
+The brightness temperature is 28.828898450691835
+The optical depth is 7.4277882211600001
+T_rot = 59.2, J_up = 9
+f - opt. thick, 0.28527571
+f - full, 0.28544541
+
+RCrA-IRS7C
+The brightness temperature is 20.523875046888765
+The optical depth is 12.038056532400001
+T_rot = 47.6, J_up = 5
+f - opt. thick, 0.27662582
+f - full, 0.27662746
+
+The brightness temperature is 23.185869712346797
+The optical depth is 10.3830676824
+T_rot = 47.6, J_up = 6
+f - opt. thick, 0.31660321
+f - full, 0.31661301
+
+The brightness temperature is 20.497385316290821
+The optical depth is 6.47579096713
+T_rot = 47.6, J_up = 7
+f - opt. thick, 0.22374541
+f - full, 0.22409057
+
+The brightness temperature is 18.969905057239661
+The optical depth is 8.8710508804099995
+T_rot = 83.0, J_up = 8
+f - opt. thick, 0.0757143
+f - full, 0.07572493
+
+The brightness temperature is 37.02069951927664
+The optical depth is 7.2302437980600001
+T_rot = 83.0, J_up = 9
+f - opt. thick, 0.28968872
+f - full, 0.28989871
+
+L1551-IRS5
+The brightness temperature is 6.7872165451127016
+The optical depth is 14.9308260208
+T_rot = 36.8, J_up = 5
+f - opt. thick, 0.01936058
+f - full, 0.01936058
