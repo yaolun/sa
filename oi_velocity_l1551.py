@@ -45,6 +45,38 @@ def read_fitting_cii(filepath,noiselevel):
     else:
         return [],[]
 
+def great_config(array_name, ax, rot=0, shift=(0,0), color='r', alpha=1, linestyle='--'):
+    import numpy as np
+    import matplotlib.pyplot as plt
+    # configuration detail from Risacher+2016 (IEEE), Table VI
+    if array_name == 'HFA':
+        beam_dia = 6.3
+        spacing = 13.8
+    if array_name == 'LFA':
+        beam_dia = 15.5 # at 1.9THz, 11.8 at 2.5THz
+        spacing = 34.0
+
+    array = [np.array([0,0]),
+             np.array([spacing, 0]),
+             np.array([-spacing,0]),
+             np.array([spacing*np.cos(np.radians(60.0)), spacing*np.sin(np.radians(60.0))]),
+             np.array([-spacing*np.cos(np.radians(60.0)), spacing*np.sin(np.radians(60.0))]),
+             np.array([spacing*np.cos(np.radians(60.0)), -spacing*np.sin(np.radians(60.0))]),
+             np.array([-spacing*np.cos(np.radians(60.0)), -spacing*np.sin(np.radians(60.0))])]
+
+    rot_matrix = np.matrix([[np.cos(np.radians(rot)), -np.sin(np.radians(rot))],
+                     [np.sin(np.radians(rot)), np.cos(np.radians(rot))]])
+
+    for i in range(len(array)):
+        array[i] = np.array([array[i][0]+shift[0], array[i][1]+shift[1]])
+        array[i] = np.dot(array[i], rot_matrix)[0]
+
+    for pix in array:
+        ax.add_artist(plt.Circle((pix[0,0],pix[0,1]), beam_dia/2, color=color,
+                                 fill=False, linestyle=linestyle, linewidth=2, alpha=alpha))
+
+    return None
+
 
 indir = '/Users/yaolun/test/L1551-IRS5/cube/'
 oi_ref_wl = 63.18367004
@@ -97,10 +129,16 @@ ax = fig.add_subplot(111)
 ra_rebin = np.linspace(20, -20, 100)
 dec_rebin = np.linspace(-20, 20, 100)
 
-z = griddata((plot_ra, plot_dec), velo, (ra_rebin[None:], dec_rebin[:,None]), method='cubic')
+z = griddata((plot_ra, plot_dec), velo, (ra_rebin[None,:], dec_rebin[:,None]), method='cubic')
 
 # masked array for masking NaN values
 masked_z = np.ma.array (z, mask=np.isnan(z))
+
+# add the GREAT pixel configuration
+great_config('HFA', ax, rot=-33)
+# shift along the outflow direction
+great_config('HFA', ax, rot=-33, shift=(6.9,0), color='m', linestyle='-')
+great_config('HFA', ax, rot=-33, shift=(-6.9,0), color='cyan')
 
 # plot the contour with color and lines
 ax.contour(ra_rebin, dec_rebin, z, 10, linewidths=0.5,colors='k')
@@ -128,7 +166,7 @@ ori_data = ax.plot(plot_ra,plot_dec, 'bo', markersize=5)
 ax.set_xlabel(r'$\rm{RA\,offset\,[arcsec]}$', fontsize=20)
 ax.set_ylabel(r'$\rm{Dec\,offset\,[arcsec]}$', fontsize=20)
 [ax.spines[axis].set_linewidth(1.5) for axis in ['top','bottom','left','right']]
-ax.minorticks_on() 
+ax.minorticks_on()
 ax.tick_params('both',labelsize=18,width=1.5,which='major',pad=15,length=5)
 ax.tick_params('both',labelsize=18,width=1.5,which='minor',pad=15,length=2.5)
 
@@ -180,10 +218,16 @@ ax = fig.add_subplot(111)
 ra_rebin = np.linspace(20, -20, 100)
 dec_rebin = np.linspace(-20, 20, 100)
 
-z = griddata((plot_ra, plot_dec), velo, (ra_rebin[None:], dec_rebin[:,None]), method='cubic')
+z = griddata((plot_ra, plot_dec), velo, (ra_rebin[None,:], dec_rebin[:,None]), method='cubic')
 
 # masked array for masking NaN values
 masked_z = np.ma.array (z, mask=np.isnan(z))
+
+# add the GREAT pixel configuration
+great_config('LFA', ax, rot=-33)
+# shift along the outflow direction
+great_config('LFA', ax, rot=-33, shift=(6.9,0), color='m', linestyle='-')
+great_config('LFA', ax, rot=-33, shift=(-6.9,0), color='cyan')
 
 # plot the contour with color and lines
 ax.contour(ra_rebin, dec_rebin, z, 10, linewidths=0.5,colors='k')
@@ -211,7 +255,7 @@ plt.setp(cb_obj,fontsize=12)
 ax.set_xlabel(r'$\rm{RA\,offset\,[arcsec]}$', fontsize=20)
 ax.set_ylabel(r'$\rm{Dec\,offset\,[arcsec]}$', fontsize=20)
 [ax.spines[axis].set_linewidth(1.5) for axis in ['top','bottom','left','right']]
-ax.minorticks_on() 
+ax.minorticks_on()
 ax.tick_params('both',labelsize=18,width=1.5,which='major',pad=15,length=5)
 ax.tick_params('both',labelsize=18,width=1.5,which='minor',pad=15,length=2.5)
 
@@ -254,10 +298,25 @@ ax = fig.add_subplot(111)
 ra_rebin = np.linspace(20, -20, 100)
 dec_rebin = np.linspace(-20, 20, 100)
 
-z = griddata((plot_ra, plot_dec), oi_flux, (ra_rebin[None:], dec_rebin[:,None]), method='cubic') / 1e-14
+z = griddata((plot_ra, plot_dec), oi_flux, (ra_rebin[None,:], dec_rebin[:,None]), method='cubic') / 1e-14
 
 # masked array for masking NaN values
 masked_z = np.ma.array (z, mask=np.isnan(z))
+
+# print out the averaged intensity per beam at specific position
+pos = [[0,0], [5.78682692, 3.75800934], [-5.78682692, -3.75800934]]
+beam_size = 6.3
+
+for p in pos:
+    total_I = 0
+    pix_num = 0
+    for rr in range(len(ra_rebin)):
+        for dd in range(len(dec_rebin)):
+            if (ra_rebin[rr]-p[0])**2+(dec_rebin[dd]-p[1])**2 <= (beam_size/2)**2:
+                # the z array is inversed
+                total_I = total_I+z[dd,rr]
+                pix_num += 1
+    print total_I/pix_num
 
 # plot the contour with color and lines
 levels = np.linspace(np.nanmin(z), np.nanmax(z), 10)[1:]
@@ -276,7 +335,7 @@ cax = divider.append_axes("right", size="5%", pad=0.05)
 cb = fig.colorbar(im, cax=cax)
 cb.solids.set_edgecolor("face")
 cb.ax.minorticks_on()
-cb.ax.set_ylabel(r'$\rm{F_{[OI]}\,[10^{-14}\,erg\,s^{-1}\,cm^{-2}\,arcsec^{-1}]}$',fontsize=16)
+cb.ax.set_ylabel(r'$\rm{F_{[OI]}\,[10^{-14}\,erg\,s^{-1}\,cm^{-2}\,arcsec^{-2}]}$',fontsize=16)
 cb_obj = plt.getp(cb.ax.axes, 'yticklabels')
 plt.setp(cb_obj,fontsize=12)
 
@@ -286,9 +345,15 @@ plt.setp(cb_obj,fontsize=12)
 ax.set_xlabel(r'$\rm{RA\,offset\,[arcsec]}$', fontsize=20)
 ax.set_ylabel(r'$\rm{Dec\,offset\,[arcsec]}$', fontsize=20)
 [ax.spines[axis].set_linewidth(1.5) for axis in ['top','bottom','left','right']]
-ax.minorticks_on() 
+ax.minorticks_on()
 ax.tick_params('both',labelsize=18,width=1.5,which='major',pad=15,length=5)
 ax.tick_params('both',labelsize=18,width=1.5,which='minor',pad=15,length=2.5)
+
+# add the GREAT pixel configuration
+great_config('HFA', ax, rot=-33)
+# shift along the outflow direction
+great_config('HFA', ax, rot=-33, shift=(6.9,0), color='m', linestyle='-')
+great_config('HFA', ax, rot=-33, shift=(-6.9,0), color='cyan')
 
 fig.savefig('/Users/yaolun/test/L1551-IRS5_oi_intensity.pdf', format='pdf', dpi=300, bbox_inches='tight')
 fig.clf()
@@ -327,12 +392,29 @@ ax = fig.add_subplot(111)
 # ra_rebin = np.linspace(min(plot_ra), max(plot_ra), 100)
 # dec_rebin = np.linspace(min(plot_dec), max(plot_dec), 100)
 ra_rebin = np.linspace(20, -20, 100)
-dec_rebin = np.linspace(-20, 20, 100)
+dec_rebin = np.linspace(-20, 20, 102)
 
-z = griddata((plot_ra, plot_dec), cii_flux, (ra_rebin[None:], dec_rebin[:,None]), method='cubic') / 1e-16
+z = griddata((plot_ra, plot_dec), cii_flux, (ra_rebin[None,:], dec_rebin[:,None]), method='cubic') / 1e-16
 
 # masked array for masking NaN values
 masked_z = np.ma.array (z, mask=np.isnan(z))
+
+# print out the averaged intensity per beam at specific position
+pos = [[0,0], [5.78682692, 3.75800934], [-5.78682692, -3.75800934]]
+beam_size = 15.5
+
+
+for p in pos:
+    total_I = 0
+    pix_num = 0
+    for rr in range(len(ra_rebin)):
+        for dd in range(len(dec_rebin)):
+            if (ra_rebin[rr]-p[0])**2+(dec_rebin[dd]-p[1])**2 <= (beam_size/2)**2:
+                # the z array is inversed
+                total_I = total_I+z[dd,rr]
+                pix_num += 1
+    print total_I/pix_num
+
 
 # plot the contour with color and lines
 levels = np.linspace(np.nanmin(z), np.nanmax(z), 10)[1:]
@@ -351,7 +433,7 @@ cax = divider.append_axes("right", size="5%", pad=0.05)
 cb = fig.colorbar(im, cax=cax)
 cb.solids.set_edgecolor("face")
 cb.ax.minorticks_on()
-cb.ax.set_ylabel(r'$\rm{F_{[CII]}\,[10^{-16}\,erg\,s^{-1}\,cm^{-2}\,arcsec^{-1}]}$',fontsize=16)
+cb.ax.set_ylabel(r'$\rm{F_{[CII]}\,[10^{-16}\,erg\,s^{-1}\,cm^{-2}\,arcsec^{-2}]}$',fontsize=16)
 cb_obj = plt.getp(cb.ax.axes, 'yticklabels')
 plt.setp(cb_obj,fontsize=12)
 
@@ -361,9 +443,15 @@ plt.setp(cb_obj,fontsize=12)
 ax.set_xlabel(r'$\rm{RA\,offset\,[arcsec]}$', fontsize=20)
 ax.set_ylabel(r'$\rm{Dec\,offset\,[arcsec]}$', fontsize=20)
 [ax.spines[axis].set_linewidth(1.5) for axis in ['top','bottom','left','right']]
-ax.minorticks_on() 
+ax.minorticks_on()
 ax.tick_params('both',labelsize=18,width=1.5,which='major',pad=15,length=5)
 ax.tick_params('both',labelsize=18,width=1.5,which='minor',pad=15,length=2.5)
+
+# add the GREAT pixel configuration
+great_config('LFA', ax, rot=-33)
+great_config('LFA', ax, rot=-33, shift=(6.9,0), color='m', linestyle='-')
+great_config('LFA', ax, rot=-33, shift=(-6.9,0), color='cyan')
+
 
 fig.savefig('/Users/yaolun/test/L1551-IRS5_cii_intensity.pdf', format='pdf', dpi=300, bbox_inches='tight')
 fig.clf()
