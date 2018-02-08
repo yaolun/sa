@@ -56,15 +56,18 @@ c = const.c.cgs.value
 fitting = ascii.read('/Volumes/SD-Mac/CDF_archive_v2/CDF_archive_v2_lines.txt')
 tau4TB = ascii.read('/Volumes/SD-Mac/Dropbox/real_cops-spire/tau_for_TB.txt')
 
-T_rot_list = {'Ced110': [58.4],
-              'GSS30-IRS1': [449.4, 121.6, 96.0, 56.3],
-              'VLA1623': [348.1, 125.0, 79.3, 43.8],
-              'WL12': [589.5, 162.1, 101.7, 35.9],
-              'L1551-IRS5': [484.8, 99.7, 39.1],
-              'RCrA-IRS5A': [318.2, 121.1, 77.7, 43.0],
-              'RCrA-IRS7B': [367.5, 122.8, 92.9, 61.6],
-              'RCrA-IRS7C': [394.9, 117.0, 98.1, 51.5],
-              'BHR71': [451.3, 145.1, 87.7, 37.1]}
+T_rot_list = {'Ced110': [58.5, 51.1],
+              'GSS30-IRS1': [533.7, 246.3, 91.4, 51.7],
+              'VLA1623': [352.6, 213.4, 112.4, 57.8],
+              'WL12': [371.6, 132.7, 71.1, 26.8],
+              'L1551-IRS5': [424.2, 127.7, 72.7, 37.9],
+              'RCrA-IRS5A': [273.4, 101.0, 64.2, 40.5],
+              'RCrA-IRS7C': [486.9, 276.8, 105.6, 65.5],
+              'BHR71': [1064.5, 397.3, 103.9, 45.5],
+              'HH46': [74.1, 44.4],
+              'DKCha': [637.2, 426.4, 100.5, 48.1],
+              'TMR1': [392.9, 120.1, 83.1, 57.3]
+              }
 
 # get the object list for tau4TB, where the 13CO is detected
 obj_list = list(set(tau4TB['Object']))
@@ -82,8 +85,8 @@ f_slw_beam = interp1d(slw_beam['wavelength(um)'][trimmer_slw], slw_beam['size(ar
 
 # use the aperture for extracting 1D SPIRE spectrum
 fitted_size = {'Ced110': 30.5, 'GSS30-IRS1': 38.5, 'VLA1623': 25.75, 'WL12': 41.0,
-               'L1551-IRS5': 14.25, 'RCrA-IRS5A': 40.0, 'RCrA-IRS7B': 37.0, 'RCrA-IRS7C': 38.0,
-               'BHR71': 15.5}
+               'L1551-IRS5': 14.25, 'RCrA-IRS5A': 40.0, 'RCrA-IRS7C': 38.0,
+               'BHR71': 15.5, 'HH46': 16.0, 'DKCha': 13.25, 'TMR1': 26.5}
 
 # loop through each pair of object and J_up found in tau4TB file
 for i, obj in enumerate(obj_list):
@@ -105,8 +108,8 @@ for i, obj in enumerate(obj_list):
             print('No data found for J_up='+str(j)+' in'+obj)
             continue
 
-        # use the averaged line width of 5 km/s
-        F_v = data['Str(W/cm2)'].data/(13.8e5/c*data['ObsWL(um)'].data)/1.064
+        # use the averaged line width of 4.3 km/s (CO 6-5) from Yildiz+2013
+        F_v = data['Str(W/cm2)'].data/(5.7e5/c*data['ObsWL(um)'].data)/1.064
         nu = c/data['ObsWL(um)'].data*1e4
 
         if data['ObsWL(um)'] >= 310:
